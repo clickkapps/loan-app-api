@@ -19,4 +19,5 @@ class AuthController extends Controller
         $this->middleware('throttle:3,5')->only(['login']); // 3(maxAttempts).  // 5(decayMinutes)
     }
 
+
 }

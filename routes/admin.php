@@ -15,3 +15,4 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware(['basic.auth'])->get('/login', [\App\Http\Controllers\Admin\AuthController::class, 'login']);
+

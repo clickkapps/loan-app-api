@@ -23,5 +23,9 @@ class UserTableSeeder extends Seeder
             'password' => Hash::make('12345678'),
             'active' => true,
         ]);
+
+        $admin->refresh();
+        $admin->assignRole(['super admin']);
+
     }
 }
