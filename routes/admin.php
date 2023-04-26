@@ -14,5 +14,34 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['basic.auth'])->get('/login', [\App\Http\Controllers\Admin\AuthController::class, 'login']);
 
+/*
+|--------------------------------------------------------------------------
+| Authentication Routes
+|--------------------------------------------------------------------------
+|
+*/
+Route::middleware(['basic.auth'])->post('/login', [\App\Http\Controllers\Admin\AuthController::class, 'login']);
+
+
+/*
+|--------------------------------------------------------------------------
+| Admin management Routes
+|--------------------------------------------------------------------------
+|
+*/
+
+Route::middleware(['auth:sanctum'])->post('/create-admin', [\App\Http\Controllers\Admin\AdminController::class, 'create']);
+Route::middleware(['auth:sanctum'])->get('/get-admins', [\App\Http\Controllers\Admin\AdminController::class, 'getAll']);
+
+
+/*
+|--------------------------------------------------------------------------
+| Permissions management Routes
+|--------------------------------------------------------------------------
+|
+*/
+
+Route::middleware(['auth:sanctum'])->get('/get-permissions', [\App\Http\Controllers\Admin\RolePermissionController::class, 'getAll']);
+Route::middleware(['auth:sanctum'])->get('/get-user-permissions/{userId}', [\App\Http\Controllers\Admin\RolePermissionController::class, 'getUserPermissions']);
+Route::middleware(['auth:sanctum'])->post('/assign-permission', [\App\Http\Controllers\Admin\RolePermissionController::class, 'assign']);

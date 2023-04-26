@@ -13,15 +13,14 @@ class PermissionTableSeeder extends Seeder
      */
     public function run(): void
     {
-        /// High level roles and permissions --------
-        Permission::create(['name' => 'admin management module']);
-        Permission::create(['name' => 'customer kyc module']);
-        Permission::create(['name' => 'recovery officers module']);
-        Permission::create(['name' => 'roles and permissions module']);
-        Permission::create(['name' => 'account settings module']);
-        Permission::create(['name' => 'customer support module']);
-
-        /// Sub level roles and permissions will be here --------
+        /// roles and permissions --------
+        $adminPermissions = config('custom.admin_permissions');
+        foreach ($adminPermissions as $permission) {
+            Permission::updateOrCreate(['name' => $permission['major']], []);
+            foreach ($permission['subs'] as $sub) {
+                Permission::updateOrCreate(['name' => $sub], []);
+            }
+        }
 
     }
 }

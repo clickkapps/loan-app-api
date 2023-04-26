@@ -52,7 +52,9 @@ trait AuthTrait
                 'name' => $user->name,
                 'email' => $user->email,
                 'last_login' => $lastLogin,
-                'token' => $token
+                'token' => $token,
+                'roles' => $user->getRoleNames(),
+                'permissions' => $user->permissions
             ]));
 
         }catch (\Exception $e) {

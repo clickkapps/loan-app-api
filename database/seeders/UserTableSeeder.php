@@ -14,15 +14,15 @@ class UserTableSeeder extends Seeder
      */
     public function run(): void
     {
-        $admin = User::create([
+        $admin = User::updateOrCreate(
+            ['email' => 'clickkapps@gmail.com' ],
+            [
             'name' => 'Super Admin',
-            'email' => 'clickkapps@gmail.com',
             'email_verified_at' => now(),
-            'phone' => '+233244556677',
-            'phone_verified_at' => now(),
             'password' => Hash::make('12345678'),
             'active' => true,
-        ]);
+            ]
+        );
 
         $admin->refresh();
         $admin->assignRole(['super admin']);

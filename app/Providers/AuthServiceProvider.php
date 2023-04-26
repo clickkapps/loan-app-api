@@ -23,8 +23,10 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::define('update-post', function (User $user) {
-            return $user->{'id'} === 1;
+        Gate::before(function (User $user, string $ability) {
+            if ($user->hasRole('super admin')) {
+                return true;
+            }
         });
     }
 }
