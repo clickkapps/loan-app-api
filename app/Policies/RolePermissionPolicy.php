@@ -4,7 +4,7 @@ namespace App\Policies;
 
 use App\Models\User;
 
-class PermissionPolicy
+class RolePermissionPolicy
 {
     /**
      * Create a new policy instance.

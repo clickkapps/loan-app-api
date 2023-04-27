@@ -16,8 +16,8 @@ return [
             [
                 'major' => 'manage customer kyc',
                 'subs' => [
-                    'view permissions',
-                    'assign permissions'
+                    'view customer kyc',
+                    'edit customer kyc'
                 ]
             ],
             [
@@ -29,11 +29,12 @@ return [
             [
                 'major' => 'manage roles and permissions',
                 'subs' => [
-
+                    'view permissions',
+                    'assign permissions'
                 ]
             ],
             [
-                'major' => 'manage settings',
+                'major' => 'manage configurations',
                 'subs' => [
 
                 ]
