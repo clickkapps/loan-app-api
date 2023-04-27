@@ -18,7 +18,8 @@ class AdminController extends Controller
      * @throws AuthorizationException
      * @throws \Exception
      */
-    public function create(Request $request) {
+    public function create(Request $request): \Illuminate\Http\JsonResponse
+    {
 
         // check if user can create new admin
         $this->authorize('create', Admin::class);
