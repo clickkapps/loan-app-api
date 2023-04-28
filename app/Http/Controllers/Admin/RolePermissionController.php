@@ -59,7 +59,7 @@ class RolePermissionController extends Controller
 
 
 
-        return response()->json(ApiResponse::successResponse());
+        return response()->json(ApiResponse::successResponseWithMessage());
 
     }
 
@@ -87,7 +87,7 @@ class RolePermissionController extends Controller
             return true;
 
         })->values();
-        return response()->json(ApiResponse::successResponseV2($filtered));
+        return response()->json(ApiResponse::successResponseWithData($filtered));
 
     }
 
@@ -123,7 +123,7 @@ class RolePermissionController extends Controller
 
         })->values();
 
-        return response()->json(ApiResponse::successResponseV2($filtered));
+        return response()->json(ApiResponse::successResponseWithData($filtered));
 
     }
 }

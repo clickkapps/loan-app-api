@@ -14,10 +14,13 @@ class ConfigCusBoardingSeeder extends Seeder
     public function run(): void
     {
         // add account details page configuration
-        ConfigCusBoardingPage::updateOrCreate([
-            'key' => 'account_details_page',
-            ''
-        ]);
+        ConfigCusBoardingPage::updateOrCreate(
+            ['page_position' => 1,],
+            [
+                'page_title' => 'Basic info',
+                'page_description' => 'Provide us with your basic information',
+            ]
+        );
 
         // Account number
     }

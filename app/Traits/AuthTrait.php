@@ -48,7 +48,7 @@ trait AuthTrait
 
             $token = $user->createToken($user->email)->plainTextToken;
 
-            return response()->json(ApiResponse::successResponseV2([
+            return response()->json(ApiResponse::successResponseWithData([
                 'name' => $user->name,
                 'email' => $user->email,
                 'last_login' => $lastLogin,

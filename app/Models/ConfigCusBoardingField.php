@@ -11,12 +11,13 @@ class ConfigCusBoardingField extends Model
     protected $table = 'config_cusboarding_fields';
 
     protected $fillable = [
-        'config_cusboarding_field_id',
+        'config_cusboarding_page_id',
         'type',
         'required',
-        'title',
+        'name',
         'placeholder',
         'key',
+        'position',
         'extra'
     ];
 

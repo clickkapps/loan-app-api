@@ -55,7 +55,7 @@ class AdminController extends Controller
 
         Log::info("new admin created: $email");
 
-        return response()->json(ApiResponse::successResponse('Account created'));
+        return response()->json(ApiResponse::successResponseWithMessage('Account created'));
 
     }
 

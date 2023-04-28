@@ -20,12 +20,12 @@ class ApiResponse
         return new ApiResponse(false,$message,$extra);
     }
 
-    static public function successResponse($message = "SUCCESS", $extra = null): ApiResponse
+    static public function successResponseWithMessage($message = "SUCCESS", $extra = null): ApiResponse
     {
         return new ApiResponse(true,$message,$extra);
     }
 
-    static public function successResponseV2($extra = null, $message = "SUCCESS"): ApiResponse
+    static public function successResponseWithData($extra = null, $message = "SUCCESS"): ApiResponse
     {
         return new ApiResponse(true,$message,$extra);
     }

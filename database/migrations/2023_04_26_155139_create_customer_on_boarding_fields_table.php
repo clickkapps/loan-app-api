@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('config_cusboarding_fields', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('config_cusboarding_field_id')->constrained();
+            $table->foreignId('config_cusboarding_page_id')->constrained();
             $table->string('type')->default('text');
             $table->boolean('required')->default(true);
-            $table->string('title')->nullable()->default(null);
+            $table->string('name')->nullable()->default(null);
             $table->string('placeholder')->nullable()->default(null);
+            $table->integer('position');
             $table->string('key')->nullable()->default(null)->comment('This field is not exposed to admin users. Used internally');
             $table->timestamps();
             $table->text('extra')->nullable()->default(null);

@@ -30,9 +30,13 @@ Route::middleware(['basic.auth'])->post('/login', [\App\Http\Controllers\Admin\A
 |--------------------------------------------------------------------------
 |
 */
+Route::middleware(['auth:sanctum'])->group(function() {
 
-Route::middleware(['auth:sanctum'])->post('/create-admin', [\App\Http\Controllers\Admin\AdminController::class, 'create']);
-Route::middleware(['auth:sanctum'])->get('/get-admins', [\App\Http\Controllers\Admin\AdminController::class, 'getAll']);
+    Route::post('/create-admin', [\App\Http\Controllers\Admin\AdminController::class, 'create']);
+    Route::get('/get-admins', [\App\Http\Controllers\Admin\AdminController::class, 'getAll']);
+
+});
+
 
 
 /*
@@ -41,7 +45,26 @@ Route::middleware(['auth:sanctum'])->get('/get-admins', [\App\Http\Controllers\A
 |--------------------------------------------------------------------------
 |
 */
+Route::middleware(['auth:sanctum'])->group(function() {
 
-Route::middleware(['auth:sanctum'])->get('/get-permissions', [\App\Http\Controllers\Admin\RolePermissionController::class, 'getAll']);
-Route::middleware(['auth:sanctum'])->get('/get-user-permissions/{userId}', [\App\Http\Controllers\Admin\RolePermissionController::class, 'getUserPermissions']);
-Route::middleware(['auth:sanctum'])->post('/assign-permission', [\App\Http\Controllers\Admin\RolePermissionController::class, 'assign']);
+    Route::get('/get-permissions', [\App\Http\Controllers\Admin\RolePermissionController::class, 'getAll']);
+    Route::get('/get-user-permissions/{userId}', [\App\Http\Controllers\Admin\RolePermissionController::class, 'getUserPermissions']);
+    Route::post('/assign-permission', [\App\Http\Controllers\Admin\RolePermissionController::class, 'assign']);
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Admin config Routes
+|--------------------------------------------------------------------------
+|
+*/
+Route::middleware(['auth:sanctum'])->group(function() {
+
+    Route::post('/add-cusboarding-page', [\App\Http\Controllers\Admin\ConfigCusBoardingController::class, 'addPage']);
+    Route::post('/add-cusboarding-field', [\App\Http\Controllers\Admin\ConfigCusBoardingController::class, 'addFieldToPage']);
+    Route::delete('/delete-cusboarding-field/{id}', [\App\Http\Controllers\Admin\ConfigCusBoardingController::class, 'removeField']);
+    Route::get('/get-cusboarding-fields', [\App\Http\Controllers\Admin\ConfigCusBoardingController::class, 'getPagesWithFields']);
+
+});

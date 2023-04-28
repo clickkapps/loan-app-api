@@ -63,7 +63,7 @@ class AuthController extends Controller
 
         Log::info("verification code: $code");
 
-        return response()->json(ApiResponse::successResponse("A verification code has been sent to $email"));
+        return response()->json(ApiResponse::successResponseWithMessage("A verification code has been sent to $email"));
 
     }
 
@@ -129,7 +129,7 @@ class AuthController extends Controller
                 'status' => 'verified'
             ]);
 
-            return response()->json(ApiResponse::successResponse());
+            return response()->json(ApiResponse::successResponseWithMessage());
 
         }catch (\Exception $e) {
 

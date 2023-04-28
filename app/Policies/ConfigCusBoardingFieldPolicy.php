@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Policies;
+
+use App\Models\User;
+
+class ConfigCusBoardingFieldPolicy
+{
+    /**
+     * Create a new policy instance.
+     */
+    public function __construct()
+    {
+        //
+    }
+
+    public function createField(User $user) : bool {
+        return  $user->hasPermissionTo('configure customer on-boarding fields');
+    }
+}

@@ -14,7 +14,7 @@ class CustomerController extends Controller
     public function getCustomers(): \Illuminate\Http\JsonResponse
     {
         $customers = User::role('customer')->get();
-        return response()->json(ApiResponse::successResponseV2($customers));
+        return response()->json(ApiResponse::successResponseWithData($customers));
     }
 
     /**
