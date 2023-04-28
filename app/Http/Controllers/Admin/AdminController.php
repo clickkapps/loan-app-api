@@ -69,4 +69,19 @@ class AdminController extends Controller
 
     }
 
+    public function getAdmin($id): \Illuminate\Http\JsonResponse
+    {
+        $user = User::find($id);
+
+        $lastLogin = $user->{'last_login'};
+        return response()->json(ApiResponse::successResponseWithData([
+            'name' => $user->name,
+            'email' => $user->email,
+            'last_login' => $lastLogin,
+            'roles' => $user->getRoleNames(),
+            'permissions' => $user->permissions
+        ]));
+
+    }
+
 }

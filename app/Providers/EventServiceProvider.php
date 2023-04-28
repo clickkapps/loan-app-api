@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\CusBoardingFieldAdded;
 use App\Events\PermissionAssigned;
 use App\Listeners\EvaluateMajorPermissions;
+use App\Listeners\OrderlyArrangeCusBoardingFields;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -22,6 +24,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         PermissionAssigned::class => [
             EvaluateMajorPermissions::class
+        ],
+        CusBoardingFieldAdded::class => [
+            OrderlyArrangeCusBoardingFields::class
         ]
     ];
 

@@ -34,6 +34,7 @@ Route::middleware(['auth:sanctum'])->group(function() {
 
     Route::post('/create-admin', [\App\Http\Controllers\Admin\AdminController::class, 'create']);
     Route::get('/get-admins', [\App\Http\Controllers\Admin\AdminController::class, 'getAll']);
+    Route::get('/get-admin/{id}', [\App\Http\Controllers\Admin\AdminController::class, 'getAdmin']);
 
 });
 

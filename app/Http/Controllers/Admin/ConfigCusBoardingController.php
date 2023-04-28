@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Classes\ApiResponse;
+use App\Events\CusBoardingFieldAdded;
 use App\Http\Controllers\Controller;
 use App\Models\ConfigCusBoardingField;
 use App\Models\ConfigCusBoardingPage;
@@ -70,7 +71,7 @@ class ConfigCusBoardingController extends Controller
         $name = $request->get('name');
         $placeholder = $request->get('placeholder');
         $required = $request->get('required');
-        $fieldPosition = $request->get('$fieldPosition');
+        $fieldPosition = $request->get('position');
         $extra = $request->get('extra');
 
         if(blank($fieldPosition)){
@@ -83,7 +84,7 @@ class ConfigCusBoardingController extends Controller
             }
         }
 
-        ConfigCusBoardingField::create([
+        $configCusboardingField =ConfigCusBoardingField::create([
             'config_cusboarding_page_id' => $pageId,
             'type' => $type,
             'required' => $required,
@@ -92,6 +93,9 @@ class ConfigCusBoardingController extends Controller
             'position' => $fieldPosition,
             'extra' => $extra
         ]);
+
+        // raise an event to arrange all the field positions
+        CusBoardingFieldAdded::dispatch($configCusboardingField);
 
         return response()->json(ApiResponse::successResponseWithMessage());
 
