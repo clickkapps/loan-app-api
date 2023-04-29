@@ -22,5 +22,10 @@ class AdminPolicy
         return $user->hasPermissionTo('create admin');
     }
 
+    public function viewAdmin(User $user): bool
+    {
+        return $user->hasRole('admin') || $user->hasRole('super admin');
+    }
+
 
 }

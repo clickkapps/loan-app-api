@@ -69,8 +69,13 @@ class AdminController extends Controller
 
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getAdmin($id): \Illuminate\Http\JsonResponse
     {
+        $this->authorize('viewAdmin', Admin::class);
+
         $user = User::find($id);
 
         $lastLogin = $user->{'last_login'};

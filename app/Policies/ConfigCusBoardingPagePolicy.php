@@ -14,7 +14,7 @@ class ConfigCusBoardingPagePolicy
         //
     }
 
-    public function createPage(User $user) : bool {
+    public function configureCusboardingFields(User $user) : bool {
         return  $user->hasPermissionTo('configure customer on-boarding fields');
     }
 }

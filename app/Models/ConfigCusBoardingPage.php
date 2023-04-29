@@ -19,6 +19,6 @@ class ConfigCusBoardingPage extends Model
 
     public function fields(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(ConfigCusBoardingField::class, 'config_cusboarding_page_id');
+        return $this->hasMany(ConfigCusBoardingField::class, 'config_cusboarding_page_id')->orderBy('position');
     }
 }

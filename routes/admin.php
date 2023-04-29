@@ -66,6 +66,7 @@ Route::middleware(['auth:sanctum'])->group(function() {
     Route::post('/add-cusboarding-page', [\App\Http\Controllers\Admin\ConfigCusBoardingController::class, 'addPage']);
     Route::post('/add-cusboarding-field', [\App\Http\Controllers\Admin\ConfigCusBoardingController::class, 'addFieldToPage']);
     Route::delete('/delete-cusboarding-field/{id}', [\App\Http\Controllers\Admin\ConfigCusBoardingController::class, 'removeField']);
-    Route::get('/get-cusboarding-fields', [\App\Http\Controllers\Admin\ConfigCusBoardingController::class, 'getPagesWithFields']);
+    Route::delete('/delete-cusboarding-page/{id}', [\App\Http\Controllers\Admin\ConfigCusBoardingController::class, 'removePage']);
+    Route::get('/get-cusboarding-pages-fields', [\App\Http\Controllers\Admin\ConfigCusBoardingController::class, 'getPagesWithFields']);
 
 });

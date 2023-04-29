@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('config_cusboarding_fields', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('config_cusboarding_page_id')->constrained();
+            $table->foreignId('config_cusboarding_page_id')->constrained()->onDelete('cascade');
             $table->string('type')->default('text');
             $table->boolean('required')->default(true);
             $table->string('name')->nullable()->default(null);
