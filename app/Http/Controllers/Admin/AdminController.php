@@ -80,6 +80,7 @@ class AdminController extends Controller
 
         $lastLogin = $user->{'last_login'};
         return response()->json(ApiResponse::successResponseWithData([
+            'id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
             'last_login' => $lastLogin,
