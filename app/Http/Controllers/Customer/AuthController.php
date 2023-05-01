@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Verification;
 use App\Traits\AuthTrait;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -24,7 +25,8 @@ class AuthController extends Controller
     /**
      * @throws \Exception
      */
-    public function createAccount(Request $request) {
+    public function register(Request $request): \Illuminate\Http\JsonResponse
+    {
 
         $request->validate([
             'name' => 'required|string',
@@ -46,6 +48,7 @@ class AuthController extends Controller
 
         );
 
+
         // allow re-signup only if email has not been verified
         // probable the user started the signup process and neglected it on half-way
         // this will prevent ppl from activating their blocked account via signup
@@ -53,17 +56,53 @@ class AuthController extends Controller
             throw new \Exception('This account already exist. Try login instead');
         }
 
-        /// create and send verification code to the user's email
-        $code = generateRandomNumber(6);
+        $user->refresh();
+        $user->assignRole(['customer']);
 
-        Verification::updateOrCreate(
-            ['user_id' => $user->id, 'verification_field'=> 'email'],
-            ['code' => Hash::make($code)]
-        );
 
-        Log::info("verification code: $code");
+        $previousCodeSent = Verification::with([])
+            ->where(['user_id' => $user->id, 'verification_field' => 'email'])->first();
 
-        return response()->json(ApiResponse::successResponseWithMessage("A verification code has been sent to $email"));
+        $now = Carbon::now();
+        $retryIntervalInMinutes = 1;
+
+        // check if it has been at least 5 mins since code was sent
+        // code should only be resent after 5 mins
+
+
+        if($previousCodeSent &&  $now->lessThan(Carbon::parse($previousCodeSent->{'updated_at'})->addMinutes($retryIntervalInMinutes)) && Carbon::parse($previousCodeSent->{'updated_at'})->addMinutes($retryIntervalInMinutes)->diffInSeconds($now) != 0) {
+
+            $retryInMinutes = Carbon::parse($previousCodeSent->{'updated_at'})->addMinutes($retryIntervalInMinutes)->diffInMinutes($now);
+            $retryInSeconds = Carbon::parse($previousCodeSent->{'updated_at'})->addMinutes($retryIntervalInMinutes)->diffInSeconds($now);
+            $response = "Verification code has already been sent to $email. New code can only be sent in the next $retryInMinutes minute(s)";
+            Log::info("code already sent:  $retryInMinutes minute(s) remaining to retry");
+
+        } else {
+
+            /// create and send verification code to the user's email
+            $code = generateRandomNumber(6);
+
+            Verification::with([])->updateOrCreate(
+                ['user_id' => $user->id, 'verification_field'=> 'email'],
+                ['code' => Hash::make($code)]
+            );
+
+            $newCodeSent = Verification::with([])->where(['user_id' => $user->id, 'verification_field' => 'email'])->first();
+            $retryInSeconds = Carbon::parse($newCodeSent->{'updated_at'})->addMinutes($retryIntervalInMinutes)->diffInSeconds($now);
+
+            // send verification code
+            $response = "A verification code has been sent to $email";
+
+            Log::info("verification code sent: $code");
+
+        }
+
+
+        return response()->json(ApiResponse::successResponseWithData(
+            [
+              'retry_in_seconds' => $retryInSeconds
+            ],
+            $response));
 
     }
 
@@ -74,7 +113,7 @@ class AuthController extends Controller
 
             $request->validate([
                 'code' => 'required|string',
-                'email' => 'required|string|email'
+                'email' => 'required|string'
             ]);
 
             $email = $request->get('email');

@@ -65,7 +65,7 @@ class AdminController extends Controller
     public function getAll() {
 
         $this->authorize('viewAny', Admin::class);
-        return User::role('admin')->get();
+        return User::role('admin')->with('permissions')->get();
 
     }
 

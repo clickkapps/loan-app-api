@@ -31,7 +31,7 @@ trait AuthTrait
 
             if( blank($user->{'email_verified_at'})){
                 throw ValidationException::withMessages([
-                    'email' => ['This account has not been verified. Try signing up again and verify your email'],
+                    'email' => ['This account has not been verified. Try signing up again and verify your account'],
                 ]);
             }
 
