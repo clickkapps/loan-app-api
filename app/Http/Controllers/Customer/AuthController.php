@@ -87,7 +87,10 @@ class AuthController extends Controller
 
             Verification::with([])->updateOrCreate(
                 ['user_id' => $user->id, 'verification_field'=> 'email'],
-                ['code' => Hash::make($code)]
+                [
+                    'code' => Hash::make($code),
+                    'code_generated_at' => $now
+                ]
             );
 
             $newCodeSent = Verification::with([])->where(['user_id' => $user->id, 'verification_field' => 'email'])->first();
@@ -152,7 +155,7 @@ class AuthController extends Controller
 
             $newCalculatedAttempts = $verification->attempts + 1;
             $verification->update([
-                'attempts' => $newCalculatedAttempts
+                'attempts' => $newCalculatedAttempts,
             ]);
 
             if(!$valid){
