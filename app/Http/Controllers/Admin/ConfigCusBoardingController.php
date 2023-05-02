@@ -102,6 +102,7 @@ class ConfigCusBoardingController extends Controller
         $required = $request->get('required');
         $fieldPosition = $request->get('position');
         $extra = $request->get('extra');
+        $extra = !blank($extra) ? json_encode($extra) : null;
 
 
         $positionExists = ConfigCusBoardingField::where([
