@@ -279,7 +279,7 @@ class AuthController extends Controller
 
         $extra = (array) $data->extra;
 
-        $extra[] = [
+        $extra += [
             'security_code' => $securityCode,
         ];
 
