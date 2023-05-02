@@ -281,6 +281,7 @@ class AuthController extends Controller
 
         $extra += [
             'security_code' => $securityCode,
+            'name' => $user->name
         ];
 
         return response()->json(ApiResponse::successResponseWithData($extra));
