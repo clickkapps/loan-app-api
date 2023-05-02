@@ -26,5 +26,7 @@ Route::middleware(['basic.auth'])->group(function () {
     Route::post('/login', [\App\Http\Controllers\Customer\AuthController::class, 'login']);
     Route::post('/register', [\App\Http\Controllers\Customer\AuthController::class, 'register']);
     Route::post('/verify-account', [\App\Http\Controllers\Customer\AuthController::class, 'verifyAccountOnSignup']);
+    Route::post('/request-password-reset', [\App\Http\Controllers\Customer\AuthController::class, 'requestPasswordReset']);
+    Route::post('/set-password', [\App\Http\Controllers\Customer\AuthController::class, 'setPassword']);
 
 });

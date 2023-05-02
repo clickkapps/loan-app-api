@@ -6,8 +6,11 @@ use App\Classes\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Verification;
+use App\Notifications\AccountVerificationRequested;
+use App\Providers\RouteServiceProvider;
 use App\Traits\AuthTrait;
 use Carbon\Carbon;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -31,7 +34,7 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string',
             'email' => 'required|string', // this is what we use to identify the user
-            'password' => 'required|string',
+            'password' => 'required|string'
         ]);
 
         $name = $request->get('name');
@@ -64,7 +67,7 @@ class AuthController extends Controller
             ->where(['user_id' => $user->id, 'verification_field' => 'email'])->first();
 
         $now = Carbon::now();
-        $retryIntervalInMinutes = 1;
+        $retryIntervalInMinutes = 6;
 
         // check if it has been at least 5 mins since code was sent
         // code should only be resent after 5 mins
@@ -80,7 +83,7 @@ class AuthController extends Controller
         } else {
 
             /// create and send verification code to the user's email
-            $code = generateRandomNumber(6);
+            $code = generateRandomNumber();
 
             Verification::with([])->updateOrCreate(
                 ['user_id' => $user->id, 'verification_field'=> 'email'],
@@ -92,6 +95,8 @@ class AuthController extends Controller
 
             // send verification code
             $response = "A verification code has been sent to $email";
+
+            $user->notify(new AccountVerificationRequested($code));
 
             Log::info("verification code sent: $code");
 
@@ -113,11 +118,13 @@ class AuthController extends Controller
 
             $request->validate([
                 'code' => 'required|string',
-                'email' => 'required|string'
+                'email' => 'required|string',
+                'activate_account' => 'required|bool'
             ]);
 
             $email = $request->get('email');
             $code = $request->get('code');
+            $activateAccount = $request->get('activate_account');
 
             $user = User::where('email', $email)->first();
 
@@ -158,11 +165,18 @@ class AuthController extends Controller
                 throw new \Exception('Invalid verification code');
             }
 
-            // mark email as verified
-            $user->update([
+            $dataToUpdate = [
                 'email_verified_at' => now(),
-                'active' => true
-            ]);
+            ];
+
+            if($activateAccount) {
+                $dataToUpdate += [
+                    'active' => true
+                ];
+            }
+
+            // mark email as verified
+            $user->update($dataToUpdate);
 
             $verification->update([
                 'status' => 'verified'
@@ -177,5 +191,101 @@ class AuthController extends Controller
         }
 
     }
+
+    /**
+     * @throws \Exception
+     */
+    public function setPassword(Request $request): \Illuminate\Http\JsonResponse
+    {
+
+        $request->validate([
+            'email' => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+
+        $email = $request->get('email');
+        $password = $request->get('password');
+        $securityCode = $request->get('security_code');
+
+        $user = User::where('email', $email)->first();
+
+        if(blank($user)){
+            throw new \Exception('Unauthorized action. Please contact administrators');
+        }
+
+        // If the user is a guest
+        if(!$request->user()) {
+
+            if(blank($securityCode)) {
+                // unauthorized user trying to set password
+                Log::info("unauthorized user trying to set password");
+                throw new \Exception("Unauthorized action. Please contact administrators");
+            }
+
+            if (Hash::check($securityCode, $user->password)) {
+                throw new \Exception("Unauthorized action. Please contact administrators");
+            }
+
+        }
+
+        $user->update([
+            'password' => Hash::make($password)
+        ]);
+
+        return response()->json(ApiResponse::successResponseWithMessage());
+
+
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function requestPasswordReset(Request $request): \Illuminate\Http\JsonResponse
+    {
+
+        $request->validate([
+            'email' => 'required|string', // this is what we use to identify the user
+        ]);
+
+        $email = $request->get('email');
+        $user = User::where('email', $email)->first();
+
+        if(blank($user)){
+            throw new \Exception('This account does not exist');
+        }
+
+        $securityCode = generateRandomNumber();
+
+        $user->update([
+           'email_verified_at' => null,
+        ]);
+
+        $myRequest = new Request();
+        $myRequest->setMethod('POST');
+        $myRequest->request->add([
+            'name' => $user->name,
+            'email' => $email,
+            'password' => $securityCode,
+        ]);
+
+        $registrationResponse = $this->register($myRequest);
+
+        $data = $registrationResponse->getData();
+
+        if(!$data->status){
+            throw new \Exception('Unauthorized action. Please contact administrators');
+        }
+
+        $extra = (array) $data->extra;
+
+        $extra[] = [
+            'security_code' => $securityCode,
+        ];
+
+        return response()->json(ApiResponse::successResponseWithData($extra));
+
+    }
+
 
 }
