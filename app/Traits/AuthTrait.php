@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use App\Classes\ApiResponse;
 use App\Models\User;
+use App\Models\Verification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -25,7 +26,7 @@ trait AuthTrait
 
             if (! $user || ! Hash::check($request->get('password'), $user->password)) {
                 throw ValidationException::withMessages([
-                    'email' => ['The provided credentials are incorrect.'],
+                    'email' => ['Invalid credentials'],
                 ]);
             }
 
@@ -45,6 +46,14 @@ trait AuthTrait
             $user->update([
                 'last_login' => now()
             ]);
+
+            $verification = Verification::where('user_id', $user->id)->first();
+            if(!blank($verification) && $verification->attempts > 0) {
+                $verification->update([
+                    'attempts' => 0
+                ]);
+            }
+
 
             $token = $user->createToken($user->email)->plainTextToken;
 

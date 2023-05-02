@@ -73,11 +73,11 @@ class AuthController extends Controller
         // code should only be resent after 5 mins
 
 
-        if($previousCodeSent &&  $now->lessThan(Carbon::parse($previousCodeSent->{'updated_at'})->addMinutes($retryIntervalInMinutes)) && Carbon::parse($previousCodeSent->{'updated_at'})->addMinutes($retryIntervalInMinutes)->diffInSeconds($now) != 0) {
+        if($previousCodeSent && $previousCodeSent->{'code_generated_at'} && $now->lessThan(Carbon::parse($previousCodeSent->{'code_generated_at'})->addMinutes($retryIntervalInMinutes)) && Carbon::parse($previousCodeSent->{'code_generated_at'})->addMinutes($retryIntervalInMinutes)->diffInSeconds($now) != 0) {
 
-            $retryInMinutes = Carbon::parse($previousCodeSent->{'updated_at'})->addMinutes($retryIntervalInMinutes)->diffInMinutes($now);
-            $retryInSeconds = Carbon::parse($previousCodeSent->{'updated_at'})->addMinutes($retryIntervalInMinutes)->diffInSeconds($now);
-            $response = "Verification code has already been sent to $email. New code can only be sent in the next $retryInMinutes minute(s)";
+            $retryInMinutes = Carbon::parse($previousCodeSent->{'code_generated_at'})->addMinutes($retryIntervalInMinutes)->diffInMinutes($now);
+            $retryInSeconds = Carbon::parse($previousCodeSent->{'code_generated_at'})->addMinutes($retryIntervalInMinutes)->diffInSeconds($now);
+            $response = "Verification code has already been sent to $email";
             Log::info("code already sent:  $retryInMinutes minute(s) remaining to retry");
 
         } else {
@@ -179,7 +179,8 @@ class AuthController extends Controller
             $user->update($dataToUpdate);
 
             $verification->update([
-                'status' => 'verified'
+                'status' => 'verified',
+                'code_generated_at' => null
             ]);
 
             return response()->json(ApiResponse::successResponseWithMessage());
@@ -223,7 +224,7 @@ class AuthController extends Controller
                 throw new \Exception("Unauthorized action. Please contact administrators");
             }
 
-            if (Hash::check($securityCode, $user->password)) {
+            if (!Hash::check($securityCode, $user->password)) {
                 throw new \Exception("Unauthorized action. Please contact administrators");
             }
 
@@ -284,7 +285,7 @@ class AuthController extends Controller
             'name' => $user->name
         ];
 
-        return response()->json(ApiResponse::successResponseWithData($extra));
+        return response()->json(ApiResponse::successResponseWithData($extra, $data->message));
 
     }
 
