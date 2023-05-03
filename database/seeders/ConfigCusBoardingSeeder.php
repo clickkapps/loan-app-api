@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\ConfigCusBoardingPage;
+use App\Models\ConfigCusboardingPage;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -14,7 +14,7 @@ class ConfigCusBoardingSeeder extends Seeder
     public function run(): void
     {
         // add account details page configuration
-        ConfigCusBoardingPage::updateOrCreate(
+        ConfigCusboardingPage::updateOrCreate(
             ['page_position' => 1,],
             [
                 'page_title' => 'Basic info',

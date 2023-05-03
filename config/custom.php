@@ -37,6 +37,7 @@ return [
                 'major' => 'manage configurations',
                 'subs' => [
                     'configure customer on-boarding fields',
+                    'loan application configuration'
                 ]
             ],
             [

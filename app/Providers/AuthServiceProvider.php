@@ -4,10 +4,11 @@ namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
 use App\Models\Admin;
-use App\Models\ConfigCusBoardingField;
+use App\Models\ConfigCusboardingField;
+use App\Models\Configuration;
 use App\Models\User;
 use App\Policies\AdminPolicy;
-use App\Policies\ConfigCusBoardingFieldPolicy;
+use App\Policies\ConfigurationPolicy;
 use App\Policies\CustomerPolicy;
 use App\Policies\RolePermissionPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -24,6 +25,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
 
         Permission::class => RolePermissionPolicy::class,
+        Configuration::class => ConfigurationPolicy::class,
 
     ];
 

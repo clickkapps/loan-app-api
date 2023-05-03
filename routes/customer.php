@@ -30,3 +30,18 @@ Route::middleware(['basic.auth'])->group(function () {
     Route::post('/set-password', [\App\Http\Controllers\Customer\AuthController::class, 'setPassword']);
 
 });
+
+
+/*
+|--------------------------------------------------------------------------
+| Cusboarding Routes
+|--------------------------------------------------------------------------
+|
+*/
+
+Route::middleware(['auth:sanctum', 'role:customer'])->group(function() {
+
+    Route::get('/get-cusboarding-pages-fields', [\App\Http\Controllers\Customer\CusboardingController::class, 'getPagesWithFields']);
+    Route::get('/get-initial-data', [\App\Http\Controllers\Customer\CusboardingController::class, 'getPagesWithFields']);
+
+});

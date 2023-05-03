@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ConfigCusBoardingPage extends Model
+class ConfigCusboardingPage extends Model
 {
     use HasFactory;
     protected $table = 'config_cusboarding_pages';
@@ -19,6 +19,6 @@ class ConfigCusBoardingPage extends Model
 
     public function fields(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(ConfigCusBoardingField::class, 'config_cusboarding_page_id')->orderBy('position');
+        return $this->hasMany(ConfigCusboardingField::class, 'config_cusboarding_page_id')->orderBy('position');
     }
 }

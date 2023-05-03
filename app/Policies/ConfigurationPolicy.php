@@ -4,7 +4,7 @@ namespace App\Policies;
 
 use App\Models\User;
 
-class ConfigCusBoardingPagePolicy
+class ConfigurationPolicy
 {
     /**
      * Create a new policy instance.
@@ -14,7 +14,16 @@ class ConfigCusBoardingPagePolicy
         //
     }
 
-    public function configureCusboardingFields(User $user) : bool {
-        return  $user->hasPermissionTo('configure customer on-boarding fields');
+    public function configureLoanApplicationParameters(User $user) : bool {
+
+        return $user->hasPermissionTo('configuration loan application parameters');
+
     }
+
+    public function configureCusboardingFields(User $user) : bool {
+
+        return  $user->hasPermissionTo('configure customer on-boarding fields');
+
+    }
+
 }

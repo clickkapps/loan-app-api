@@ -3,13 +3,13 @@
 namespace App\Traits;
 
 use App\Classes\ApiResponse;
-use App\Models\ConfigCusBoardingPage;
+use App\Models\ConfigCusboardingPage;
 
-trait CusBoardingPageTrait
+trait CusboardingPageTrait
 {
     public function getCusboardingPagesWithFields(): \Illuminate\Http\JsonResponse
     {
-        $pageWithFields = ConfigCusBoardingPage::with('fields')->orderBy('page_position')->get();
+        $pageWithFields = ConfigCusboardingPage::with('fields')->orderBy('page_position')->get();
         return response()->json(ApiResponse::successResponseWithData($pageWithFields));
     }
 }

@@ -30,7 +30,7 @@ Route::middleware(['basic.auth'])->post('/login', [\App\Http\Controllers\Admin\A
 |--------------------------------------------------------------------------
 |
 */
-Route::middleware(['auth:sanctum'])->group(function() {
+Route::middleware(['auth:sanctum', 'role:super admin|admin'])->group(function() {
 
     Route::post('/create-admin', [\App\Http\Controllers\Admin\AdminController::class, 'create']);
     Route::get('/get-admins', [\App\Http\Controllers\Admin\AdminController::class, 'getAll']);
@@ -46,7 +46,7 @@ Route::middleware(['auth:sanctum'])->group(function() {
 |--------------------------------------------------------------------------
 |
 */
-Route::middleware(['auth:sanctum'])->group(function() {
+Route::middleware(['auth:sanctum','role:super admin|admin'])->group(function() {
 
     Route::get('/get-permissions', [\App\Http\Controllers\Admin\RolePermissionController::class, 'getAll']);
     Route::get('/get-user-permissions/{userId}', [\App\Http\Controllers\Admin\RolePermissionController::class, 'getUserPermissions']);
@@ -61,12 +61,16 @@ Route::middleware(['auth:sanctum'])->group(function() {
 |--------------------------------------------------------------------------
 |
 */
-Route::middleware(['auth:sanctum'])->group(function() {
+Route::middleware(['auth:sanctum', 'role:super admin|admin'])->group(function() {
 
-    Route::post('/add-cusboarding-page', [\App\Http\Controllers\Admin\ConfigCusBoardingController::class, 'addPage']);
-    Route::post('/add-cusboarding-field', [\App\Http\Controllers\Admin\ConfigCusBoardingController::class, 'addFieldToPage']);
-    Route::delete('/delete-cusboarding-field/{id}', [\App\Http\Controllers\Admin\ConfigCusBoardingController::class, 'removeField']);
-    Route::delete('/delete-cusboarding-page/{id}', [\App\Http\Controllers\Admin\ConfigCusBoardingController::class, 'removePage']);
-    Route::get('/get-cusboarding-pages-fields', [\App\Http\Controllers\Admin\ConfigCusBoardingController::class, 'getPagesWithFields']);
+    Route::post('/add-cusboarding-page', [\App\Http\Controllers\Admin\ConfigCusboardingController::class, 'addPage']);
+    Route::post('/add-cusboarding-field', [\App\Http\Controllers\Admin\ConfigCusboardingController::class, 'addFieldToPage']);
+    Route::post('/reassign-cusboarding-field-to-page', [\App\Http\Controllers\Admin\ConfigCusboardingController::class, 'reAssignFieldToPage']);
+    Route::post('/reassign-cusboarding-field-to-position', [\App\Http\Controllers\Admin\ConfigCusboardingController::class, 'reAssignFieldToPosition']);
+    Route::put('/update-field-values/{fieldId}', [\App\Http\Controllers\Admin\ConfigCusboardingController::class, 'updateFieldValues']);
+    Route::delete('/delete-cusboarding-field/{id}', [\App\Http\Controllers\Admin\ConfigCusboardingController::class, 'removeField']);
+    Route::delete('/delete-cusboarding-page/{id}', [\App\Http\Controllers\Admin\ConfigCusboardingController::class, 'removePage']);
+    Route::get('/get-cusboarding-pages-fields', [\App\Http\Controllers\Admin\ConfigCusboardingController::class, 'getPagesWithFields']);
+    Route::get('/get-general-configurations', [\App\Http\Controllers\Admin\ConfigCusboardingController::class, 'getConfigurations']);
 
 });
