@@ -179,6 +179,7 @@ class ConfigCusboardingController extends Controller
     /**
      * @throws AuthorizationException
      * @throws ValidationException
+     * @throws \Exception
      */
     public function updateFieldValues(Request $request, $fieldId): \Illuminate\Http\JsonResponse
     {
@@ -197,6 +198,10 @@ class ConfigCusboardingController extends Controller
         $extra = !blank($extra) ? json_encode($extra) : null;
 
         $field = ConfigCusboardingField::with([])->find($fieldId);
+
+        if(blank($field)){
+            throw new \Exception("There's no field with an id $fieldId");
+        }
 
         // if the field name updates then update cusboarding responses field name
         if($field->{'name'} != $name) {
