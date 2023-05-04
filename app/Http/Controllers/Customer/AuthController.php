@@ -23,7 +23,7 @@ class AuthController extends Controller
 
     public function __construct()
     {
-        $this->middleware('throttle:3,5')->only(['login']); // 3(maxAttempts).  // 5(decayMinutes)
+//        $this->middleware('throttle:3,5')->only(['login']); // 3(maxAttempts).  // 5(decayMinutes)
     }
 
     /**

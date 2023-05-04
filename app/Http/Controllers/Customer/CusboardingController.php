@@ -34,7 +34,10 @@ class CusboardingController extends Controller
               'loan_application_duration_limit' => $customer->{'loan_application_duration_limit'} ?: $generalConfig->{'loan_application_duration_limit'},
               'loan_application_interest_percentage' => $customer->{'loan_application_interest_percentage'} ?: $generalConfig->{'loan_application_interest_percentage'},
           ],
-          'cusboarding' => $pagesWithFields
+          'cusboarding' => [
+              'cusboarding_completed' =>  $customer->{'cusboarding_completed'},
+              'pages_with_fields' => $pagesWithFields
+          ]
         ];
 
         return response()->json(ApiResponse::successResponseWithData($data));
