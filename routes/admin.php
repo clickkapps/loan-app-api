@@ -75,3 +75,21 @@ Route::middleware(['auth:sanctum', 'role:super admin|admin'])->group(function() 
     Route::put('/update-general-configurations/{id}', [\App\Http\Controllers\Admin\ConfigCusboardingController::class, 'updateConfigurations']);
 
 });
+
+
+/*
+|--------------------------------------------------------------------------
+| Customers KYC Routes
+|--------------------------------------------------------------------------
+|
+*/
+
+Route::middleware(['auth:sanctum', 'role:super admin|admin'])->group(function() {
+
+    Route::get('/get-customers', [\App\Http\Controllers\Admin\CustomerController::class, 'getCustomers']);
+    Route::get('/get-single-customer/{userId}', [\App\Http\Controllers\Admin\CustomerController::class, 'getCustomer']);
+    Route::get('/get-single-customer-kyc/{userId}', [\App\Http\Controllers\Admin\CustomerController::class, 'getCustomerKYC']);
+
+
+});
+

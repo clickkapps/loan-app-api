@@ -51,4 +51,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Customer::class);
     }
+
+    public function kyc(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Cusboarding::class);
+    }
 }

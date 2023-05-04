@@ -5,42 +5,77 @@ namespace App\Http\Controllers\Customer;
 use App\Classes\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\ConfigCusboardingField;
-use App\Models\Configuration;
+use App\Models\Cusboarding;
+use App\Models\Customer;
 use App\Traits\CusboardingPageTrait;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class CusboardingController extends Controller
 {
     use CusboardingPageTrait;
 
+    /**
+     * @throws ValidationException
+     */
+    public function setKYCResponses(Request $request) {
 
-    // All relevant data required to personalize the app
-    public function getInitialData(Request $request): \Illuminate\Http\JsonResponse
-    {
-
-        /// Get configurations -------
         $user = $request->user();
-        $customer = $user->customer;
 
-        // general configurations
-        $generalConfig = Configuration::with([])->first();
+        $this->validate($request, [
+           'data' => 'required|array'
+        ]);
 
-        $pagesWithFields = $this->getCusboardingPagesWithFields()->getData()->extra;
+        $data = $request->get('data');
+        $encoded = json_encode($data);
+        Log::info("data: $encoded");
 
-        $data = [
-          'loan_application_config' => [
-              'loan_application_amount_limit' => $customer->{'loan_application_amount_limit'} ?: $generalConfig->{'loan_application_amount_limit'},
-              'loan_application_duration_limit' => $customer->{'loan_application_duration_limit'} ?: $generalConfig->{'loan_application_duration_limit'},
-              'loan_application_interest_percentage' => $customer->{'loan_application_interest_percentage'} ?: $generalConfig->{'loan_application_interest_percentage'},
-          ],
-          'cusboarding' => [
-              'cusboarding_completed' =>  $customer->{'cusboarding_completed'},
-              'pages_with_fields' => $pagesWithFields
-          ]
-        ];
 
-        return response()->json(ApiResponse::successResponseWithData($data));
+        $dataToUpsert = [];
+        foreach ($data as $d) {
+            $dataToUpsert[] = [
+                'field_name' => $d['field_name'],
+                'field_type' => $d['field_type'],
+                'response' =>  $d['field_value'],
+                'user_id' => $user->id
+            ];
+        }
+
+        Cusboarding::with([])->upsert($dataToUpsert, ['user_id','field_name'], ['response', 'field_type']);
+
+        $this->evaluateCustomerKYCStatus($user->id);
+
+        return response()->json(ApiResponse::successResponseWithMessage());
 
     }
+
+    public function evaluateCustomerKYCStatus($userId) {
+
+        $requiredFieldNames = ConfigCusboardingField::with([])->where('required', true)->pluck('name')->toArray();
+        $submittedFieldNames = Cusboarding::with([])->where('user_id', $userId)->pluck('field_name')->toArray();
+
+        $containsAllValues = !array_diff($requiredFieldNames, $submittedFieldNames);
+
+        $updateFields =  [
+            'cusboarding_completed' => false
+        ];
+        if($containsAllValues) {
+            $updateFields = [
+                'cusboarding_completed' => true
+            ];
+        }
+
+        Customer::with([])->where('user_id', $userId)->update($updateFields);
+
+    }
+
+    public function fetchCustomerKYCStatus($userId): \Illuminate\Http\JsonResponse
+    {
+
+       $kycStatus = Customer::with([])->where('user_id', $userId)->first()->{'cusboarding_completed'};
+       return response()->json(ApiResponse::successResponseWithData($kycStatus));
+
+    }
+
 }

@@ -10,6 +10,6 @@ class Cusboarding extends Model
     use HasFactory;
 
     protected $fillable = [
-        'field_name', 'response', 'user_id'
+        'field_name', 'response', 'user_id', 'field_type'
     ];
 }

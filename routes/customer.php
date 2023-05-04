@@ -30,6 +30,9 @@ Route::middleware(['basic.auth'])->group(function () {
     Route::post('/set-password', [\App\Http\Controllers\Customer\AuthController::class, 'setPassword']);
 
 });
+Route::middleware(['auth:sanctum', 'role:customer'])
+    ->get('/get-initial-data', [\App\Http\Controllers\Customer\AuthController::class, 'getInitialData']);
+
 
 
 /*
@@ -41,6 +44,7 @@ Route::middleware(['basic.auth'])->group(function () {
 
 Route::middleware(['auth:sanctum', 'role:customer'])->group(function() {
 
-    Route::get('/get-initial-data', [\App\Http\Controllers\Customer\CusboardingController::class, 'getInitialData']);
+    Route::post('/set-kyc-responses', [\App\Http\Controllers\Customer\CusboardingController::class, 'setKYCResponses']);
+    Route::post('/get-kyc-status', [\App\Http\Controllers\Customer\CusboardingController::class, 'fetchCustomerKYCStatus']);
 
 });
