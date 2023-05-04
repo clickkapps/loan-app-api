@@ -200,7 +200,7 @@ class ConfigCusboardingController extends Controller
         $field = ConfigCusboardingField::with([])->find($fieldId);
 
         if(blank($field)){
-            throw new \Exception("There's no field with an id $fieldId");
+            throw new \Exception("Invalid field id: $fieldId");
         }
 
         // if the field name updates then update cusboarding responses field name
@@ -415,6 +415,24 @@ class ConfigCusboardingController extends Controller
 
         $config = Configuration::with([])->first();
         return response()->json(ApiResponse::successResponseWithData($config));
+
+    }
+
+    /**
+     * @throws AuthorizationException
+     * @throws \Exception
+     */
+    public function updateConfigurations(Request $request, $id): \Illuminate\Http\JsonResponse
+    {
+        $this->authorize('configureLoanApplicationParameters', Configuration::class);
+
+        $config = Configuration::with([])->find($id);
+        if(blank($config)) {
+            throw new \Exception("Invalid config id: $id");
+        }
+        // get configurations
+        $config->update($request->all());
+        return response()->json(ApiResponse::successResponseWithMessage());
 
     }
 }

@@ -72,5 +72,6 @@ Route::middleware(['auth:sanctum', 'role:super admin|admin'])->group(function() 
     Route::delete('/delete-cusboarding-page/{id}', [\App\Http\Controllers\Admin\ConfigCusboardingController::class, 'removePage']);
     Route::get('/get-cusboarding-pages-fields', [\App\Http\Controllers\Admin\ConfigCusboardingController::class, 'getPagesWithFields']);
     Route::get('/get-general-configurations', [\App\Http\Controllers\Admin\ConfigCusboardingController::class, 'getConfigurations']);
+    Route::put('/update-general-configurations/{id}', [\App\Http\Controllers\Admin\ConfigCusboardingController::class, 'updateConfigurations']);
 
 });

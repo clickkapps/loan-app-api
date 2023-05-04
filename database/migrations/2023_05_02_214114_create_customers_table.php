@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->unique()->constrained()->onDelete('cascade');
             $table->boolean('cusboarding_completed')->default(false);
             $table->decimal('loan_application_amount_limit')->nullable()->default(null);
             $table->integer('loan_application_duration_limit')->nullable()->default(null);

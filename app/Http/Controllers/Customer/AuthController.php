@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Customer;
 
 use App\Classes\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Models\Customer;
 use App\Models\User;
 use App\Models\Verification;
 use App\Notifications\AccountVerificationRequested;
@@ -104,6 +105,12 @@ class AuthController extends Controller
             Log::info("verification code sent: $code");
 
         }
+
+        // create related customer table
+        Customer::with([])->updateOrCreate(
+            ['user_id' => $user->id ],
+            []
+        );
 
 
         return response()->json(ApiResponse::successResponseWithData(

@@ -8,4 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Customer extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'id',
+        'user_id',
+        'cusboarding_completed',
+        'loan_application_amount_limit',
+        'loan_application_duration_limit',
+        'loan_application_interest_percentage'
+    ];
 }

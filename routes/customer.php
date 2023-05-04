@@ -41,7 +41,6 @@ Route::middleware(['basic.auth'])->group(function () {
 
 Route::middleware(['auth:sanctum', 'role:customer'])->group(function() {
 
-    Route::get('/get-cusboarding-pages-fields', [\App\Http\Controllers\Customer\CusboardingController::class, 'getPagesWithFields']);
-    Route::get('/get-initial-data', [\App\Http\Controllers\Customer\CusboardingController::class, 'getPagesWithFields']);
+    Route::get('/get-initial-data', [\App\Http\Controllers\Customer\CusboardingController::class, 'getInitialData']);
 
 });
