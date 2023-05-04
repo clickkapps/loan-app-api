@@ -11,6 +11,7 @@ use App\Models\Verification;
 use App\Notifications\AccountVerificationRequested;
 use App\Providers\RouteServiceProvider;
 use App\Traits\AuthTrait;
+use App\Traits\CusboardingPageTrait;
 use Carbon\Carbon;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
@@ -20,7 +21,7 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    use AuthTrait;
+    use AuthTrait, CusboardingPageTrait;
 
     public function __construct()
     {
