@@ -18,9 +18,15 @@ class CustomerController extends Controller
         return response()->json(ApiResponse::successResponseWithData($customers));
     }
 
+    /**
+     * @throws \Exception
+     */
     public function getCustomer($userId): \Illuminate\Http\JsonResponse
     {
         $customer = User::with('customer')->find($userId);
+        if(!$customer->hasRole('customer')) {
+            throw new \Exception("No customer with id: $userId");
+        }
         return response()->json(ApiResponse::successResponseWithData($customer));
     }
 
