@@ -7,11 +7,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Cusboarding;
 use App\Models\Customer;
 use App\Models\User;
+use App\Traits\CusboardingPageTrait;
 use Illuminate\Auth\Access\AuthorizationException;
 use Spatie\Permission\Models\Permission;
 
 class CustomerController extends Controller
 {
+    use CusboardingPageTrait;
+
     public function getCustomers(): \Illuminate\Http\JsonResponse
     {
         $customers = User::role('customer')->with('customer')->paginate(20);
@@ -39,9 +42,16 @@ class CustomerController extends Controller
 
         $this->authorize('view customer kyc', Customer::class);
 
+        $configsWithResponses = $this->getCusboardingPagesWithFieldsWithResponses($userId)->getData()->extra;
 
-        $kyc = Cusboarding::with([])->where('user_id', $userId)->get();
-        return response()->json(ApiResponse::successResponseWithData($kyc));
+        $fieldsCollection = collect();
+        foreach (collect($configsWithResponses) as $pages) {
+            $fieldsCollection = $fieldsCollection->toBase()->merge(collect($pages->fields));
+        }
+
+        // update all the configs with
+
+        return response()->json(ApiResponse::successResponseWithData($fieldsCollection));
 
     }
 }
