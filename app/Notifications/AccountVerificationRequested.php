@@ -2,15 +2,19 @@
 
 namespace App\Notifications;
 
+use App\Channels\SmsChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
+use JetBrains\PhpStorm\ArrayShape;
 
-class AccountVerificationRequested extends Notification
+class AccountVerificationRequested extends Notification implements ShouldQueue
 {
     use Queueable;
     private string $code;
+    private string $message;
 
     /**
      * Create a new notification instance.
@@ -18,27 +22,31 @@ class AccountVerificationRequested extends Notification
     public function __construct(string $code)
     {
         $this->code = $code;
+        $appName = config('app.name');
+        $this->message = "$appName: Account verification - Your verification code is $code";
     }
 
     /**
      * Get the notification's delivery channels.
      *
-     * @return array<int, string>
+     * @param  mixed  $notifiable
+     * @return array
      */
-    public function via(object $notifiable): array
+    public function via(mixed $notifiable): array
     {
-        return [];
+        return [SmsChannel::class];
     }
 
-    /**
-     * Get the mail representation of the notification.
-     */
-    public function toMail(object $notifiable): MailMessage
+
+    #[ArrayShape(['phone' => "mixed", 'message' => "string"])] public function toSMS($notifiable): array
     {
-        return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+        $encoded = json_encode($notifiable);
+        Log::info("notifiable: $encoded");
+
+        return [
+            'phone' => $notifiable->{'email'},
+            'message' => $this->message,
+        ];
     }
 
 }

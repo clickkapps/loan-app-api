@@ -4,6 +4,8 @@ return [
 
     'basic_auth_username' => env('BASIC_AUTH_USERNAME', null),
     'basic_auth_password' => env('BASIC_AUTH_PASSWORD', null),
+    'sms_api_token' => env('SMS_API_TOKEN', null),
+    'sms_api_url' => env('SMS_API_URL', null),
 
     'admin_permissions' => [
             [

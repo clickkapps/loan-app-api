@@ -340,18 +340,27 @@ class ConfigCusboardingController extends Controller
             throw new \Exception("Field already assigned to page $pageId");
         }
 
-        // Last filed in the new pageId
-        $lastField = ConfigCusboardingField::where('config_cusboarding_page_id', $pageId)->orderByDesc('position')->first();
-        if(!blank($lastField)) {
-            $fieldPosition = $lastField->{'position'}  + 1;
-        }else{
-            $fieldPosition = 1;
-        }
+        $type = $field->{'type'};
+        $name = $field->{'name'};
+        $placeholder = $field->{'placeholder'};
+        $required = $field->{'required'};
+        $extra = $field->{'extra'};
+        $extra = !blank($extra) ? json_decode($extra) : null;
 
-        $field->update([
+        $myRequest = new \Illuminate\Http\Request();
+        $myRequest->setMethod('POST');
+        $myRequest->request->add([
             'config_cusboarding_page_id' => $pageId,
-            'position' => $fieldPosition
+            'type' => $type,
+            'name' => $name,
+            'placeholder' => $placeholder,
+            'required' => $required,
+            'extra' => $extra
         ]);
+
+        $this->removeField($fieldId);
+        $this->addFieldToPage($myRequest);
+
 
         return  response()->json(ApiResponse::successResponseWithMessage());
 
@@ -377,25 +386,28 @@ class ConfigCusboardingController extends Controller
         $field = ConfigCusboardingField::with([])->find($fieldId);
 
 
-        // Last filed in the new pageId
-        // bring out all the fields from this position downwards and reorder them
-        $orderedFields = ConfigCusboardingField::with([])
-            ->where('config_cusboarding_page_id', $field->{'config_cusboarding_page_id'})
-            ->where('id', '!=', $field->{'id'})
-            ->where('position', '>=', $fieldPosition)->orderBy('position')->get();
+        $pageId = $field->{'config_cusboarding_page_id'};
+        $type = $field->{'type'};
+        $name = $field->{'name'};
+        $placeholder = $field->{'placeholder'};
+        $required = $field->{'required'};
+        $extra = $field->{'extra'};
+        $extra = !blank($extra) ? json_decode($extra) : null;
 
-        // recreate the fields with the appropriate positions
-
-        $field->update([
-            'id' => $field->{'id'},
-            'position' => $fieldPosition,
+        $myRequest = new \Illuminate\Http\Request();
+        $myRequest->setMethod('POST');
+        $myRequest->request->add([
+            'config_cusboarding_page_id' => $pageId,
+            'type' => $type,
+            'name' => $name,
+            'placeholder' => $placeholder,
+            'required' => $required,
+            'extra' => $extra,
+            'position' => $fieldPosition
         ]);
 
-        foreach ($orderedFields as $f) {
-            $f->update([
-                'position' => $f->{'position'} + 1,
-            ]);
-        }
+        $this->removeField($fieldId);
+        $this->addFieldToPage($myRequest);
 
 
         return  response()->json(ApiResponse::successResponseWithMessage());

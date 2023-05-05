@@ -14,6 +14,7 @@ class Customer extends Model
         'cusboarding_completed',
         'loan_application_amount_limit',
         'loan_application_duration_limit',
-        'loan_application_interest_percentage'
+        'loan_application_interest_percentage',
+        'agreed_to_terms_or_service'
     ];
 }

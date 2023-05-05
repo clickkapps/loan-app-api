@@ -3,4 +3,8 @@ Issues:
     - assign of field to different page
 
 Tasks:
-   -
+   - sms integration - done
+   - Telegram bot integration
+   - Email integration
+   - enable queue and cron on server
+   - return the filled KYC fields and unfilled
