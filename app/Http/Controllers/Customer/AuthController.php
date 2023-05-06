@@ -313,7 +313,7 @@ class AuthController extends Controller
         // general configurations
         $generalConfig = Configuration::with([])->first();
 
-        $pagesWithFields = $this->getCusboardingPagesWithFieldsWithResponses()->getData()->extra;
+        $pagesWithFields = $this->getCusboardingPagesWithFieldsWithResponses($user->id)->getData()->extra;
 
         $data = [
             'loan_application_config' => [
