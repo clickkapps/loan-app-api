@@ -57,7 +57,13 @@ class CusboardingController extends Controller
     public function evaluateCustomerKYCStatus($userId) {
 
         $requiredFieldNames = ConfigCusboardingField::with([])->where('required', true)->pluck('name')->toArray();
-        $submittedFieldNames = Cusboarding::with([])->where('user_id', $userId)->pluck('field_name')->toArray();
+        $submittedFieldNames = Cusboarding::with([])
+            ->where('user_id',  $userId,)
+            ->where( function ($query) {
+                $query->where('response' , '!=', '')
+                    ->orWhere('response', '!=', null);
+            })
+            ->pluck('field_name')->toArray();
 
         $containsAllValues = !array_diff($requiredFieldNames, $submittedFieldNames);
 
