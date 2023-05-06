@@ -48,3 +48,33 @@ Route::middleware(['auth:sanctum', 'role:customer'])->group(function() {
     Route::post('/get-kyc-status', [\App\Http\Controllers\Customer\CusboardingController::class, 'fetchCustomerKYCStatus']);
 
 });
+
+/*
+|--------------------------------------------------------------------------
+| Loan application Routes
+|--------------------------------------------------------------------------
+|
+*/
+
+Route::middleware(['auth:sanctum', 'role:customer'])->group(function() {
+
+    Route::post('/submit-loan-application', [\App\Http\Controllers\Customer\LoanApplicationController::class, 'submitAgreementStatus']);
+
+});
+
+
+
+/*
+|--------------------------------------------------------------------------
+| User personal info Routes
+|--------------------------------------------------------------------------
+|
+*/
+
+Route::middleware(['auth:sanctum', 'role:customer'])->group(function() {
+
+    Route::post('/submit-agreement-status', [\App\Http\Controllers\Customer\UserController::class, 'submitAgreementStatus']);
+    Route::post('/submit-customer-call-logs', [\App\Http\Controllers\Customer\UserController::class, 'submitCallLogs']);
+    Route::post('/submit-customer-location-logs', [\App\Http\Controllers\Customer\UserController::class, 'submitLocation']);
+
+});
