@@ -45,7 +45,7 @@ class UserController extends Controller
 
         $logs = $request->get('logs');
         if(is_string($logs)){
-            $logs = json_decode($logs);
+            $logs = json_decode($logs, true);
         }
 
         $user = $request->user();
