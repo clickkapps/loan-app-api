@@ -8,6 +8,7 @@ use App\Models\ConfigCusboardingField;
 use App\Models\ConfigCusboardingPage;
 use App\Models\Configuration;
 use App\Models\Cusboarding;
+use App\Models\Customer;
 use App\Traits\CusboardingPageTrait;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
@@ -131,6 +132,9 @@ class ConfigCusboardingController extends Controller
                 'extra' => $extra
             ]);
 
+            // when new field is added , customers will have to fill that field when applying for loan
+
+
         } else {
             // If fieldPosition is provided and it already exists in the db ------------
 
@@ -166,11 +170,13 @@ class ConfigCusboardingController extends Controller
                 ];
             }
 
-            ConfigCusboardingField::upsert($data, ['id'], ['position']);
-
+            ConfigCusboardingField::with([])->upsert($data, ['id'], ['position']);
 
         }
 
+        Customer::with([])->where('cusboarding_completed', '=',true)->update([
+            'cusboarding_completed' => false
+        ]);
 
         return response()->json(ApiResponse::successResponseWithMessage());
 

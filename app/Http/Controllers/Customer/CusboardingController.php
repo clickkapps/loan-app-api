@@ -46,7 +46,11 @@ class CusboardingController extends Controller
 
         $this->evaluateCustomerKYCStatus($user->id);
 
-        return response()->json(ApiResponse::successResponseWithMessage());
+        $cusboardingStatus = $this->fetchCustomerKYCStatus($user->id)->getData()->extra;
+
+        return response()->json(ApiResponse::successResponseWithData([
+            'cusboarding_completed' => $cusboardingStatus
+        ]));
 
     }
 
