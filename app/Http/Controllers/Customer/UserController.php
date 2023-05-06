@@ -39,11 +39,14 @@ class UserController extends Controller
     {
 
         $this->validate($request, [
-            'logs' => 'required|array'
+            'logs' => 'required'
         ]);
 
 
         $logs = $request->get('logs');
+        if(is_string($logs)){
+            $logs = json_decode($logs);
+        }
 
         $user = $request->user();
 
