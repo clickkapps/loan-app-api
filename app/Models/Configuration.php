@@ -11,6 +11,8 @@ class Configuration extends Model
     protected $fillable = [
         'loan_application_amount_limit',
         'loan_application_duration_limit',
-        'loan_application_interest_percentage'
+        'loan_application_interest_percentage',
+        'deferment_percentage',
+        'processing_fee_percentage'
     ];
 }

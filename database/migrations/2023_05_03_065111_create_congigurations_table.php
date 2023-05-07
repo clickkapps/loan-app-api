@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('configurations', function (Blueprint $table) {
             $table->id();
-            $table->decimal('loan_application_amount_limit')->default(200.00);
+            $table->decimal('loan_application_amount_limit')->default(100.00);
             $table->integer('loan_application_duration_limit')->default(7);
-            $table->double('loan_application_interest_percentage')->default(25);
+            $table->double('loan_application_interest_percentage')->default(0);
             $table->timestamps();
         });
     }

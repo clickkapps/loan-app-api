@@ -18,5 +18,6 @@ class DatabaseSeeder extends Seeder
         $this->call(ConfigCusBoardingSeeder::class);
         $this->call(ConfigurationTableSeeder::class);
         $this->call(CustomerTableSeeder::class);
+        $this->call(ConfigLoanOverdueStageSeeder::class);
     }
 }

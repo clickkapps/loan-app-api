@@ -47,9 +47,11 @@ class CusboardingController extends Controller
         $this->evaluateCustomerKYCStatus($user->id);
 
         $cusboardingStatus = $this->fetchCustomerKYCStatus($user->id)->getData()->extra;
+        $pagesWithFieldResponses = $this->getCusboardingPagesWithFieldsWithResponses($user->id)->getData()->extra;
 
         return response()->json(ApiResponse::successResponseWithData([
-            'cusboarding_completed' => $cusboardingStatus
+            'cusboarding_completed' => $cusboardingStatus,
+            'pages_with_fields' => $pagesWithFieldResponses
         ]));
 
     }
@@ -87,5 +89,15 @@ class CusboardingController extends Controller
        return response()->json(ApiResponse::successResponseWithData($kycStatus));
 
     }
+
+    public function fetchCustomerKYCResponses(Request $request): \Illuminate\Http\JsonResponse
+    {
+       $user = $request->user();
+       $response = $this->getCusboardingPagesWithFieldsWithResponses($user->id);
+       return response()->json(ApiResponse::successResponseWithData($response));
+
+    }
+
+
 
 }

@@ -6,12 +6,14 @@ use App\Classes\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Configuration;
 use App\Models\Customer;
+use App\Models\LoanApplication;
 use App\Models\User;
 use App\Models\Verification;
 use App\Notifications\AccountVerificationRequested;
 use App\Providers\RouteServiceProvider;
 use App\Traits\AuthTrait;
 use App\Traits\CusboardingPageTrait;
+use App\Traits\LoanApplicationTrait;
 use Carbon\Carbon;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
@@ -21,7 +23,7 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    use AuthTrait, CusboardingPageTrait;
+    use AuthTrait, CusboardingPageTrait, LoanApplicationTrait;
 
     public function __construct()
     {
@@ -314,14 +316,22 @@ class AuthController extends Controller
         $generalConfig = Configuration::with([])->first();
 
         $pagesWithFields = $this->getCusboardingPagesWithFieldsWithResponses($user->id)->getData()->extra;
+        $runningLoan = $this->getLoanApplicationUpdate($request)->getData()->extra;
 
         $data = [
             'loan_application_config' => [
                 'loan_application_amount_limit' => $customer->{'loan_application_amount_limit'} ?: $generalConfig->{'loan_application_amount_limit'},
                 'loan_application_duration_limit' => $customer->{'loan_application_duration_limit'} ?: $generalConfig->{'loan_application_duration_limit'},
                 'loan_application_interest_percentage' => $customer->{'loan_application_interest_percentage'} ?: $generalConfig->{'loan_application_interest_percentage'},
+                'processing_fee_percentage' => $generalConfig->{'processing_fee_percentage'},
+            ],
+            "customer" => [
+                'default_momo_account_number' => $customer->{'default_momo_account_number'},
+                'default_momo_account_name' => $customer->{'default_momo_account_name'},
+                'default_momo_network' => $customer->{'default_momo_network'}
             ],
             "agreement" => $customer->{'agreed_to_terms_or_service'},
+            "running_loan" => $runningLoan,
             'cusboarding' => [
                 'cusboarding_completed' =>  $customer->{'cusboarding_completed'},
                 'pages_with_fields' => $pagesWithFields
