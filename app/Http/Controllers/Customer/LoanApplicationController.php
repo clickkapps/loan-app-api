@@ -69,7 +69,7 @@ class LoanApplicationController extends Controller
             'amount_disbursed' => 0.00,
             'fee_charged' => $fee,
             'amount_to_pay' => 0.0,
-            'loan_overdue_stage_id' => $loanState->{'id'}, // Stage 1
+//            'loan_overdue_stage_id' => $loanState->{'id'}, // Stage 1 field will be created when loan is disbursed
             'closed' =>  false
         ]);
 
@@ -150,7 +150,8 @@ class LoanApplicationController extends Controller
     {
 
         $user = $request->user();
-        $loanData = LoanApplication::with(['latestStatus', 'stage'])->where('user_id', $user->id)->orderByDesc('created_at')->paginate(30);
+        $loanData = LoanApplication::with(['latestStatus', 'stage'])
+            ->where('user_id', $user->id)->orderByDesc('created_at')->paginate(30);
 
         return response()->json(ApiResponse::successResponseWithData($loanData));
 

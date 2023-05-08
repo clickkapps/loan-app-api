@@ -18,7 +18,7 @@ class ConfigLoanOverdueStageSeeder extends Seeder
         if(!$exists) {
             ConfigLoanOverdueStage::with([])->create(
                 [
-                    'name' => 'T0',
+                    'name' => '1',
                     'desc' => 'This configuration applies when loan application is not overdue. This config is system generated',
                     'days_after_deadline' => 0,
                     'interest_percentage_per_day' => 0,
@@ -26,7 +26,7 @@ class ConfigLoanOverdueStageSeeder extends Seeder
                     'auto_deduction_enabled' => false,
                     'percentage_raise_on_next_loan_request' => 50,
                     'eligible_for_next_loan_request' => true,
-                    'key' => 'not_overdue'
+                    'key' => 'not_overdue',
                 ]
             );
         }

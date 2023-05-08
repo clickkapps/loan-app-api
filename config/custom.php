@@ -36,6 +36,13 @@ return [
                 ]
             ],
             [
+                'major' => 'manage loans applications',
+                'subs' => [
+                    'access to pending loans',
+                    'access to loan stage 1',
+                ]
+            ],
+            [
                 'major' => 'manage configurations',
                 'subs' => [
                     'configure customer on-boarding fields',
