@@ -6,11 +6,15 @@ use App\Classes\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\LoanApplication;
 use App\Models\LoanApplicationStatus;
+use App\Traits\LoanApplicationTrait;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class LoanApplicationController extends Controller
 {
+    use LoanApplicationTrait;
+
     /**
      * @throws AuthorizationException
      */
@@ -22,8 +26,8 @@ class LoanApplicationController extends Controller
 
             $this->authorize('access to pending loans');
 
-            $pendingLoanIds = LoanApplicationStatus::with([])->where('status', 'requested')->pluck('loan_application_id');
-            $loans = LoanApplication::with(['latestStatus'])->whereIn('id', $pendingLoanIds)->orderByDesc('created_at')->get();
+            // Get loans whose latest status is requested --------
+            $loans = $this->getLoansWhoseLatestStatusIs(status: 'requested');
 
         }
 

@@ -140,12 +140,6 @@ class LoanApplicationController extends Controller
 
     }
 
-    public function processRepayment(Request $request) {
-
-        $user = $request->user();
-
-    }
-
     public function fetchLoanApplicationHistory(Request $request): \Illuminate\Http\JsonResponse
     {
 

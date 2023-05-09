@@ -20,7 +20,8 @@ class LoanApplication extends Model
         'fee_charged',
         'amount_to_pay',
         'loan_overdue_stage_id',
-        'completed'
+        'completed',
+        'locked'
     ];
 
     public function statuses(): \Illuminate\Database\Eloquent\Relations\HasMany

@@ -13,6 +13,7 @@ class Configuration extends Model
         'loan_application_duration_limit',
         'loan_application_interest_percentage',
         'deferment_percentage',
-        'processing_fee_percentage'
+        'processing_fee_percentage',
+        'auto_loan_approval'
     ];
 }

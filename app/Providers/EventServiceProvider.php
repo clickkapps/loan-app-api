@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\PaymentStatusReceived;
 use App\Events\PermissionAssigned;
 use App\Listeners\EvaluateMajorPermissions;
+use App\Listeners\ProcessLoanApproval;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -22,6 +24,12 @@ class EventServiceProvider extends ServiceProvider
         ],
         PermissionAssigned::class => [
             EvaluateMajorPermissions::class
+        ],
+        PaymentStatusReceived::class => [
+            ProcessLoanApproval::class,
+            // process deferment
+            // process loan settlement
+            //etc
         ],
     ];
 
