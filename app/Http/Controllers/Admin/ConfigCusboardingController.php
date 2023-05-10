@@ -6,6 +6,7 @@ use App\Classes\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\ConfigCusboardingField;
 use App\Models\ConfigCusboardingPage;
+use App\Models\ConfigLoanOverdueStage;
 use App\Models\Configuration;
 use App\Models\Cusboarding;
 use App\Models\Customer;
@@ -422,35 +423,6 @@ class ConfigCusboardingController extends Controller
 
 
 
-    /**
-     * @throws AuthorizationException
-     */
-    public function getConfigurations(Request $request): \Illuminate\Http\JsonResponse
-    {
-        $this->authorize('configureLoanApplicationParameters', Configuration::class);
 
-        // get configurations
 
-        $config = Configuration::with([])->first();
-        return response()->json(ApiResponse::successResponseWithData($config));
-
-    }
-
-    /**
-     * @throws AuthorizationException
-     * @throws \Exception
-     */
-    public function updateConfigurations(Request $request, $id): \Illuminate\Http\JsonResponse
-    {
-        $this->authorize('configureLoanApplicationParameters', Configuration::class);
-
-        $config = Configuration::with([])->find($id);
-        if(blank($config)) {
-            throw new \Exception("Invalid config id: $id");
-        }
-        // get configurations
-        $config->update($request->all());
-        return response()->json(ApiResponse::successResponseWithMessage());
-
-    }
 }

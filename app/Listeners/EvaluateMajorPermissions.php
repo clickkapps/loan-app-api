@@ -27,9 +27,24 @@ class EvaluateMajorPermissions
         $assigned = $event->assigned;
         $adminPermissions = collect(config('custom.admin_permissions'));
 
-        $permissionMap = $adminPermissions->firstWhere(function ($item) use ($permission) {
-            return collect($item['subs'])->contains($permission);
-        });
+        // add this permission to list of permissions on the fly ----
+        if(str_contains($permission, 'loan stage')) {
+
+            $mp = $adminPermissions->firstWhere('major', 'manage loans applications');
+            $updatedSubs = collect($mp['subs'])->concat($permission);
+            $mp->update(['subs' => $updatedSubs]);
+
+            $permissionMap = $mp;
+
+        } else {
+
+            $permissionMap = $adminPermissions->firstWhere(function ($item) use ($permission) {
+                return collect($item['subs'])->contains($permission);
+            });
+
+        }
+
+
 
         if(blank($permissionMap)){
             return;

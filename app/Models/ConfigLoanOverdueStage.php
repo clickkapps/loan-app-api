@@ -12,7 +12,8 @@ class ConfigLoanOverdueStage extends Model
     protected $fillable = [
         'name',
         'desc',
-        'days_after_deadline',
+        'from_days_after_deadline',
+        'to_days_after_deadline',
         'interest_percentage_per_day',
         'installment_enabled',
         'auto_deduction_enabled',

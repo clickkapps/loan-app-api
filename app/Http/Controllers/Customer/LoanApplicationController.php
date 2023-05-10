@@ -51,7 +51,7 @@ class LoanApplicationController extends Controller
         ])->first();
         $customer = Customer::with([])->where('user_id', '=', $user->id)->first();
 
-        $fee = $amountRequested +  ($amountRequested * $config->{'processing_fee_percentage'} / 100) + ($amountRequested * $config->{'loan_application_interest_percentage'} / 100);
+        $fee = $amountRequested - ( ($amountRequested * $config->{'processing_fee_percentage'} / 100) + ($amountRequested * $config->{'loan_application_interest_percentage'} / 100) );
 
        $amountLimit  = $customer->{'loan_application_amount_limit'} ?: $config->{'loan_application_amount_limit'};
        if($amountRequested > $amountLimit) {

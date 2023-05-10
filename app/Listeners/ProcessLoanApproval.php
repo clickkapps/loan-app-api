@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Events\PaymentCallbackReceived;
 use App\Events\PaymentStatusReceived;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -19,8 +20,9 @@ class ProcessLoanApproval
     /**
      * Handle the event.
      */
-    public function handle(PaymentStatusReceived $event): void
+    public function handle(PaymentCallbackReceived $event): void
     {
-        //
+        // update the loan status, that process is successful
+
     }
 }

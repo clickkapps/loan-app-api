@@ -7,6 +7,13 @@ return [
     'sms_api_token' => env('SMS_API_TOKEN', null),
     'sms_api_url' => env('SMS_API_URL', null),
 
+    'payment' => [
+        "callbackUrl" => env('PAYMENT_CALLBACK_URL', null),
+        "cancellationUrl" => env('PAYMENT_CANCELLATION_URL', null),
+        "returnUrl" =>  env('PAYMENT_RETURN_URL', null),
+        "logo" => env('PAYMENT_LOGO_URL', null),
+    ],
+
     'admin_permissions' => [
             [
                 'major' => 'manage other admins',
@@ -39,7 +46,7 @@ return [
                 'major' => 'manage loans applications',
                 'subs' => [
                     'access to pending loans',
-                    'access to loan stage 1',
+                    'access to loan stage 0',
                 ]
             ],
             [

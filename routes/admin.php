@@ -71,8 +71,14 @@ Route::middleware(['auth:sanctum', 'role:super admin|admin'])->group(function() 
     Route::delete('/delete-cusboarding-field/{id}', [\App\Http\Controllers\Admin\ConfigCusboardingController::class, 'removeField']);
     Route::delete('/delete-cusboarding-page/{id}', [\App\Http\Controllers\Admin\ConfigCusboardingController::class, 'removePage']);
     Route::get('/get-cusboarding-pages-fields', [\App\Http\Controllers\Admin\ConfigCusboardingController::class, 'getPagesWithFields']);
-    Route::get('/get-general-configurations', [\App\Http\Controllers\Admin\ConfigCusboardingController::class, 'getConfigurations']);
-    Route::put('/update-general-configurations/{id}', [\App\Http\Controllers\Admin\ConfigCusboardingController::class, 'updateConfigurations']);
+
+
+    Route::get('/get-general-configurations', [\App\Http\Controllers\Admin\GeneralConfigurationController::class, 'getConfigurations']);
+    Route::put('/update-general-configurations/{id}', [\App\Http\Controllers\Admin\GeneralConfigurationController::class, 'updateConfigurations']);
+    Route::get('/get-loan-stages-configurations', [\App\Http\Controllers\Admin\GeneralConfigurationController::class, 'getLoanStagesConfigurations']);
+    Route::put('/update-loan-stages-configurations/{id}', [\App\Http\Controllers\Admin\GeneralConfigurationController::class, 'updateLoanStagesConfigurations']);
+    Route::post('/add-loan-stages-configurations', [\App\Http\Controllers\Admin\GeneralConfigurationController::class, 'addLoanStagesConfigurations']);
+    Route::delete('/delete-loan-stages-configurations/{id}', [\App\Http\Controllers\Admin\GeneralConfigurationController::class, 'removeLoanStagesConfiguration']);
 
 });
 

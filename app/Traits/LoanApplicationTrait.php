@@ -4,8 +4,12 @@ namespace App\Traits;
 
 use App\Classes\ApiResponse;
 use App\Models\LoanApplication;
+use App\Models\Payment;
+use App\Models\User;
+use App\Notifications\PaymentInitiated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 trait LoanApplicationTrait
 {
@@ -58,6 +62,82 @@ trait LoanApplicationTrait
 
     public function initiateLoanDisbursal(LoanApplication $loan): void
     {
-        // check if there's enough funds in the merchant
+        // lock the loan application so that it can't be acted on again
+        if($loan->{'locked'}) {
+            return;
+        }
+
+        $loan->update([
+            'locked' => true
+        ]);
+
+
+        $userId = $loan->{'user_id'};
+        $amount = $loan->{'amount'};
+        $accountNumber = $loan->{'account_number'};
+        $accountName = $loan->{'account_name'};
+        $networkType = $loan->{'network_type'};
+        $title = config('app.name');
+        $description = 'Loan disbursal';
+        $loanId = $loan->{'id'};
+
+        // unique reference number ------
+        $date = now()->toDateTimeString();
+        $date = str_replace('-','', $date);
+        $date = str_replace(':','', $date);
+
+        $clientRef = $loanId . $date . generateRandomNumber();
+        Log::info("client ref: $clientRef");
+        //---------------------------------------------------------
+
+
+        // record the transaction
+        $payment = Payment::with([])->create([
+            'user_id' => $userId,
+            'loan_application_id' => $loanId,
+            'client_ref' => $clientRef,
+//            'server_ref',
+            'amount' => $amount,
+            'account_number' => $accountNumber,
+            'account_name' => $accountName,
+            'network_type' => $networkType,
+            'title' => $title,
+            'description' => $description,
+//            'response_message',
+//            'response_code',
+            'status' => 'opened',
+//            'extra'
+        ]);
+
+        /// Call PAYMENT GATEWAY API to make payment
+        ///
+
+        $user = User::find($userId);
+        $user->notify(new PaymentInitiated(payment: $payment));
+
+
+    }
+
+
+    public function paymentCallback(Request $request): void
+    {
+
+        $responseCode = $request->get('responseCode');
+
+//         let' assume its successful --------
+        if($responseCode == '200' || $responseCode == '201') {
+
+            
+
+        }
+
+        else {
+
+            //     if it fails --------
+
+        }
+
+
+
     }
 }

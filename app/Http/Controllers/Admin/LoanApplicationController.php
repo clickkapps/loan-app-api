@@ -48,4 +48,5 @@ class LoanApplicationController extends Controller
         return response()->json(ApiResponse::successResponseWithData($loan));
 
     }
+
 }

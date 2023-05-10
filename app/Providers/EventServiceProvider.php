@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Events\PaymentCallbackReceived;
 use App\Events\PaymentStatusReceived;
 use App\Events\PermissionAssigned;
 use App\Listeners\EvaluateMajorPermissions;
@@ -25,11 +26,11 @@ class EventServiceProvider extends ServiceProvider
         PermissionAssigned::class => [
             EvaluateMajorPermissions::class
         ],
-        PaymentStatusReceived::class => [
+        PaymentCallbackReceived::class => [
             ProcessLoanApproval::class,
             // process deferment
             // process loan settlement
-            //etc
+            // etc
         ],
     ];
 

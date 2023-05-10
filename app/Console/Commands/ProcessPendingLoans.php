@@ -44,30 +44,21 @@ class ProcessPendingLoans extends Command implements Isolatable
         }
 
         // Pick n pending loans (say 10)
-        $pendingLoanIds = LoanApplicationStatus::with([])->where('status', 'requested')->pluck('loan_application_id');
-        $loans = LoanApplication::with(['latestStatus'])
-            ->whereIn('id', $pendingLoanIds)
-            ->where('locked', '=',false)
-            ->orderByDesc('created_at')->get();
+       $loans = $this->getLoansWhoseLatestStatusIs(status: 'requested');
 
         // for each one of them, check if the required fields are fully filled
         foreach ($loans as $loan) {
             $kycStatus = Customer::with([])->where('user_id', '',$loan->{'user_id'})->first()->{'cusboarding_completed'};
             if(!$kycStatus) {
-                // record application status
-                LoanApplicationStatus::with([])->create([
-                    'loan_application_id' => $application->{'id'},
-                    'status' => 'requested',
-                    'user_id' => $user->id,
-                    'created_by' => 'customer'
-                ]);
                 return;
             }
+
+            // for each of them initiate loan disbursal
+            $this->initiateLoanDisbursal(loan: $loan);
+
         }
 
-        // for each of them initiate loan disbursal
 
-        $this->initiateLoanDisbursal(loan: null);
 
     }
 }
