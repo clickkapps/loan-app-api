@@ -4,12 +4,15 @@ namespace App\Http\Controllers\Admin;
 
 use App\Classes\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Models\ConfigLoanOverdueStage;
 use App\Models\LoanApplication;
 use App\Models\LoanApplicationStatus;
 use App\Traits\LoanApplicationTrait;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Spatie\FlareClient\Api;
+use Spatie\Permission\Models\Permission;
 
 class LoanApplicationController extends Controller
 {
@@ -49,9 +52,28 @@ class LoanApplicationController extends Controller
 
     }
 
-    public function getLoanStages(Request $request) {
+    public function fetchLoanStages(Request $request): \Illuminate\Http\JsonResponse
+    {
 
         $user = $request->user();
+
+
+        $loanStages = ConfigLoanOverdueStage::with([])->get();
+        if(!$user->hasRole('super admin')) {
+            // get all permission of this admin
+
+            $permissionNames = $user->getPerssionNames();
+
+            // filter the loanStages with these permissions
+
+            $loanStages = $loanStages->filter(function ($stage) use ($permissionNames) {
+                $stageName = $stage->{'name'};
+               return collect($permissionNames)->contains("access to loan stage $stageName");
+            });
+
+        }
+
+        return response()->json(ApiResponse::successResponseWithData($loanStages));
 
     }
 

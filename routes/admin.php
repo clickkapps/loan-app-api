@@ -111,5 +111,6 @@ Route::middleware(['auth:sanctum', 'role:super admin|admin'])->group(function() 
 
     Route::get('/fetch-loans/{type}', [\App\Http\Controllers\Admin\LoanApplicationController::class, 'fetchLoans']);
     Route::get('/fetch-loan-detail/{loanId}', [\App\Http\Controllers\Admin\LoanApplicationController::class, 'fetchLoanDetail']);
+    Route::get('/fetch-loan-stages/', [\App\Http\Controllers\Admin\LoanApplicationController::class, 'fetchLoanStages']);
 
 });
