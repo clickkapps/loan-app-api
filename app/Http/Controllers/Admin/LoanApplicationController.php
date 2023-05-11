@@ -62,7 +62,7 @@ class LoanApplicationController extends Controller
         if(!$user->hasRole('super admin')) {
             // get all permission of this admin
 
-            $permissionNames = $user->getPerssionNames();
+            $permissionNames = $user->getPermissionNames();
 
             // filter the loanStages with these permissions
 
