@@ -19,6 +19,7 @@ class ConfigLoanOverdueStage extends Model
         'auto_deduction_enabled',
         'percentage_raise_on_next_loan_request',
         'eligible_for_next_loan_request',
-        'key'
+        'key',
+        'jargon'
     ];
 }

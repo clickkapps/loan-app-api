@@ -49,4 +49,10 @@ class LoanApplicationController extends Controller
 
     }
 
+    public function getLoanStages(Request $request) {
+
+        $user = $request->user();
+
+    }
+
 }
