@@ -76,6 +76,13 @@ class LoanApplicationController extends Controller
 
             // filter the loanStages with these permissions
 
+            if($permissionNames->contains('access to pending loans')) {
+                $response[] = [
+                    'name' => 'Pending loans',
+                    'value' => 'pending'
+                ];
+            }
+
             $loanStages->each(function ($stage) use ($permissionNames, &$response) {
                 $stageName = $stage->{'name'};
                 $contains = $permissionNames->contains("access to loan stage $stageName");
@@ -88,14 +95,14 @@ class LoanApplicationController extends Controller
 
             });
 
-            if($permissionNames->contains('access to pending loans')) {
-                $response[] = [
-                  'name' => 'Pending loans',
-                  'value' => 'pending'
-                ];
-            }
+
 
         }else {
+
+            $response[] = [
+                'name' => 'Pending loans',
+                'value' => 'pending'
+            ];
 
             // super admin -------
             $loanStages->each(function ($stage) use (&$response) {
@@ -108,10 +115,7 @@ class LoanApplicationController extends Controller
 
             });
 
-            $response[] = [
-                'name' => 'Pending loans',
-                'value' => 'pending'
-            ];
+
 
         }
 
