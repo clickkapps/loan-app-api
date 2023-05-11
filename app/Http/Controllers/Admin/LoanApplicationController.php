@@ -81,7 +81,7 @@ class LoanApplicationController extends Controller
                 $contains = $permissionNames->contains("access to loan stage $stageName");
                 if($contains) {
                     $response[] = [
-                        'name' => "Loan stage $stageName",
+                        'name' => $stage->{'jargon'},
                         'value' => "stage-$stageName"
                     ];
                 }
