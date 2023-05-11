@@ -32,6 +32,14 @@ class LoanApplicationController extends Controller
             // Get loans whose latest status is requested --------
             $loans = $this->getLoansWhoseLatestStatusIs(status: 'requested');
 
+        }else {
+
+            $items = explode('-', $type);
+            $stageName = $items[1];
+
+            // get loans whose latest stage is $stageName
+            $stage = ConfigLoanOverdueStage::with([])->where('name', $stageName)->first();
+            $loans = LoanApplication::with([])->where('loan_overdue_stage_id', $stage->{'id'})->get();
         }
 
         return response()->json(ApiResponse::successResponseWithData($loans));
@@ -58,22 +66,56 @@ class LoanApplicationController extends Controller
         $user = $request->user();
 
 
+        $response = [];
         $loanStages = ConfigLoanOverdueStage::with([])->get();
+
         if(!$user->hasRole('super admin')) {
             // get all permission of this admin
 
-            $permissionNames = $user->getPermissionNames();
+            $permissionNames = collect($user->getPermissionNames());
 
             // filter the loanStages with these permissions
 
-            $loanStages = $loanStages->filter(function ($stage) use ($permissionNames) {
+            $loanStages->each(function ($stage) use ($permissionNames, &$response) {
                 $stageName = $stage->{'name'};
-               return collect($permissionNames)->contains("access to loan stage $stageName");
+                $contains = $permissionNames->contains("access to loan stage $stageName");
+                if($contains) {
+                    $response[] = [
+                        'name' => "Loan stage $stageName",
+                        'value' => "stage-$stageName"
+                    ];
+                }
+
             });
+
+            if($permissionNames->contains('access to pending loans')) {
+                $response[] = [
+                  'name' => 'Pending loans',
+                  'value' => 'pending'
+                ];
+            }
+
+        }else {
+
+            // super admin -------
+            $loanStages->each(function ($stage) use (&$response) {
+
+                $stageName = $stage->{'name'};
+                $response[] = [
+                    'name' => "Loan stage $stageName",
+                    'value' => "stage-$stageName"
+                ];
+
+            });
+
+            $response[] = [
+                'name' => 'Pending loans',
+                'value' => 'pending'
+            ];
 
         }
 
-        return response()->json(ApiResponse::successResponseWithData($loanStages));
+        return response()->json(ApiResponse::successResponseWithData($response));
 
     }
 
