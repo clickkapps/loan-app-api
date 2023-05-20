@@ -212,4 +212,25 @@ class AdminController extends Controller
         return response()->json(ApiResponse::successResponseWithData($agentInfo));
 
     }
+
+
+    /**
+     * @throws \Exception
+     */
+    public function getLoansAssignedToAgent($userId): \Illuminate\Http\JsonResponse
+    {
+
+        $user = User::with([])->find($userId);
+        if(blank($user)){
+            throw new \Exception('User not found');
+        }
+
+        if(!$user->hasRole('agent')) {
+            throw  new \Exception('User has no agent role');
+        }
+
+        $agentInfo = $user->{'agent'};
+        return response()->json(ApiResponse::successResponseWithData($agentInfo));
+
+    }
 }

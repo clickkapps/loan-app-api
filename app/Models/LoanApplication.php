@@ -23,6 +23,7 @@ class LoanApplication extends Model
         'loan_overdue_stage_id',
         'completed',
         'locked',
+        'assigned_to'
     ];
 
     public function statuses(): \Illuminate\Database\Eloquent\Relations\HasMany
@@ -43,5 +44,10 @@ class LoanApplication extends Model
     public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function assignedTo(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assigned_to','id');
     }
 }

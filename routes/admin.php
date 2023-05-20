@@ -41,7 +41,6 @@ Route::middleware(['auth:sanctum', 'role:super admin|admin'])->group(function() 
     Route::get('/get-agent-assigned-loans', [\App\Http\Controllers\Admin\AdminController::class, 'getAgentAssignedLoans']);
     Route::get('/get-agent-info/{userId}', [\App\Http\Controllers\Admin\AdminController::class, 'getAgentInfo']);
 
-
 });
 
 
@@ -118,5 +117,8 @@ Route::middleware(['auth:sanctum', 'role:super admin|admin'])->group(function() 
     Route::get('/fetch-loans/{type}', [\App\Http\Controllers\Admin\LoanApplicationController::class, 'fetchLoans']);
     Route::get('/fetch-loan-detail/{loanId}', [\App\Http\Controllers\Admin\LoanApplicationController::class, 'fetchLoanDetail']);
     Route::get('/fetch-loan-stages', [\App\Http\Controllers\Admin\LoanApplicationController::class, 'fetchLoanStages']);
+    Route::post('/assign-loan-to-agent', [\App\Http\Controllers\Admin\LoanApplicationController::class, 'assignLoanToAgent']);
+    Route::post('/un-assign-loan-to-agent', [\App\Http\Controllers\Admin\LoanApplicationController::class, 'unAssignLoanToAgent']);
+    Route::get('/get-assigned-loans/{userId}', [\App\Http\Controllers\Admin\LoanApplicationController::class, 'getAssignedLoans']);
 
 });

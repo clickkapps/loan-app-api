@@ -10,6 +10,7 @@ use App\Notifications\PaymentInitiated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 trait LoanApplicationTrait
 {
@@ -122,4 +123,78 @@ trait LoanApplicationTrait
     }
 
 
+    /**
+     * @throws ValidationException
+     * @throws \Exception
+     */
+    public function assignLoanToAgent(Request $request): \Illuminate\Http\JsonResponse
+    {
+
+        $this->validate($request, [
+            'loan_id' => 'required',
+            'user_id' => 'required',
+        ]);
+
+        $loanId = $request->get('loan_id');
+        $userId = $request->get('user_id');
+
+        $loan = LoanApplication::with([])->find($loanId);
+
+        if(blank($loan)) {
+            throw new \Exception("Loan does not exists");
+        }
+
+        // check if loan is already assigned to a user
+        if(!blank($loan->{'assigned_to'})) {
+            throw new \Exception("Loan has already been assigned to an agent");
+        }
+
+        $loan->update([
+            'assigned_to' => $userId
+        ]);
+
+        return response()->json(ApiResponse::successResponseWithData());
+
+    }
+
+    /**
+     * @throws ValidationException
+     * @throws \Exception
+     */
+    public function unAssignLoanToAgent(Request $request): \Illuminate\Http\JsonResponse
+    {
+
+        $this->validate($request, [
+            'loan_id' => 'required',
+            'user_id' => 'required',
+        ]);
+
+        $loanId = $request->get('loan_id');
+
+        $loan = LoanApplication::with([])->find($loanId);
+
+        if(blank($loan)) {
+            throw new \Exception("Loan does not exists");
+        }
+
+        if(blank($loan->{'assigned_to'})) {
+            throw new \Exception("Loan has not been assigned to any agent");
+        }
+
+        $loan->update([
+            'assigned_to' => null
+        ]);
+
+        return response()->json(ApiResponse::successResponseWithData());
+
+    }
+
+    public function getAssignedLoans($userId): \Illuminate\Http\JsonResponse
+    {
+        $loans = LoanApplication::with([])->where([
+            'assigned_to' => $userId
+        ]);
+
+        return response()->json(ApiResponse::successResponseWithData($loans));
+    }
 }
