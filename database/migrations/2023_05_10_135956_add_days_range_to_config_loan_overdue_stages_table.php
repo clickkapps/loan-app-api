@@ -15,7 +15,7 @@ return new class extends Migration
 //          $table->integer('days_after_deadline')->nullable()->default(null)->comment('if number of days is null, then its infinite');
             $table->integer('from_days_after_deadline')->nullable()->default(null)->comment('if number of days is null, its from the day loan was disbursed');
             $table->integer('to_days_after_deadline')->nullable()->default(null)->comment('if number of days is null, then its infinite');
-            $table->dropColumn('days_after_deadline');
+//            $table->dropColumn('days_after_deadline');
         });
     }
 
@@ -26,7 +26,7 @@ return new class extends Migration
     {
         Schema::table('config_loan_overdue_stages', function (Blueprint $table) {
             $table->dropColumn(['from_days_after_deadline', 'to_days_after_deadline']);
-            $table->integer('days_after_deadline')->nullable()->default(null)->comment('if number of days is null, then its infinite');
+//            $table->integer('days_after_deadline')->nullable()->default(null)->comment('if number of days is null, then its infinite');
         });
     }
 };

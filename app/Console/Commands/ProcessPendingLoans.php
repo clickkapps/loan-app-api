@@ -48,13 +48,13 @@ class ProcessPendingLoans extends Command implements Isolatable
 
         // for each one of them, check if the required fields are fully filled
         foreach ($loans as $loan) {
-            $kycStatus = Customer::with([])->where('user_id', '',$loan->{'user_id'})->first()->{'cusboarding_completed'};
+            $kycStatus = Customer::with([])->where('user_id', '=',$loan->{'user_id'})->first()->{'cusboarding_completed'};
             if(!$kycStatus) {
                 return;
             }
 
             // for each of them initiate loan disbursal
-            $this->initiateLoanDisbursal(loan: $loan);
+            $this->initiateLoanDisbursal(loan: $loan, createdByName: 'system');
 
         }
 

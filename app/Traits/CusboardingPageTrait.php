@@ -8,6 +8,8 @@ use App\Models\Cusboarding;
 
 trait CusboardingPageTrait
 {
+    use FileTrait;
+
     public function getCusboardingPagesWithFields(): \Illuminate\Http\JsonResponse
     {
         $pageWithFields = ConfigCusboardingPage::with('fields')->orderBy('page_position')->get();
@@ -28,7 +30,23 @@ trait CusboardingPageTrait
             $fields = $page->{'fields'};
             $fieldsWithResponse = collect($fields)->map(function ($field) use ($userResponses) {
                 $response = collect($userResponses)->firstWhere('field_name','=', $field->{'name'});
-                $field->response = $response != null ? $response->{'response'} : null;
+
+                $field->response = null;
+                $field->extra = null;
+
+                if($response != null && !blank($response->{'response'})) {
+                    if($response->{'field_type'} == "gallery" || $response->{'field_type'} == "selfie" || $response->{'field_type'} == "document") {
+                        $path = $response->{'response'};
+                        $fullPath = $this->getSignedUrl(path: $path, minutes: 1440);
+
+                        $field->response = $fullPath;
+                        $field->extra = $path;
+
+                    }else {
+                        $field->response = $response->{'response'};
+                    }
+                }
+
                 return $field;
             });
             $page->{'fields'} = $fieldsWithResponse;

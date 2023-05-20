@@ -30,10 +30,10 @@ trait LoanApplicationTrait
         $displayStatus = $applicationStatus->status;
         if($displayStatus == "requested") {
             $displayStatus = "Pending approval";
-        }else if($displayStatus == "disbursed") {
-            $displayStatus = "Loan disbursed";
         }else if($displayStatus == "denied") {
             $displayStatus = "Application denied";
+        }else if($displayStatus == "stage-0") {
+            $displayStatus = "Loan disbursed";
         }
 
         return response()->json(ApiResponse::successResponseWithData(
@@ -60,7 +60,7 @@ trait LoanApplicationTrait
             ->get();
     }
 
-    public function initiateLoanDisbursal(LoanApplication $loan): void
+    public function initiateLoanDisbursal(LoanApplication $loan, string $createdByName, User $createdByUser = null): void
     {
         // lock the loan application so that it can't be acted on again
         if($loan->{'locked'}) {
@@ -73,7 +73,7 @@ trait LoanApplicationTrait
 
 
         $userId = $loan->{'user_id'};
-        $amount = $loan->{'amount'};
+        $amount = $loan->{'amount_requested'} - $loan->{'fee_charged'};
         $accountNumber = $loan->{'account_number'};
         $accountName = $loan->{'account_name'};
         $networkType = $loan->{'network_type'};
@@ -85,6 +85,7 @@ trait LoanApplicationTrait
         $date = now()->toDateTimeString();
         $date = str_replace('-','', $date);
         $date = str_replace(':','', $date);
+        $date = str_replace(' ','', $date);
 
         $clientRef = $loanId . $date . generateRandomNumber();
         Log::info("client ref: $clientRef");
@@ -106,6 +107,8 @@ trait LoanApplicationTrait
 //            'response_message',
 //            'response_code',
             'status' => 'opened',
+            'created_by_name' => $createdByName,
+            'created_by_user_id' => $createdByUser?->{'id'},
 //            'extra'
         ]);
 
@@ -119,25 +122,4 @@ trait LoanApplicationTrait
     }
 
 
-    public function paymentCallback(Request $request): void
-    {
-
-        $responseCode = $request->get('responseCode');
-
-//         let' assume its successful --------
-        if($responseCode == '200' || $responseCode == '201') {
-
-            
-
-        }
-
-        else {
-
-            //     if it fails --------
-
-        }
-
-
-
-    }
 }

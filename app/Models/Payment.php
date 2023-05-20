@@ -24,6 +24,8 @@ class Payment extends Model
         'response_code',
         'status',
         'extra',
+        'created_by_name',
+        'created_by_user_id',
 
     ];
 }

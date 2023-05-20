@@ -27,5 +27,16 @@ class AdminPolicy
         return $user->hasRole('admin') || $user->hasRole('super admin');
     }
 
+    public function assignAgents(User $user): bool
+    {
+        return  $user->hasPermissionTo('assign agents');
+    }
+
+
+    public function viewAgents(User $user): bool
+    {
+        return  $user->hasPermissionTo('view agents');
+    }
+
 
 }

@@ -10,9 +10,6 @@ use App\Models\LoanApplicationStatus;
 use App\Traits\LoanApplicationTrait;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Spatie\FlareClient\Api;
-use Spatie\Permission\Models\Permission;
 
 class LoanApplicationController extends Controller
 {

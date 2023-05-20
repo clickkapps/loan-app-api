@@ -2,25 +2,25 @@
 
 namespace App\Notifications;
 
-use App\Channels\PaymentChannel;
-use App\Models\Payment;
+use App\Channels\SmsChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Log;
+use JetBrains\PhpStorm\ArrayShape;
 
-class PaymentInitiated extends Notification implements ShouldQueue
+class LoanStage0ReminderGenerated extends Notification implements ShouldQueue
 {
     use Queueable;
-    private Payment $payment;
+    private string $message;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($payment)
+    public function __construct(string $message)
     {
-       $this->payment = $payment;
+        $this->message = $message;
     }
 
     /**
@@ -30,14 +30,17 @@ class PaymentInitiated extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return [PaymentChannel::class];
+        return [SmsChannel::class];
     }
 
-   public function toPaymentGateway($notifiable): Payment
+    #[ArrayShape(['phone' => "mixed", 'message' => "string"])] public function toSMS($notifiable): array
     {
         $encoded = json_encode($notifiable);
         Log::info("notifiable: $encoded");
 
-        return $this->payment;
+        return [
+            'phone' => $notifiable->{'email'},
+            'message' => $this->message,
+        ];
     }
 }

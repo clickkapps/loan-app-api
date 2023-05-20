@@ -47,7 +47,7 @@ class SmsChannel
             "sourceAddress" => "Eazisend",
             "shortMessage" => $message,
             "destinationAddress" => $phone,
-            "messageDescription" => "tithe",
+            "messageDescription" => "personal",
             "messageType" => "quick sms",
             "randomspecial" => "",
             "specialUnicodeSupport" => true

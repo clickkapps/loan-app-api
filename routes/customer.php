@@ -48,6 +48,9 @@ Route::middleware(['auth:sanctum', 'role:customer'])->group(function() {
     Route::post('/get-kyc-status', [\App\Http\Controllers\Customer\CusboardingController::class, 'fetchCustomerKYCStatus']);
     Route::get('/get-kyc-responses', [\App\Http\Controllers\Customer\CusboardingController::class, 'fetchCustomerKYCResponses']);
 
+    Route::post('/upload-kyc-file', [\App\Http\Controllers\Customer\CusboardingController::class, 'uploadKYCFile'] );
+    Route::post('/get-kyc-url-from-path', [\App\Http\Controllers\Customer\CusboardingController::class, 'getKYCUrlFromPath'] );
+
 });
 
 /*
@@ -61,9 +64,15 @@ Route::middleware(['auth:sanctum', 'role:customer'])->group(function() {
 
     Route::post('/submit-loan-application', [\App\Http\Controllers\Customer\LoanApplicationController::class, 'submitApplication']);
     Route::get('/fetch-loan-application-update', [\App\Http\Controllers\Customer\LoanApplicationController::class, 'fetchLoanApplicationUpdate']);
+
     Route::get('/fetch-loan-repayment-data/{loanId}', [\App\Http\Controllers\Customer\LoanApplicationController::class, 'getLoanRepaymentData']);
+    Route::get('/fetch-loan-deferment-data/{loanId}', [\App\Http\Controllers\Customer\LoanApplicationController::class, 'getLoanDefermentData']);
+
     Route::get('/fetch-loan-details/{loanId}', [\App\Http\Controllers\Customer\LoanApplicationController::class, 'getLoanDetails']);
     Route::get('/fetch-loan-history', [\App\Http\Controllers\Customer\LoanApplicationController::class, 'fetchLoanApplicationHistory']);
+
+    Route::get('/initiate-loan-repayment', [\App\Http\Controllers\Customer\LoanApplicationController::class, 'initiateLoanRepayment']);
+    Route::get('/initiate-loan-deferment', [\App\Http\Controllers\Customer\LoanApplicationController::class, 'initiateLoanDeferment']);
 
 });
 

@@ -8,13 +8,15 @@ use App\Models\ConfigCusboardingField;
 use App\Models\Cusboarding;
 use App\Models\Customer;
 use App\Traits\CusboardingPageTrait;
+use App\Traits\FileTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class CusboardingController extends Controller
 {
-    use CusboardingPageTrait;
+    use CusboardingPageTrait, FileTrait;
 
     /**
      * @throws ValidationException
@@ -96,6 +98,32 @@ class CusboardingController extends Controller
        $response = $this->getCusboardingPagesWithFieldsWithResponses($user->id);
        return response()->json(ApiResponse::successResponseWithData($response));
 
+    }
+
+    /**
+     * @throws ValidationException
+     */
+    public function uploadKYCFile(Request $request): \Illuminate\Http\JsonResponse
+    {
+        return $this->uploadFile($request);
+    }
+
+    /**
+     * @throws ValidationException
+     */
+    public function getKYCUrlFromPath(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $this->validate($request, [
+            'path' => 'required'
+        ]);
+
+        $path = $request->get('path');
+        $fullUrl = $this->getSignedUrl($path);
+
+        return response()->json(ApiResponse::successResponseWithData([
+            'display_path' => $fullUrl,
+            'path' =>  $path
+        ]));
     }
 
 

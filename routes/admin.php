@@ -35,6 +35,12 @@ Route::middleware(['auth:sanctum', 'role:super admin|admin'])->group(function() 
     Route::post('/create-admin', [\App\Http\Controllers\Admin\AdminController::class, 'create']);
     Route::get('/get-admins', [\App\Http\Controllers\Admin\AdminController::class, 'getAll']);
     Route::get('/get-admin/{id}', [\App\Http\Controllers\Admin\AdminController::class, 'getAdmin']);
+    Route::post('/make-admin-an-agent', [\App\Http\Controllers\Admin\AdminController::class, 'makeAdminAnAgent']);
+    Route::post('/unmake-admin-an-agent', [\App\Http\Controllers\Admin\AdminController::class, 'unmakeAdminAnAgent']);
+    Route::get('/get-agents', [\App\Http\Controllers\Admin\AdminController::class, 'getAgents']);
+    Route::get('/get-agent-assigned-loans', [\App\Http\Controllers\Admin\AdminController::class, 'getAgentAssignedLoans']);
+    Route::get('/get-agent-info/{userId}', [\App\Http\Controllers\Admin\AdminController::class, 'getAgentInfo']);
+
 
 });
 

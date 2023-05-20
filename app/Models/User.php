@@ -56,4 +56,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Cusboarding::class);
     }
+
+    public function agent(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Agent::class);
+    }
 }

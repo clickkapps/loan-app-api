@@ -18,6 +18,7 @@ class LoanApplication extends Model
         'amount_requested',
         'amount_disbursed',
         'fee_charged',
+        'accumulated_interest',
         'amount_to_pay',
         'loan_overdue_stage_id',
         'completed',
@@ -26,7 +27,7 @@ class LoanApplication extends Model
 
     public function statuses(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(LoanApplicationStatus::class)->orderByDesc('created_at');
+        return $this->hasMany(LoanApplicationStatus::class)->orderBy('created_at');
     }
 
     public function latestStatus(): Model|\Illuminate\Database\Eloquent\Relations\HasOne|null
@@ -37,5 +38,10 @@ class LoanApplication extends Model
     public function stage(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(ConfigLoanOverdueStage::class, 'loan_overdue_stage_id');
+    }
+
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

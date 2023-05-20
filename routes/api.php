@@ -13,6 +13,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return 'WEB SERVICE RUNNING';
-});
+Route::match(['GET', 'POST'], '/payment-callback', [\App\Http\Controllers\PaymentController::class, 'paymentCallback']);

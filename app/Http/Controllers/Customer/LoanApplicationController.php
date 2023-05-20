@@ -51,7 +51,7 @@ class LoanApplicationController extends Controller
         ])->first();
         $customer = Customer::with([])->where('user_id', '=', $user->id)->first();
 
-        $fee = $amountRequested - ( ($amountRequested * $config->{'processing_fee_percentage'} / 100) + ($amountRequested * $config->{'loan_application_interest_percentage'} / 100) );
+        $fee = $amountRequested * $config->{'processing_fee_percentage'} / 100 + $amountRequested * $config->{'loan_application_interest_percentage'} / 100 ;
 
        $amountLimit  = $customer->{'loan_application_amount_limit'} ?: $config->{'loan_application_amount_limit'};
        if($amountRequested > $amountLimit) {
@@ -120,8 +120,40 @@ class LoanApplicationController extends Controller
         }
 
         // check if installments can be paid on the loan
+        $loanStage = $loan->{'stage'};
+        $installmentEnabled = $loanStage->{'installment_enabled'} == 1;
 
-        return response()->json(ApiResponse::successResponseWithData());
+        return response()->json(ApiResponse::successResponseWithData([
+            'installment_enabled' => $installmentEnabled,
+            'amount_to_pay' => $loan->{'amount_to_pay'},
+        ]));
+
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function getLoanDefermentData($loanId): \Illuminate\Http\JsonResponse
+    {
+
+        $loan = LoanApplication::with([])->find($loanId);
+        if(blank($loan)){
+            throw  new \Exception('Loan has been removed. Contact support team');
+        }
+
+        // check if loan has been approved
+        if($loan->{'latestStatus'}->status == 'requested') {
+            throw new \Exception("Loan is pending approval");
+        }
+
+        $config = Configuration::with([])->first();
+        $defermentPercentage = $config->{'deferment_percentage'};
+        $defermentAmount = ($defermentPercentage / 100) * $loan->{'amount_to_pay'};
+
+        return response()->json(ApiResponse::successResponseWithData([
+            'deferment_amount' => $defermentAmount
+        ]));
+
 
     }
 
@@ -135,6 +167,20 @@ class LoanApplicationController extends Controller
         if(blank($loan)){
             throw  new \Exception('Loan has been removed. Contact support team');
         }
+
+        $loan->{'modified_statuses'} = collect($loan->{'statuses'})->map(function ($status) {
+            $display = $status->status;
+            if($status->status == "requested") {
+                $display = 'Loan application submitted';
+            }else if($status->status == "stage-0") {
+                $display = 'Loan disbursed';
+            }
+            return [
+                'status' => $status->status,
+                'display' => $display,
+                'created_at' => Carbon::parse($status->{'created_at'})->toDayDateTimeString()
+            ];
+        });
 
         return response()->json(ApiResponse::successResponseWithData($loan));
 
@@ -151,5 +197,8 @@ class LoanApplicationController extends Controller
 
     }
 
+    public function initiateLoanRepayment(Request $request) {
+
+    }
 
 }

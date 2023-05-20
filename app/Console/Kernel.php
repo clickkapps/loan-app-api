@@ -2,7 +2,10 @@
 
 namespace App\Console;
 
+use App\Console\Commands\AddInterestToLoansAtVariousStages;
+use App\Console\Commands\MoveOverDueLoansToNextStages;
 use App\Console\Commands\ProcessPendingLoans;
+use App\Console\Commands\Stage0RepaymentReminder;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -14,8 +17,15 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
-        $schedule->command('sanctum:prune-expired --hours=24')->daily();
+        $schedule->command('sanctum:prune-expired --hours=24')->daily()->runInBackground();
         $schedule->command(ProcessPendingLoans::class, ['--isolated'])->everyMinute();
+        $schedule->command(Stage0RepaymentReminder::class)->dailyAt('9:00');
+
+        // These two are expected to execute sequentially in the order below ---------------
+        $schedule->command(MoveOverDueLoansToNextStages::class)->daily();
+        $schedule->command(AddInterestToLoansAtVariousStages::class)->daily();
+        // ---
+
     }
 
     /**
