@@ -18,7 +18,10 @@ trait LoanApplicationTrait
     public function getLoanApplicationUpdate(Request $request): \Illuminate\Http\JsonResponse
     {
 
-        $runningLoan = LoanApplication::with([])->where('closed',false)->first();
+        $runningLoan = LoanApplication::with([])->where([
+            'closed' => false,
+            'user_id' => $request->user()->id
+        ])->first();
         if(blank($runningLoan)){
             return response()->json(ApiResponse::successResponseWithData(
                 [
