@@ -46,6 +46,8 @@ trait CusboardingPageTrait
                         $field->response = $response->{'response'};
 //                        $field->extra = $response->{'extra'};
                     }
+                }else {
+                    $field->response = '';
                 }
 
                 return $field;

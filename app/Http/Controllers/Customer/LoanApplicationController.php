@@ -40,7 +40,11 @@ class LoanApplicationController extends Controller
         $networkType = $request->get('network_type');
 
         // user cannot apply for another loan if a loan is already running
-        $runningLoan = LoanApplication::with([])->where('closed',false)->exists();
+        $runningLoan = LoanApplication::with([])->where(
+            [
+                'closed' => false,
+                'user_id' => $request->user()->id
+            ])->exists();
         if($runningLoan) {
             throw new \Exception('You have an existing running loan. Kindly contact support to close any previous loan applications');
         }
