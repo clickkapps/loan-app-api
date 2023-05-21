@@ -106,7 +106,7 @@ class LoanApplicationController extends Controller
 
                 $stageName = $stage->{'name'};
                 $response[] = [
-                    'name' => "Loan stage $stageName",
+                    'name' => $stage->{'jargon'},
                     'value' => "stage-$stageName"
                 ];
 
