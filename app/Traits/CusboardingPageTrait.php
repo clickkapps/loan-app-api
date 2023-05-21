@@ -31,8 +31,8 @@ trait CusboardingPageTrait
             $fieldsWithResponse = collect($fields)->map(function ($field) use ($userResponses) {
                 $response = collect($userResponses)->firstWhere('field_name','=', $field->{'name'});
 
-                $field->response = null;
-                $field->extra = null;
+//                $field->response = null;
+//                $field->extra = null;
 
                 if($response != null && !blank($response->{'response'})) {
                     if($response->{'field_type'} == "gallery" || $response->{'field_type'} == "selfie" || $response->{'field_type'} == "document") {
@@ -44,6 +44,7 @@ trait CusboardingPageTrait
 
                     }else {
                         $field->response = $response->{'response'};
+//                        $field->extra = $response->{'extra'};
                     }
                 }
 
