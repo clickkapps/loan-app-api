@@ -20,6 +20,7 @@ class LimitRequestsByCountry
     public function handle(Request $request, Closure $next): Response
     {
         $ip = request()->ip();
+        Log::info("IP: " . json_encode($ip));
         $countryCode = GeoIP::getLocation($ip)->iso_code;
 //        dd($data);
 
