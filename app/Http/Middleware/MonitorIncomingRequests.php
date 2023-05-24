@@ -23,12 +23,13 @@ class MonitorIncomingRequests
         Log::info('incoming request body: ' . json_encode($request->all()));
         Log::info('incoming request IP: ' . json_encode($request->ip()));
         $countryCode = ip_info("Visitor", "Country Code"); // IN
+        Log::info("country code: $countryCode");
 //        dd($data);
         if($countryCode != "GH") {
             exit;
         }
 
-        Log::info("country code: $countryCode");
+
         return $next($request);
     }
 }
