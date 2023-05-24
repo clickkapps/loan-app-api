@@ -3,7 +3,6 @@
 namespace App\Listeners;
 
 use App\Events\PaymentCallbackReceived;
-use App\Events\PaymentStatusReceived;
 use App\Models\ConfigLoanOverdueStage;
 use App\Models\Configuration;
 use App\Models\LoanApplication;

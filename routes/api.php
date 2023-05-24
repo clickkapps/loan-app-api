@@ -12,5 +12,8 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+Route::get('/test', function () {
+    return 'Application is running';
+});
 
 Route::match(['GET', 'POST'], '/payment-callback', [\App\Http\Controllers\PaymentController::class, 'paymentCallback']);

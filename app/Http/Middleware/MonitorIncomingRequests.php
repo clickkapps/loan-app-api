@@ -18,16 +18,20 @@ class MonitorIncomingRequests
      */
     public function handle(Request $request, Closure $next): Response
     {
-        Log::info('incoming request header: ' . json_encode($request->header()));
-        Log::info('incoming request body: ' . json_encode($request->all()));
-        Log::info('incoming request IP: ' . json_encode($request->ip()));
-        $countryCodes = $request->header()['cf-ipcountry']; // IN
-        $encodedCountryCodes = json_encode($countryCodes);
-        Log::info("country code: $encodedCountryCodes");
-//        dd($data);
-        if(count($countryCodes) != 1 || $countryCodes[0] != "GH") {
-            Log::info("Request terminated: invalid country code");
-            exit;
+
+        if(config('app.env') == 'production') {
+
+            Log::info('incoming request header: ' . json_encode($request->header()));
+            Log::info('incoming request body: ' . json_encode($request->all()));
+            Log::info('incoming request IP: ' . json_encode($request->ip()));
+
+            $countryCodes = $request->header()['cf-ipcountry']; // IN
+            $encodedCountryCodes = json_encode($countryCodes);
+            Log::info("country code: $encodedCountryCodes");
+            if(count($countryCodes) != 1 || $countryCodes[0] != "GH") {
+                Log::info("Request terminated: invalid country code");
+                exit;
+            }
         }
 
 
