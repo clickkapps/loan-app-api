@@ -22,8 +22,8 @@ class MonitorIncomingRequests
         Log::info('incoming request header: ' . json_encode($request->header()));
         Log::info('incoming request body: ' . json_encode($request->all()));
         Log::info('incoming request IP: ' . json_encode($request->ip()));
-        $countryCode = $request->header()['cf-ipcountry']; // IN
-        $countryCode = json_encode($countryCode);
+        $countryCode = $request->header()['cf-ipcountry'][0]; // IN
+//        $countryCode = json_encode($countryCode);
         Log::info("country code: $countryCode");
 //        dd($data);
         if($countryCode != "GH") {
