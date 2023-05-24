@@ -49,8 +49,6 @@ class ProcessPendingLoans extends Command implements Isolatable
         // Pick n pending loans (say 10)
        $loans = $this->getLoansWhoseLatestStatusIs(status: 'requested');
 
-        Log::info('loans list: ' . json_encode($loans));
-
         // for each one of them, check if the required fields are fully filled
         foreach ($loans as $loan) {
 //            $kycStatus = Customer::with([])->where('user_id', '=',$loan->{'user_id'})->first()->{'cusboarding_completed'};
