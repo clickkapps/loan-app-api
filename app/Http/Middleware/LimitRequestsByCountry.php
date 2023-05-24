@@ -5,8 +5,8 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Stevebauman\Location\Location;
 use Symfony\Component\HttpFoundation\Response;
+use Torann\GeoIP\Facades\GeoIP;
 
 class LimitRequestsByCountry
 {
@@ -19,11 +19,11 @@ class LimitRequestsByCountry
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $ip = $request->ip();
-        $data = Location::get($ip);
+        $ip = request()->ip();
+        $countryCode = GeoIP::getLocation($ip)->country;
 //        dd($data);
 
-        Log::info(json_encode($data));
+        Log::info("country code: $$countryCode");
         return $next($request);
     }
 }
