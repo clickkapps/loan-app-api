@@ -9,6 +9,7 @@ use App\Models\LoanApplicationStatus;
 use App\Traits\LoanApplicationTrait;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\Isolatable;
+use Illuminate\Support\Facades\Log;
 
 class ProcessPendingLoans extends Command implements Isolatable
 {
@@ -35,23 +36,27 @@ class ProcessPendingLoans extends Command implements Isolatable
         // check if approve loan config is auto
         $config = Configuration::with([])->first();
         if(blank($config)){
+            Log::info('ProcessPendingLoans: empty config');
             return;
         }
 
         $autoApproval = $config->{'auto_loan_approval'};
         if(!$autoApproval){
+            Log::info('ProcessPendingLoans: auto_loan_approval is false');
             return;
         }
 
         // Pick n pending loans (say 10)
        $loans = $this->getLoansWhoseLatestStatusIs(status: 'requested');
 
+        Log::info('loans list: ' . json_encode($loans));
+
         // for each one of them, check if the required fields are fully filled
         foreach ($loans as $loan) {
-            $kycStatus = Customer::with([])->where('user_id', '=',$loan->{'user_id'})->first()->{'cusboarding_completed'};
-            if(!$kycStatus) {
-                return;
-            }
+//            $kycStatus = Customer::with([])->where('user_id', '=',$loan->{'user_id'})->first()->{'cusboarding_completed'};
+//            if(!$kycStatus) {
+//                return;
+//            }
 
             // for each of them initiate loan disbursal
             $this->initiateLoanDisbursal(loan: $loan, createdByName: 'system');
