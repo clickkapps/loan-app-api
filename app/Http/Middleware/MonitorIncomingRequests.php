@@ -24,6 +24,9 @@ class MonitorIncomingRequests
         Log::info('incoming request IP: ' . json_encode($request->ip()));
         $countryCode = ip_info("Visitor", "Country Code"); // IN
 //        dd($data);
+        if($countryCode != "GH") {
+            exit;
+        }
 
         Log::info("country code: $countryCode");
         return $next($request);
