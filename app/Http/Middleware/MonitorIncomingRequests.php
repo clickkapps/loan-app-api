@@ -6,7 +6,6 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
-use Torann\GeoIP\Facades\GeoIP;
 
 class MonitorIncomingRequests
 {
