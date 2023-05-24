@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 use Torann\GeoIP\Facades\GeoIP;
 
-class LimitRequestsByCountry
+class MonitorIncomingRequests
 {
     /**
      * Handle an incoming request.
@@ -19,9 +19,10 @@ class LimitRequestsByCountry
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $ip = request()->ip();
-        Log::info("IP: " . json_encode($ip));
-        $countryCode = GeoIP::getLocation($ip)->iso_code;
+        Log::info('incoming request header: ' . json_encode($request->header()));
+        Log::info('incoming request body: ' . json_encode($request->all()));
+        Log::info('incoming request IP: ' . json_encode($request->ip()));
+        $countryCode = ip_info($request->ip(), "Country Code"); // IN
 //        dd($data);
 
         Log::info("country code: $countryCode");

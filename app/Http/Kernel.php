@@ -2,7 +2,7 @@
 
 namespace App\Http;
 
-use App\Http\Middleware\LimitRequestsByCountry;
+use App\Http\Middleware\MonitorIncomingRequests;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -22,7 +22,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
-        LimitRequestsByCountry::class,
+        MonitorIncomingRequests::class,
     ];
 
     /**
