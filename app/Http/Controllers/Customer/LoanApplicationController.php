@@ -9,9 +9,11 @@ use App\Models\Configuration;
 use App\Models\Customer;
 use App\Models\LoanApplication;
 use App\Models\LoanApplicationStatus;
+use App\Models\Payment;
 use App\Traits\LoanApplicationTrait;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class LoanApplicationController extends Controller
@@ -84,13 +86,6 @@ class LoanApplicationController extends Controller
            'user_id' => $user->id,
            'created_by' => 'customer'
        ]);
-
-       // update customers default momo details
-        $customer->update([
-            'default_momo_account_number' => $accountNumber,
-            'default_momo_account_name' => $accountName,
-            'default_momo_network' => $networkType
-        ]);
 
        return $this->fetchLoanApplicationUpdate($request);
 
@@ -201,7 +196,76 @@ class LoanApplicationController extends Controller
 
     }
 
+    /**
+     * @throws ValidationException
+     * @throws \Exception
+     */
     public function initiateLoanRepayment(Request $request) {
+
+        $this->validate($request, [
+            'loan_id' => 'required',
+            'account_number' => 'required',
+            'account_name' => 'required',
+            'network_type' => 'required',
+        ]);
+
+        $user = $request->user();
+
+        $loanId = $request->get('loan_id');
+        $accountNumber = $request->get('account_number');
+        $accountName = $request->get('account_name');
+        $networkType = $request->get('network_type');
+
+        // user cannot apply for another loan if a loan is already running
+        $loan = LoanApplication::with([])->find($loanId);
+        if(blank($loan)){
+            Log::info('initiateLoanRepayment: invalid loanId : request: ' . json_encode($request->all()));
+            throw  new \Exception('Invalid request. contact technical team');
+        }
+
+        /// cache repayment info for next payment
+        $customer = Customer::with([])->where('user_id', '=', $user->id)->first();
+        $customer->update([
+            'default_momo_account_number' => $accountNumber,
+            'default_momo_account_name' => $accountName,
+            'default_momo_network' => $networkType
+        ]);
+
+        /// initiate payment
+        // unique reference number ------
+        $date = now()->toDateTimeString();
+        $date = str_replace('-','', $date);
+        $date = str_replace(':','', $date);
+        $date = str_replace(' ','', $date);
+
+        $clientRef = $loanId . $date . generateRandomNumber();
+        Log::info("client ref: $clientRef");
+        //---------------------------------------------------------
+
+        $description = 'Loan repayment';
+
+        // record the transaction
+        $payment = Payment::with([])->create([
+
+            'user_id' => $user->id,
+            'loan_application_id' => $loanId,
+            'client_ref' => $clientRef,
+//            'server_ref',
+            'amount' => $loan->{'amount_to_pay'},
+            'account_number' => $accountNumber,
+            'account_name' => $accountName,
+            'network_type' => $networkType,
+            'title' => config('app.name'),
+            'description' => $description,
+//            'response_message',
+//            'response_code',
+            'status' => 'opened',
+            'created_by_name' => 'user',
+            'created_by_user_id' => $user->id,
+
+        ]);
+
+        // submit to payment gateway
 
     }
 

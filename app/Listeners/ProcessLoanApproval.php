@@ -9,12 +9,12 @@ use App\Models\LoanApplication;
 use App\Models\LoanApplicationStatus;
 use App\Notifications\LoanMovedToStage0;
 use App\Traits\LoanApplicationTrait;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 
-class ProcessLoanApproval
+class ProcessLoanApproval implements ShouldQueue
 {
-    use LoanApplicationTrait;
+    use LoanApplicationTrait, Queueable;
     /**
      * Create the event listener.
      */
@@ -26,10 +26,15 @@ class ProcessLoanApproval
     /**
      * Handle the event.
      */
-    public function handle(PaymentCallbackReceived $event)
+    public function handle(PaymentCallbackReceived $event) : void
     {
-        // update the loan status, that process is successful
+
         $payment = $event->payment;
+
+        if($payment->{'description'} != 'Loan disbursal') {
+            return;
+        }
+        // update the loan status, that process is successful
         $loan = LoanApplication::with([])->where('id','=', $payment->{'loan_application_id'})->first();
         $user = $loan->user;
 
@@ -80,7 +85,6 @@ class ProcessLoanApproval
                 'locked' => false
             ]);
 
-        return response()->json(['message' => 'received'], 200);
 
     }
 }

@@ -17,3 +17,9 @@ Route::get('/test', function () {
 });
 
 Route::match(['GET', 'POST'], '/payment-callback', [\App\Http\Controllers\PaymentController::class, 'paymentCallback']);
+
+
+Route::middleware('auth.basic')->get('push-event', function() {
+    $loan = \App\Models\LoanApplication::with([])->first();
+    event(new \App\Events\LoanApplicationAssignedToAgent(loan: $loan));
+});

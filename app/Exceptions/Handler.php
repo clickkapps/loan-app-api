@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -38,9 +39,12 @@ class Handler extends ExceptionHandler
         });
 
         $this->renderable(function (\Exception $e, Request $request) {
+
             if ($request->is('*/api/*')) {
                 return response()->json(ApiResponse::failedResponse($e->getMessage()));
             }
         });
     }
+
+
 }

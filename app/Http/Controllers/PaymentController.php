@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
 {
-    public function paymentCallback(Request $request): void
+    public function paymentCallback(Request $request)
     {
 
         $responseCode = $request->get('responseCode');
@@ -55,6 +55,8 @@ class PaymentController extends Controller
         // after updating the payment  record, dispatch event
 
         PaymentCallbackReceived::dispatch($payment);
+
+        return response()->json(['message' => 'received'], 200);
 
 
     }
