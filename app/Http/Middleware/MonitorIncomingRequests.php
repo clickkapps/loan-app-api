@@ -5,7 +5,6 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Stevebauman\Location\Facades\Location;
 use Symfony\Component\HttpFoundation\Response;
 
 class MonitorIncomingRequests
@@ -26,22 +25,7 @@ class MonitorIncomingRequests
             Log::info('incoming request header: ' . json_encode($request->header()));
             Log::info('incoming request body: ' . json_encode($request->all()));
             Log::info('incoming request IP: ' . json_encode($request->ip()));
-
-
-            $currentRequestInfo = Location::get();
-
-            $encodedCurrentRequestInfo = json_encode($currentRequestInfo);
-
-            Log::info("country info: $encodedCurrentRequestInfo");
-
-            if($currentRequestInfo) {
-                if($currentRequestInfo->{'countryCode'} != "GH") {
-                    Log::info("Request terminated: invalid country code");
-                    throw new \Exception("Request from unapproved country");
-                }
-            }else {
-                Log::info("unable to detect request information");
-            }
+            Log::info('incoming request URL: ' . json_encode($request->url()));
 
         }
 

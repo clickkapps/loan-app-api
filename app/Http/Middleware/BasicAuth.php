@@ -38,6 +38,7 @@ class BasicAuth
         if ($is_not_authenticated) {
             header('HTTP/1.1 401 Authorization Required');
             header('WWW-Authenticate: Basic realm="Access denied"');
+            Log::info('REQUEST TERMINATED: basic auth credentials unavailable');
             exit;
         }
 
