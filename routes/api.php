@@ -21,5 +21,5 @@ Route::match(['GET', 'POST'], '/payment-callback', [\App\Http\Controllers\Paymen
 
 Route::middleware('basic.auth')->get('push-event', function() {
     $loan = \App\Models\LoanApplication::with([])->first();
-    event(new \App\Events\LoanApplicationAssignedToAgent(loan: $loan));
+    event(new \App\Events\LoanApplicationAssignedToAgent(message: 'custom-message'));
 });

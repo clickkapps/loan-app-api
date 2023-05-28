@@ -18,7 +18,7 @@ class LoanApplicationAssignedToAgent implements ShouldBroadcast
     /**
      * Create a new event instance.
      */
-    public function __construct(public $loan)
+    public function __construct(public $message)
     {}
 
     /**
@@ -29,7 +29,7 @@ class LoanApplicationAssignedToAgent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            'loan-assigned',
+            new PrivateChannel('loan-assigned'),
         ];
     }
 }
