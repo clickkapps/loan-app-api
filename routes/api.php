@@ -22,7 +22,7 @@ Route::match(['GET', 'POST'], '/payment-callback', [\App\Http\Controllers\Paymen
 
 Route::middleware('basic.auth')->get('push-event', function() {
     \Illuminate\Support\Facades\Log::info('push-event called');
-//    $loan = \App\Models\LoanApplication::with([])->first();
+    $loan = \App\Models\LoanApplication::with([])->first();
     event(new \App\Events\LoanApplicationAssignedToAgent(message: 'custom-message'));
     return "Event has been sent!";
 });
