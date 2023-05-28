@@ -32,7 +32,7 @@ class LoanApplicationAssignedToAgent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('loan-assigned'),
+            'loan-assigned'
         ];
     }
 }
