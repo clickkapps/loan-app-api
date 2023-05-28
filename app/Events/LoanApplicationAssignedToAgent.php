@@ -29,7 +29,7 @@ class LoanApplicationAssignedToAgent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            ['loan-assigned'],
+            'loan-assigned',
         ];
     }
 }
