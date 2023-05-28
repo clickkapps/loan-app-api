@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::get('/test', function () {
+    \Illuminate\Support\Facades\Log::info('test-url called');
     return 'Application is running';
 });
 
@@ -20,6 +21,8 @@ Route::match(['GET', 'POST'], '/payment-callback', [\App\Http\Controllers\Paymen
 
 
 Route::middleware('basic.auth')->get('push-event', function() {
-    $loan = \App\Models\LoanApplication::with([])->first();
+    \Illuminate\Support\Facades\Log::info('push-event called');
+//    $loan = \App\Models\LoanApplication::with([])->first();
     event(new \App\Events\LoanApplicationAssignedToAgent(message: 'custom-message'));
+    return "Event has been sent!";
 });

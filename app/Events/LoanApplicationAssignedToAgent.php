@@ -14,12 +14,15 @@ use Illuminate\Queue\SerializesModels;
 class LoanApplicationAssignedToAgent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
+    public string $message;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(public $message)
-    {}
+    public function __construct($message)
+    {
+        $this->message = $message;
+    }
 
     /**
      * Get the channels the event should broadcast on.
