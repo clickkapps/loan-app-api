@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Stevebauman\Location\Facades\Location;
 use Symfony\Component\HttpFoundation\Response;
 
 class MonitorIncomingRequests
@@ -21,22 +22,27 @@ class MonitorIncomingRequests
 
         if(config('app.env') == 'production') {
 
+            $ip = $request->ip();
             Log::info('incoming request header: ' . json_encode($request->header()));
             Log::info('incoming request body: ' . json_encode($request->all()));
-            Log::info('incoming request IP: ' . json_encode($request->ip()));
+            Log::info('incoming request IP: ' . json_encode($ip));
 
-            $header = $request->header();
-            if(isset($header['cf-ipcountry'])){
-                Log::info("Request terminated: cf-ipcountry property not available in header");
-                exit;
+
+            $currentRequestInfo = Location::get($ip);
+
+            $encodedCurrentRequestInfo = json_encode($currentRequestInfo);
+
+            Log::info("country code: $encodedCurrentRequestInfo");
+
+            if($currentRequestInfo) {
+                if($currentRequestInfo->{'countryCode'} != "GH") {
+                    Log::info("Request terminated: invalid country code");
+                    exit;
+                }
+            }else {
+                Log::info("unable to detect request information");
             }
-            $countryCodes = ['cf-ipcountry']; // IN
-            $encodedCountryCodes = json_encode($countryCodes);
-            Log::info("country code: $encodedCountryCodes");
-            if(count($countryCodes) != 1 || $countryCodes[0] != "GH") {
-                Log::info("Request terminated: invalid country code");
-                exit;
-            }
+
         }
 
 
