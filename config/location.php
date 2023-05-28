@@ -68,11 +68,11 @@ return [
 
         'web' => [
 
-            'enabled' => false,
+            'enabled' => true,
 
-            'user_id' => '',
+            'user_id' => env('MAXMIND_USER_ID'),
 
-            'license_key' => '',
+            'license_key' => env('MAXMIND_LICENSE_KEY'),
 
             'options' => [
 
@@ -166,7 +166,7 @@ return [
 
     'testing' => [
 
-        'enabled' => env('LOCATION_TESTING', true),
+        'enabled' => env('LOCATION_TESTING', false),
 
         'ip' => '66.102.0.0',
 

@@ -23,13 +23,12 @@ class MonitorIncomingRequests
 
         if(config('app.env') == 'production') {
 
-            $ip = $request->ip();
             Log::info('incoming request header: ' . json_encode($request->header()));
             Log::info('incoming request body: ' . json_encode($request->all()));
-            Log::info('incoming request IP: ' . json_encode($ip));
+            Log::info('incoming request IP: ' . json_encode($request->ip()));
 
 
-            $currentRequestInfo = Location::get($ip);
+            $currentRequestInfo = Location::get();
 
             $encodedCurrentRequestInfo = json_encode($currentRequestInfo);
 
