@@ -25,7 +25,12 @@ class MonitorIncomingRequests
             Log::info('incoming request body: ' . json_encode($request->all()));
             Log::info('incoming request IP: ' . json_encode($request->ip()));
 
-            $countryCodes = $request->header()['cf-ipcountry']; // IN
+            $header = $request->header();
+            if(isset($header['cf-ipcountry'])){
+                Log::info("Request terminated: cf-ipcountry property not available in header");
+                exit;
+            }
+            $countryCodes = ['cf-ipcountry']; // IN
             $encodedCountryCodes = json_encode($countryCodes);
             Log::info("country code: $encodedCountryCodes");
             if(count($countryCodes) != 1 || $countryCodes[0] != "GH") {
