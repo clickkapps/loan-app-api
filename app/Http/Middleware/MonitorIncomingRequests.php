@@ -16,6 +16,7 @@ class MonitorIncomingRequests
      * @param Request $request
      * @param \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      * @return Response
+     * @throws \Exception
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -32,12 +33,12 @@ class MonitorIncomingRequests
 
             $encodedCurrentRequestInfo = json_encode($currentRequestInfo);
 
-            Log::info("country code: $encodedCurrentRequestInfo");
+            Log::info("country info: $encodedCurrentRequestInfo");
 
             if($currentRequestInfo) {
                 if($currentRequestInfo->{'countryCode'} != "GH") {
                     Log::info("Request terminated: invalid country code");
-                    exit;
+                    throw new \Exception("Request from unapproved country");
                 }
             }else {
                 Log::info("unable to detect request information");
