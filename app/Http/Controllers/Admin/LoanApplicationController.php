@@ -35,8 +35,10 @@ class LoanApplicationController extends Controller
             $stageName = $items[1];
 
             // get loans whose latest stage is $stageName
-            $stage = ConfigLoanOverdueStage::with([])->where('name', $stageName)->first();
-            $loans = LoanApplication::with([])->where('loan_overdue_stage_id', $stage->{'id'})->get();
+
+//            $stage = ConfigLoanOverdueStage::with([])->where('name', $stageName)->first();
+            $loans = $this->getLoansWhoseLatestStatusIs(status: $type);
+//            $loans = LoanApplication::with([])->where('loan_overdue_stage_id', $stage->{'id'})->get();
         }
 
         return response()->json(ApiResponse::successResponseWithData($loans));
