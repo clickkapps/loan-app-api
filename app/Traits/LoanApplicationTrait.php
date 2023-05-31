@@ -169,7 +169,6 @@ trait LoanApplicationTrait
 
         $this->validate($request, [
             'loan_id' => 'required',
-            'user_id' => 'required',
         ]);
 
         $loanId = $request->get('loan_id');
