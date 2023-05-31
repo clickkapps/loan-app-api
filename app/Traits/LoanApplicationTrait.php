@@ -53,13 +53,13 @@ trait LoanApplicationTrait
 
     public function getLoansWhoseLatestStatusIs(string $status): \Illuminate\Database\Eloquent\Collection|array
     {
-        return LoanApplication::with(['latestStatus'])->whereIn('id', function ($query) {
+        return LoanApplication::with(['latestStatus'])->whereIn('id', function ($query){
             $query->select(DB::raw('MAX(id)'))
                 ->from('loan_application_statuses')
                 ->groupBy('loan_application_id');
         })
-            ->whereHas('statuses', function ($query) {
-                $query->where('status', '=', 'requested');
+            ->whereHas('statuses', function ($query) use ($status) {
+                $query->where('status', '=', $status);
             })
             ->get();
     }
