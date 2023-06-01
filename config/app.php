@@ -56,6 +56,7 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
+    'agent-url' => env('AGENT_APP_LINK', 'http://localhost'),
 
     'asset_url' => env('ASSET_URL'),
 

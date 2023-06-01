@@ -7,7 +7,6 @@ return [
     'sms_api_token' => env('SMS_API_TOKEN', null),
     'sms_api_url' => env('SMS_API_URL', null),
     'currency' => env('CURRENCY', null),
-    'agent_app_link' => env('AGENT_APP_LINK', null),
 
     'payment' => [
         "callbackUrl" => env('PAYMENT_CALLBACK_URL', null),

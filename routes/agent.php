@@ -25,10 +25,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['basic.auth'])->get('/login', [\App\Http\Controllers\Admin\AuthController::class, 'login']);
-Route::middleware(['basic.auth'])->get('/signup', [\App\Http\Controllers\Admin\AuthController::class, 'login']);
-Route::middleware(['basic.auth'])->get('/verify-account', [\App\Http\Controllers\Admin\AuthController::class, 'verifyAccount']);
+Route::middleware(['basic.auth'])->post('/login', [\App\Http\Controllers\Agent\AuthController::class, 'loginAsAgent']);
+Route::middleware(['basic.auth'])->post('/request-password-reset', [\App\Http\Controllers\Agent\AuthController::class, 'requestAdminPasswordReset']);
+Route::middleware(['auth:sanctum'])->post('/set-password-auth', [\App\Http\Controllers\Agent\AuthController::class, 'setPassword']);
 
+Route::middleware(['auth:sanctum', 'role:agent'])->get('/get-initial-data', [\App\Http\Controllers\Agent\AuthController::class, 'getInitialData']);
 
 /*
 |--------------------------------------------------------------------------
@@ -36,5 +37,9 @@ Route::middleware(['basic.auth'])->get('/verify-account', [\App\Http\Controllers
 |--------------------------------------------------------------------------
 |
 */
+
+
+
+
 
 

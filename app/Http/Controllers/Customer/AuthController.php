@@ -207,51 +207,6 @@ class AuthController extends Controller
 
     }
 
-    /**
-     * @throws \Exception
-     */
-    public function setPassword(Request $request): \Illuminate\Http\JsonResponse
-    {
-
-        $request->validate([
-            'email' => 'required|string',
-            'password' => 'required|string',
-        ]);
-
-
-        $email = $request->get('email');
-        $password = $request->get('password');
-        $securityCode = $request->get('security_code');
-
-        $user = User::where('email', $email)->first();
-
-        if(blank($user)){
-            throw new \Exception('Unauthorized action. Please contact administrators');
-        }
-
-        // If the user is a guest
-        if(!$request->user()) {
-
-            if(blank($securityCode)) {
-                // unauthorized user trying to set password
-                Log::info("unauthorized user trying to set password");
-                throw new \Exception("Unauthorized action. Please contact administrators");
-            }
-
-            if (!Hash::check($securityCode, $user->password)) {
-                throw new \Exception("Unauthorized action. Please contact administrators");
-            }
-
-        }
-
-        $user->update([
-            'password' => Hash::make($password)
-        ]);
-
-        return response()->json(ApiResponse::successResponseWithMessage());
-
-
-    }
 
     /**
      * @throws \Exception

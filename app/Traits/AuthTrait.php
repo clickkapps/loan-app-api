@@ -5,8 +5,10 @@ namespace App\Traits;
 use App\Classes\ApiResponse;
 use App\Models\User;
 use App\Models\Verification;
+use App\Notifications\NewAdminPasswordGenerated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 trait AuthTrait
@@ -64,12 +66,96 @@ trait AuthTrait
                 'last_login' => $lastLogin,
                 'token' => $token,
                 'roles' => $user->getRoleNames(),
-                'permissions' => $user->permissions
+                'permissions' => $user->permissions,
+                'requires_password_reset' => $user->{'requires_password_reset'} == 1
             ]));
 
         }catch (\Exception $e) {
             return response()->json(ApiResponse::failedResponse($e->getMessage()));
         }
     }
+
+
+    /**
+     * @throws \Exception
+     */
+    public function setPassword(Request $request): \Illuminate\Http\JsonResponse
+    {
+
+        $request->validate([
+            'email' => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+
+        $email = $request->get('email');
+        $password = $request->get('password');
+        $securityCode = $request->get('security_code');
+
+        $user = User::where('email', $email)->first();
+
+        if(blank($user)){
+            throw new \Exception('Unauthorized action. Please contact administrators');
+        }
+
+        // If the user is a guest
+        if(!$request->user()) {
+
+            if(blank($securityCode)) {
+                // unauthorized user trying to set password
+                Log::info("unauthorized user trying to set password");
+                throw new \Exception("Unauthorized action. Please contact administrators");
+            }
+
+            if (!Hash::check($securityCode, $user->password)) {
+                throw new \Exception("Unauthorized action. Please contact administrators");
+            }
+
+        }
+
+        $user->update([
+            'password' => Hash::make($password),
+            'requires_password_reset' => false
+        ]);
+
+        return response()->json(ApiResponse::successResponseWithMessage());
+
+
+    }
+
+    /// Customer password reset request is already handled in the Customer/AuthController
+
+    /**
+     * @throws \Exception
+     */
+    public function requestAdminPasswordReset(Request $request): \Illuminate\Http\JsonResponse
+    {
+
+        $request->validate([
+            'email' => 'required|string', // this is what we use to identify the user
+        ]);
+
+        $email = $request->get('email');
+        $user = User::where('email', $email)->first();
+
+        if(blank($user)){
+            throw new \Exception('This account does not exist');
+        }
+
+        $securityCode = generateRandomNumber();
+
+        $user->update([
+            'password' => Hash::make($securityCode),
+            'requires_password_reset' => true
+        ]);
+
+        // Notify user about account created and temporal password
+        $user->notify(new NewAdminPasswordGenerated(tempPassword: $securityCode));
+
+        return response()->json(ApiResponse::successResponseWithMessage('Verification'));
+
+    }
+
+
 
 }

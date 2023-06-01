@@ -51,6 +51,7 @@ class AdminController extends Controller
             'email_verified_at' => now(),
             'password' => Hash::make($tempPassword),
             'active' => true,
+            'requires_password_reset' => true
         ]);
 
         $admin->refresh();

@@ -58,8 +58,8 @@ class GeneralConfigurationController extends Controller
 
         $this->validate($request,  [
             'jargon' => 'required',
-            'from_days_after_deadline' => 'required|int',
-            'to_days_after_deadline' => 'required|int',
+//            'from_days_after_deadline' => 'required|int',
+//            'to_days_after_deadline' => 'required|int',
             'interest_percentage_per_day' => 'required',
 //            'installment_enabled' => 'required|bool',
 //            'auto_deduction_enabled' => 'required|bool',

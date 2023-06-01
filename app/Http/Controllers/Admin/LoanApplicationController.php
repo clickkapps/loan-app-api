@@ -21,7 +21,6 @@ class LoanApplicationController extends Controller
     public function fetchLoans(Request $request, $type): \Illuminate\Http\JsonResponse
     {
 
-        $loans = collect();
         if($type == "pending") {
 
             $this->authorize('access to pending loans');

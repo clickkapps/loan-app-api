@@ -11,7 +11,6 @@ class AgentAssigned extends Notification  implements ShouldQueue
 {
     use Queueable;
     private string $message;
-    private string $agentAppLink;
 
 
     /**
@@ -19,8 +18,8 @@ class AgentAssigned extends Notification  implements ShouldQueue
      */
     public function __construct()
     {
-        $this->agentAppLink = config('custom.agent_app_link');
-        $this->message = sprintf("You have been assigned as an agent. Kindly login to the agent mobile app with the link below.\n%s", $this->agentAppLink);
+
+        $this->message = "You have been assigned as an agent. Kindly login to the agent mobile app with the link below";
     }
 
     /**
@@ -39,11 +38,12 @@ class AgentAssigned extends Notification  implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         $name = $notifiable->{'name'};
+        $agentAppUrl = config('app.agent-url');
         return (new MailMessage)
                     ->subject("Agent role assigned to you")
                     ->greeting("Hello $name,")
                     ->line($this->message)
-                    ->action('Agent app link', $this->agentAppLink);
+                    ->action('Download agent app', $agentAppUrl);
     }
 
 }

@@ -7,18 +7,19 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class AdminCreated extends Notification implements ShouldQueue
+class NewAdminPasswordGenerated extends Notification implements  ShouldQueue
 {
     use Queueable;
     private string $message;
+    private string $tempPassword;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(public  string $tempPassword)
+    public function __construct(string $tempPassword)
     {
-        $appName = config('app.name');
-        $this->message = sprintf("You have been added as an admin on %s with limited privileges. Use the code below as your password. You can later change your password in the settings of the dashboard", $appName);
+        $this->message = "You requested change of password. Use the temporary password below to login and you'd be asked to set a new password";
+        $this->tempPassword = $tempPassword;
     }
 
     /**
@@ -37,13 +38,11 @@ class AdminCreated extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         $name = $notifiable->{'name'};
-        $appUrl = config('app.url');
-
         return (new MailMessage)
-                    ->subject("Account created")
-                    ->greeting("Hello $name,")
-                    ->line($this->message)
-                    ->line($this->tempPassword)
-                    ->action('Go to dashboard', $appUrl);
+            ->subject("Password reset")
+            ->greeting("Hello $name,")
+            ->line($this->message)
+            ->line($this->tempPassword);
     }
+
 }
