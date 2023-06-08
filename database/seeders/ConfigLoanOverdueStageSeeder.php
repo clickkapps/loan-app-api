@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\ConfigLoanOverdueStage;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Permission;
 
 class ConfigLoanOverdueStageSeeder extends Seeder
 {
@@ -30,6 +31,13 @@ class ConfigLoanOverdueStageSeeder extends Seeder
                     'key' => 'not_overdue',
                 ]
             );
+
+            // create a permission for it.
+            $permissionName =  "access to loan stage 0";
+            Permission::with([])->updateOrCreate([
+                'guard_name' => 'web',
+                'name' => $permissionName
+            ]);
         }
 
     }

@@ -17,3 +17,8 @@ function toCurrencyFormat($value, bool $showCurrency = true): string
     }
 
 }
+
+function toNDecimalPlaces($number, $dp = 2): string
+{
+    return number_format((float)$number, $dp, '.', '');
+}

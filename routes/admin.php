@@ -54,6 +54,7 @@ Route::middleware(['auth:sanctum', 'role:super admin|admin'])->group(function() 
 Route::middleware(['auth:sanctum','role:super admin|admin'])->group(function() {
 
     Route::get('/get-permissions', [\App\Http\Controllers\Admin\RolePermissionController::class, 'getAll']);
+    Route::get('/only-loan-stages-permissions', [\App\Http\Controllers\Admin\RolePermissionController::class, 'getLoanStagesPermissions']);
     Route::get('/get-user-permissions/{userId}', [\App\Http\Controllers\Admin\RolePermissionController::class, 'getUserPermissions']);
     Route::post('/assign-permission', [\App\Http\Controllers\Admin\RolePermissionController::class, 'assign']);
 
@@ -100,7 +101,6 @@ Route::middleware(['auth:sanctum', 'role:super admin|admin'])->group(function() 
     Route::get('/get-customers', [\App\Http\Controllers\Admin\CustomerController::class, 'getCustomers']);
     Route::get('/get-single-customer/{userId}', [\App\Http\Controllers\Admin\CustomerController::class, 'getCustomer']);
     Route::get('/get-single-customer-kyc/{userId}', [\App\Http\Controllers\Admin\CustomerController::class, 'getCustomerKYC']);
-
 
 });
 

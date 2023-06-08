@@ -31,8 +31,7 @@ class EvaluateMajorPermissions
         if(str_contains($permission, 'loan stage')) {
 
             $mp = $adminPermissions->firstWhere('major', 'manage loans applications');
-            $updatedSubs = collect($mp['subs'])->concat($permission);
-            $mp->update(['subs' => $updatedSubs]);
+            $mp['subs'][] = $permission;
 
             $permissionMap = $mp;
 

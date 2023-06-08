@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Agent extends Model
+class FollowUpWhatsappLog extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'user_id',
-        'balance',
+        'loan_application_id',
+        'agent_user_id',
+        'count'
     ];
 }

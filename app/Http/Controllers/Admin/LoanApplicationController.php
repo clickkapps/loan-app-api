@@ -33,6 +33,8 @@ class LoanApplicationController extends Controller
             $items = explode('-', $type);
             $stageName = $items[1];
 
+            $this->authorize("access to loan stage $stageName");
+
             // get loans whose latest stage is $stageName
 
 //            $stage = ConfigLoanOverdueStage::with([])->where('name', $stageName)->first();

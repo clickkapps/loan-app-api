@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Notifications\AdminCreated;
 use App\Notifications\AgentAssigned;
 use App\Notifications\AgentRevoked;
+use App\Traits\RolePermissionTrait;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -18,6 +19,9 @@ use Illuminate\Validation\ValidationException;
 
 class AdminController extends Controller
 {
+
+    use RolePermissionTrait;
+
     // add new administrator
     /**
      * @throws AuthorizationException
@@ -107,10 +111,16 @@ class AdminController extends Controller
         $this->authorize('assignAgents', Admin::class);
 
         $this->validate($request, [
-           'admin_id' => 'required'
+           'admin_id' => 'required',
+           'permission' => 'required'
         ]);
 
         $adminId = $request->get('admin_id');
+        $permission = $request->get('permission');
+
+        if(!str_contains($permission, 'access to loan stage')){
+            throw  new \Exception('Invalid permission. Agent should have access to one of the loan stages');
+        }
 
         $user = User::find($adminId);
         if (blank($user)) {
@@ -138,6 +148,16 @@ class AdminController extends Controller
                 ]
             );
         }
+
+        /// assign first permission to agent ---------
+        $myRequest = new Request();
+        $myRequest->setMethod('POST');
+        $myRequest->request->add([
+            'user_id' => $user->{'id'},
+            'permission' => $permission,
+            'status' => 'assign',
+        ]);
+        $this->assign($myRequest);
 
         $user->notify(new AgentAssigned());
 

@@ -7,6 +7,7 @@ return [
     'sms_api_token' => env('SMS_API_TOKEN', null),
     'sms_api_url' => env('SMS_API_URL', null),
     'currency' => env('CURRENCY', null),
+    'developer_email' => env('DEVELOPER_EMAIL', null),
 
     'payment' => [
         "callbackUrl" => env('PAYMENT_CALLBACK_URL', null),
@@ -47,7 +48,7 @@ return [
                 'major' => 'manage loans applications',
                 'subs' => [
                     'access to pending loans',
-                    'access to loan stage 0',
+//                    'access to loan stage 0',
                 ]
             ],
             [

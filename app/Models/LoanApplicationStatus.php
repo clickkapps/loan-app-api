@@ -14,4 +14,10 @@ class LoanApplicationStatus extends Model
         'user_id',
         'created_by'
     ];
+
+    public function loanApplication(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(LoanApplication::class);
+    }
+
 }

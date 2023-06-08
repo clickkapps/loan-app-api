@@ -16,7 +16,7 @@ class LoanApplicationAssignedToAgent implements ShouldBroadcast
     /**
      * Create a new event instance.
      */
-    public function __construct(LoanApplication $loanApplication)
+    public function __construct($loanApplication)
     {
         $this->loanApplication = $loanApplication;
     }

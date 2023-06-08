@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -50,4 +51,24 @@ class LoanApplication extends Model
     {
         return $this->belongsTo(User::class, 'assigned_to','id');
     }
+
+    public function assignedToUsers(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(User::class, LoanAssignedTo::class);
+    }
+
+    public function scopeLatestStatusName($query, $name)
+    {
+        return $query->whereHas('statuses', function ($query) use ($name) {
+            $query->where('status', $name)
+                ->where('created_at', function ($subQuery) {
+                    $subQuery->selectRaw('MAX(created_at)')
+                        ->from('loan_application_statuses')
+                        ->whereColumn('loan_application_id', 'loan_applications.id');
+                });
+        });
+
+    }
+
+
 }

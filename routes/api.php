@@ -20,9 +20,9 @@ Route::get('/test', function () {
 Route::match(['GET', 'POST'], '/payment-callback', [\App\Http\Controllers\PaymentController::class, 'paymentCallback']);
 
 
-Route::middleware('basic.auth')->get('push-event', function() {
-    \Illuminate\Support\Facades\Log::info('push-event called');
-    $loan = \App\Models\LoanApplication::with([])->first();
-    event(new \App\Events\LoanApplicationAssignedToAgent(loanApplication: $loan));
-    return "Event has been sent!";
-});
+//Route::middleware('basic.auth')->get('push-event', function() {
+//    \Illuminate\Support\Facades\Log::info('push-event called');
+//    $loan = \App\Models\LoanApplication::with([])->first();
+//    event(new \App\Events\LoanApplicationAssignedToAgent(loanApplication: $loan));
+//    return "Event has been sent!";
+//});

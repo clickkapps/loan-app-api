@@ -3,7 +3,10 @@
 namespace App\Traits;
 
 use App\Classes\ApiResponse;
+use App\Models\ConfigLoanOverdueStage;
+use App\Models\FollowUp;
 use App\Models\LoanApplication;
+use App\Models\LoanAssignedTo;
 use App\Models\Payment;
 use App\Models\User;
 use App\Notifications\PaymentInitiated;
@@ -51,17 +54,10 @@ trait LoanApplicationTrait
 
     }
 
-    public function getLoansWhoseLatestStatusIs(string $status): \Illuminate\Database\Eloquent\Collection|array
+    public function getLoansWhoseLatestStatusIs(string $status)
     {
-        return LoanApplication::with(['latestStatus'])->whereIn('id', function ($query){
-            $query->select(DB::raw('MAX(id)'))
-                ->from('loan_application_statuses')
-                ->groupBy('loan_application_id');
-        })
-            ->whereHas('statuses', function ($query) use ($status) {
-                $query->where('status', '=', $status);
-            })
-            ->get();
+
+        return LoanApplication::with(['latestStatus'])->latestStatusName($status)->get();
     }
 
     public function initiateLoanDisbursal(LoanApplication $loan, string $createdByName, User $createdByUser = null): void
@@ -156,6 +152,19 @@ trait LoanApplicationTrait
             'assigned_to' => $userId
         ]);
 
+        // can be assigned to
+        LoanAssignedTo::with([])->updateOrCreate([
+            'loan_application_id' => $loanId,
+            'user_id' => $userId,
+            'stage_id' => $loan->{'loan_overdue_stage_id'}
+        ], [] );
+
+        // notify all apps that this loan is no longer available
+        \Illuminate\Support\Facades\Log::info('LoanApplicationAssignedToAgent push-event called:');
+        \Illuminate\Support\Facades\Log::info(json_encode($loan));
+        event(new \App\Events\LoanApplicationAssignedToAgent(loanApplication: $loan));
+
+
         return response()->json(ApiResponse::successResponseWithData());
 
     }
@@ -199,4 +208,39 @@ trait LoanApplicationTrait
 
         return response()->json(ApiResponse::successResponseWithData($loans));
     }
+
+    public function getLoanStagesFromPermissions(Request $request): \Illuminate\Http\JsonResponse
+    {
+
+        $user = $request->user();
+        $permissionNames = $user->getPermissionNames();
+        $stages = collect($permissionNames)->filter(function ($item) {
+            return str_contains($item, 'access to loan stage');
+        })->map(function ($item){
+            return substr($item, -1);
+        });
+
+        $loanStages = ConfigLoanOverdueStage::with([])->whereIn('name', $stages)->get();
+        return response()->json(ApiResponse::successResponseWithData($loanStages));
+
+    }
+
+    public function getFollowUpRecords(Request $request, $loanId): \Illuminate\Http\JsonResponse
+    {
+
+        $query = FollowUp::with(['agent', 'loan'])
+            ->where(['loan_application_id' => $loanId]);
+
+        if(!blank($request->get('userId'))){
+            $query->where(['agent_user_id' => $request->get('userId')]);
+        }
+
+        $records = $query->get();
+
+        return response()->json(ApiResponse::successResponseWithData($records));
+
+    }
+
+
+
 }

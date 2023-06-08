@@ -62,4 +62,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Agent::class);
     }
+
+    public function assignedToLoans(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(LoanApplication::class, LoanAssignedTo::class);
+    }
 }
