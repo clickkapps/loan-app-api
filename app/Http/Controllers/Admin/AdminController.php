@@ -202,12 +202,13 @@ class AdminController extends Controller
     /**
      * @throws AuthorizationException
      */
-    public function getAgents($loanStageId): \Illuminate\Http\JsonResponse
+    public function getAgents(Request $request): \Illuminate\Http\JsonResponse
     {
         $this->authorize('viewAgents', Admin::class);
 
         $agents = User::role('agent')->with(['agent', 'roles','permissions'])->get();
-        if(!blank($loanStageId)) {
+        if(!blank($request->get('stageId'))) {
+            $loanStageId = $request->get('stageId');
             $loanStage = ConfigLoanOverdueStage::with([])->where(['id' => $loanStageId])->first();
             $agents = collect($agents)->filter(function($agent) use ($loanStage){
                 $stageName = $loanStage->{'name'};
