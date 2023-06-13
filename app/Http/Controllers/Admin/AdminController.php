@@ -6,6 +6,7 @@ use App\Classes\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\Agent;
+use App\Models\ConfigLoanOverdueStage;
 use App\Models\User;
 use App\Notifications\AdminCreated;
 use App\Notifications\AgentAssigned;
@@ -201,15 +202,21 @@ class AdminController extends Controller
     /**
      * @throws AuthorizationException
      */
-    public function getAgents(): \Illuminate\Http\JsonResponse
+    public function getAgents($loanStageId): \Illuminate\Http\JsonResponse
     {
         $this->authorize('viewAgents', Admin::class);
 
         $agents = User::role('agent')->with(['agent', 'roles','permissions'])->get();
+        if(!blank($loanStageId)) {
+            $loanStage = ConfigLoanOverdueStage::with([])->where(['id' => $loanStageId])->first();
+            $agents = collect($agents)->filter(function($agent) use ($loanStage){
+                $stageName = $loanStage->{'name'};
+                return $agent->hasPermissionTo("access to loan stage $stageName");
+            });
+        }
         // Adding permissions via a role
 
         // create an agent account for user
-
         return response()->json(ApiResponse::successResponseWithData($agents));
 
     }
