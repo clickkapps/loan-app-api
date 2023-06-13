@@ -207,11 +207,11 @@ class AdminController extends Controller
         $this->authorize('viewAgents', Admin::class);
 
         $agents = User::role('agent')->with(['agent', 'roles','permissions'])->get();
-        if(!blank($request->get('stageId'))) {
-            $loanStageId = $request->get('stageId');
-            $loanStage = ConfigLoanOverdueStage::with([])->where(['id' => $loanStageId])->first();
-            $agents = collect($agents)->filter(function($agent) use ($loanStage){
-                $stageName = $loanStage->{'name'};
+        if(!blank($request->get('stage'))) {
+            $loanStage = $request->get('stage');
+            $items = explode('-', $loanStage);
+            $stageName = $items[1];
+            $agents = collect($agents)->filter(function($agent) use ($stageName){
                 return $agent->hasPermissionTo("access to loan stage $stageName");
             });
         }
