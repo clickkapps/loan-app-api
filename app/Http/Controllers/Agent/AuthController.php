@@ -55,8 +55,10 @@ class AuthController extends Controller
 
 
         // use the db to count this after repayment feature is done
+        $retrieved = 0;
+        $rate = 0;
+
         if($countAssignedTo > 0) {
-            $retrieved = 0;
             $rate = ($retrieved / $countAssignedTo) * 100;
         }
 
