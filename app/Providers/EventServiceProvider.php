@@ -7,6 +7,7 @@ use App\Events\PaymentStatusReceived;
 use App\Events\PermissionAssigned;
 use App\Listeners\EvaluateMajorPermissions;
 use App\Listeners\ProcessLoanApproval;
+use App\Listeners\ProcessLoanDeferment;
 use App\Listeners\ProcessLoanRepayment;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -30,6 +31,7 @@ class EventServiceProvider extends ServiceProvider
         PaymentCallbackReceived::class => [
             ProcessLoanApproval::class,
             ProcessLoanRepayment::class,
+            ProcessLoanDeferment::class
             // process deferment
             // process loan repayment
             // etc

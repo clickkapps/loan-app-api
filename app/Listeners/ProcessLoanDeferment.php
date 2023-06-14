@@ -7,11 +7,12 @@ use App\Models\ConfigLoanOverdueStage;
 use App\Models\Configuration;
 use App\Models\LoanApplication;
 use App\Models\LoanApplicationStatus;
+use App\Notifications\DefermentReceived;
 use App\Notifications\RepaymentReceived;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
-class ProcessLoanRepayment
+class ProcessLoanDeferment
 {
     /**
      * Create the event listener.
@@ -27,7 +28,7 @@ class ProcessLoanRepayment
     public function handle(PaymentCallbackReceived $event): void
     {
         $payment = $event->payment;
-        if($payment->{'description'} != 'Loan repayment') {
+        if($payment->{'description'} != 'Loan deferment') {
             return;
         }
 
@@ -45,11 +46,9 @@ class ProcessLoanRepayment
             $amountPaid = $payment->{'amount'};
             $amountRemaining = $loan->{'amount_to_pay'} - $amountPaid;
 
-            $isPartPayment = $amountRemaining > 0;
-
             LoanApplicationStatus::with([])->create([
                 'loan_application_id' => $payment->{'loan_application_id'},
-                'status' => $isPartPayment ? 'part-repayment' : 'full-repayment',
+                'status' => 'deferred',
                 'user_id' => $payment->{'created_by_user_id'},
                 'created_by' => $payment->{'created_by_name'}
             ]);
@@ -58,15 +57,14 @@ class ProcessLoanRepayment
                 'loan_overdue_stage_id' => $loanStageAt0->{'id'},
                 'amount_to_pay' => $amountRemaining,
                 'amount_disbursed' => $loan->{'amount_requested'},
-                'closed' => !$isPartPayment // close this loan if its full-payment
+                'deadline'  => now()->addDays($durationLimit)
             ]);
 
-            //
+            // credit tha agent assigned to this loan
 
-            $user->notify(new RepaymentReceived(paymentType: $isPartPayment ? 'part-repayment' : 'full-repayment', amount: $amountPaid));
+            $user->notify(new DefermentReceived(amount: $amountPaid));
         }
 
         // over here,  we don't really care if the payment failed
-
     }
 }

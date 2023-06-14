@@ -213,7 +213,7 @@ class AdminController extends Controller
             $stageName = $items[1];
             $agents = collect($agents)->filter(function($agent) use ($stageName){
                 return $agent->hasPermissionTo("access to loan stage $stageName");
-            });
+            })->values();
         }
         // Adding permissions via a role
 

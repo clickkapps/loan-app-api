@@ -11,6 +11,7 @@ use App\Models\LoanApplication;
 use App\Models\LoanApplicationStatus;
 use App\Models\Payment;
 use App\Models\User;
+use App\Notifications\DefermentInitiated;
 use App\Notifications\PaymentInitiated;
 use App\Notifications\RepaymentInitiated;
 use App\Traits\LoanApplicationTrait;
@@ -203,7 +204,8 @@ class LoanApplicationController extends Controller
      * @throws ValidationException
      * @throws \Exception
      */
-    public function initiateLoanRepayment(Request $request) {
+    public function initiateLoanRepayment(Request $request): \Illuminate\Http\JsonResponse
+    {
 
         $this->validate($request, [
             'loan_id' => 'required',
@@ -253,33 +255,124 @@ class LoanApplicationController extends Controller
             'loan_application_id' => $loanId
         ])->first();
 
-        if(blank($payment)) {
-            // record the transaction
-            $payment = Payment::with([])->create([
+        if(!blank($payment)) {
+            throw new \Exception("Duplicate repayment request detected on the given loan");
+        }
 
-                'user_id' => $user->id,
-                'loan_application_id' => $loanId,
-                'client_ref' => $clientRef,
+        // record the transaction
+        $payment = Payment::with([])->create([
+
+            'user_id' => $user->id,
+            'loan_application_id' => $loanId,
+            'client_ref' => $clientRef,
 //            'server_ref',
-                'amount' => $loan->{'amount_to_pay'},
-                'account_number' => $accountNumber,
-                'account_name' => $accountName,
-                'network_type' => $networkType,
-                'title' => config('app.name'),
-                'description' => $description,
+            'amount' => $loan->{'amount_to_pay'},
+            'account_number' => $accountNumber,
+            'account_name' => $accountName,
+            'network_type' => $networkType,
+            'title' => config('app.name'),
+            'description' => $description,
 //            'response_message',
 //            'response_code',
-                'status' => 'opened',
-                'created_by_name' => 'user',
-                'created_by_user_id' => $user->id,
+            'status' => 'opened',
+            'created_by_name' => 'user',
+            'created_by_user_id' => $user->id,
 
-            ]);
-
-        }
+        ]);
 
         // submit to payment gateway
         $user = User::find($user->id);
         $user->notify(new RepaymentInitiated(payment: $payment));
+
+        return response()->json(ApiResponse::successResponseWithMessage());
+
+    }
+
+    /**
+     * @throws ValidationException
+     * @throws \Exception
+     */
+    public function initiateLoanDeferment(Request $request): \Illuminate\Http\JsonResponse
+    {
+
+        $this->validate($request, [
+            'loan_id' => 'required',
+            'account_number' => 'required',
+            'account_name' => 'required',
+            'network_type' => 'required',
+        ]);
+
+        $user = $request->user();
+
+        $loanId = $request->get('loan_id');
+        $accountNumber = $request->get('account_number');
+        $accountName = $request->get('account_name');
+        $networkType = $request->get('network_type');
+
+
+        $loan = LoanApplication::with([])->find($loanId);
+        if(blank($loan)){
+            Log::info('initiateLoanDeferment: invalid loanId : request: ' . json_encode($request->all()));
+            throw  new \Exception('Invalid request. contact technical team');
+        }
+
+        /// cache repayment info for next payment
+        $customer = Customer::with([])->where('user_id', '=', $user->id)->first();
+        $customer->update([
+            'default_momo_account_number' => $accountNumber,
+            'default_momo_account_name' => $accountName,
+            'default_momo_network' => $networkType
+        ]);
+
+        /// initiate payment
+        // unique reference number ------
+        $date = now()->toDateTimeString();
+        $date = str_replace('-','', $date);
+        $date = str_replace(':','', $date);
+        $date = str_replace(' ','', $date);
+
+        $clientRef = $loanId . $date . generateRandomNumber();
+        Log::info("client ref: $clientRef");
+        //---------------------------------------------------------
+
+        $description = 'Loan deferment';
+
+        // if record already exists for the loan, you don't have to create the record again
+        $payment = Payment::with([])->where([
+            'description' => $description,
+            'loan_application_id' => $loanId,
+            'status' => 'opened'
+        ])->first();
+
+        if(!blank($payment)) {
+            throw new \Exception("Duplicate deferment request detected on the given loan");
+        }
+
+        // record the transaction
+        $payment = Payment::with([])->create([
+
+            'user_id' => $user->id,
+            'loan_application_id' => $loanId,
+            'client_ref' => $clientRef,
+//            'server_ref',
+            'amount' => $loan->{'amount_to_pay'},
+            'account_number' => $accountNumber,
+            'account_name' => $accountName,
+            'network_type' => $networkType,
+            'title' => config('app.name'),
+            'description' => $description,
+//            'response_message',
+//            'response_code',
+            'status' => 'opened',
+            'created_by_name' => 'user',
+            'created_by_user_id' => $user->id,
+
+        ]);
+
+        // submit to payment gateway
+        $user = User::find($user->id);
+        $user->notify(new DefermentInitiated(payment: $payment));
+
 
         return response()->json(ApiResponse::successResponseWithMessage());
 

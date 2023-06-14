@@ -40,7 +40,7 @@ class PaymentController extends Controller
             Log::info('new status: ----------------');
             Log::info(json_encode($newStatus));
 
-            return;
+            return response()->json(['message' => 'received'], 200);
         }
 
         (clone $query)->update([
