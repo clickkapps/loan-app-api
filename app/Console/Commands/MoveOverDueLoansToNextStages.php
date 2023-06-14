@@ -66,7 +66,8 @@ class MoveOverDueLoansToNextStages extends Command
 
                     // moved to stage $stage
                     $loan->update([
-                        'loan_overdue_stage_id' => $stage->{'id'}
+                        'loan_overdue_stage_id' => $stage->{'id'},
+                        'assigned_to' => null // once the loan is moved to the next stage assigned to is null
                     ]);
                     LoanApplicationStatus::with([])->create([
                         'loan_application_id' => $loan->{'id'},
