@@ -62,7 +62,6 @@ class AuthController extends Controller
             $rate = ($retrieved / $countAssignedTo) * 100;
         }
 
-
         $lastFollowUp = FollowUp::with([])->where([
             'agent_user_id' => $user->id
         ])->orderByDesc('created_at')->first();

@@ -17,4 +17,5 @@ class CallLog extends Model
         'duration',
         'call_type'
     ];
+
 }

@@ -262,4 +262,26 @@ class AdminController extends Controller
         return response()->json(ApiResponse::successResponseWithData($agentInfo));
 
     }
+
+    /**
+     * @throws ValidationException
+     */
+    public  function enableDisableAgentCommission(Request $request, $userId){
+
+        $this->validate($request, [
+            'status' => 'required|bool'
+        ]);
+
+        $user = User::with([])->find($userId);
+        if(blank($user)){
+            throw new \Exception('User not found');
+        }
+
+        if(!$user->hasRole('agent')) {
+            throw  new \Exception('User has no agent role');
+        }
+
+
+
+    }
 }

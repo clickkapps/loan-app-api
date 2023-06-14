@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\Classes\ApiResponse;
+use App\Models\CallLog;
 use App\Models\ConfigLoanOverdueStage;
 use App\Models\FollowUp;
 use App\Models\LoanApplication;
@@ -238,6 +239,14 @@ trait LoanApplicationTrait
         $records = $query->get();
 
         return response()->json(ApiResponse::successResponseWithData($records));
+
+    }
+
+    public function getCustomerCallLogs($userId): \Illuminate\Http\JsonResponse
+    {
+
+        $callLogs = CallLog::with([])->where(['user_id' => $userId])->orderByDesc('duration')->get();
+        return response()->json(ApiResponse::successResponseWithData($callLogs));
 
     }
 

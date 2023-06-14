@@ -11,5 +11,6 @@ class Agent extends Model
     protected $fillable = [
         'user_id',
         'balance',
+        'show_balance',
     ];
 }

@@ -269,13 +269,8 @@ class LoanApplicationController extends Controller
 
     }
 
-    public function getCustomerCallLogs($userId): \Illuminate\Http\JsonResponse
-    {
 
-        $callLogs = CallLog::with([])->where(['user_id' => $userId])->get();
-        return response()->json(ApiResponse::successResponseWithData($callLogs));
 
-    }
 
 
 
