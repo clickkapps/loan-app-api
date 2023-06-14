@@ -74,6 +74,7 @@ Route::middleware(['auth:sanctum', 'role:customer'])->group(function() {
     Route::get('/initiate-loan-repayment', [\App\Http\Controllers\Customer\LoanApplicationController::class, 'initiateLoanRepayment']);
     Route::get('/initiate-loan-deferment', [\App\Http\Controllers\Customer\LoanApplicationController::class, 'initiateLoanDeferment']);
 
+
 });
 
 

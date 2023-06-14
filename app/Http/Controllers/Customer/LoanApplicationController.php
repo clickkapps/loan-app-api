@@ -10,6 +10,9 @@ use App\Models\Customer;
 use App\Models\LoanApplication;
 use App\Models\LoanApplicationStatus;
 use App\Models\Payment;
+use App\Models\User;
+use App\Notifications\PaymentInitiated;
+use App\Notifications\RepaymentInitiated;
 use App\Traits\LoanApplicationTrait;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -216,7 +219,7 @@ class LoanApplicationController extends Controller
         $accountName = $request->get('account_name');
         $networkType = $request->get('network_type');
 
-        // user cannot apply for another loan if a loan is already running
+
         $loan = LoanApplication::with([])->find($loanId);
         if(blank($loan)){
             Log::info('initiateLoanRepayment: invalid loanId : request: ' . json_encode($request->all()));
@@ -244,28 +247,41 @@ class LoanApplicationController extends Controller
 
         $description = 'Loan repayment';
 
-        // record the transaction
-        $payment = Payment::with([])->create([
-
-            'user_id' => $user->id,
-            'loan_application_id' => $loanId,
-            'client_ref' => $clientRef,
-//            'server_ref',
-            'amount' => $loan->{'amount_to_pay'},
-            'account_number' => $accountNumber,
-            'account_name' => $accountName,
-            'network_type' => $networkType,
-            'title' => config('app.name'),
+        // if record already exists for the loan, you don't have to create the record again
+        $payment = Payment::with([])->where([
             'description' => $description,
+            'loan_application_id' => $loanId
+        ])->first();
+
+        if(blank($payment)) {
+            // record the transaction
+            $payment = Payment::with([])->create([
+
+                'user_id' => $user->id,
+                'loan_application_id' => $loanId,
+                'client_ref' => $clientRef,
+//            'server_ref',
+                'amount' => $loan->{'amount_to_pay'},
+                'account_number' => $accountNumber,
+                'account_name' => $accountName,
+                'network_type' => $networkType,
+                'title' => config('app.name'),
+                'description' => $description,
 //            'response_message',
 //            'response_code',
-            'status' => 'opened',
-            'created_by_name' => 'user',
-            'created_by_user_id' => $user->id,
+                'status' => 'opened',
+                'created_by_name' => 'user',
+                'created_by_user_id' => $user->id,
 
-        ]);
+            ]);
+
+        }
 
         // submit to payment gateway
+        $user = User::find($user->id);
+        $user->notify(new RepaymentInitiated(payment: $payment));
+
+        return response()->json(ApiResponse::successResponseWithMessage());
 
     }
 
