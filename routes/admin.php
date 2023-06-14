@@ -41,6 +41,9 @@ Route::middleware(['auth:sanctum', 'role:super admin|admin'])->group(function() 
     Route::get('/get-agent-assigned-loans', [\App\Http\Controllers\Admin\AdminController::class, 'getAgentAssignedLoans']);
     Route::get('/get-agent-info/{userId}', [\App\Http\Controllers\Admin\AdminController::class, 'getAgentInfo']);
 
+    // what
+    Route::get('/enable-commission/{userId}', [\App\Http\Controllers\Admin\AdminController::class, 'enableAgentCommission']);
+
 });
 
 
@@ -120,5 +123,6 @@ Route::middleware(['auth:sanctum', 'role:super admin|admin'])->group(function() 
     Route::post('/assign-loan-to-agent', [\App\Http\Controllers\Admin\LoanApplicationController::class, 'assignLoanToAgent']);
     Route::post('/un-assign-loan-to-agent', [\App\Http\Controllers\Admin\LoanApplicationController::class, 'unAssignLoanToAgent']);
     Route::get('/get-assigned-loans/{userId}', [\App\Http\Controllers\Admin\LoanApplicationController::class, 'getAssignedLoans']);
+    Route::get('/get-follow-up-records/{loanId}', [\App\Http\Controllers\Admin\LoanApplicationController::class, 'getFollowUpRecords']);
 
 });

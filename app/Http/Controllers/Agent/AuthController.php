@@ -53,9 +53,13 @@ class AuthController extends Controller
             ->where('closed','=', false)
             ->where('assigned_to', $user->id)->count();
 
+
         // use the db to count this after repayment feature is done
-        $retrieved = 0;
-        $rate = ($retrieved / $countAssignedTo) * 100;
+        if($countAssignedTo > 0) {
+            $retrieved = 0;
+            $rate = ($retrieved / $countAssignedTo) * 100;
+        }
+
 
         $lastFollowUp = FollowUp::with([])->where([
             'agent_user_id' => $user->id
