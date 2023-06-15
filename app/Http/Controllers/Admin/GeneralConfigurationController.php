@@ -174,13 +174,27 @@ class GeneralConfigurationController extends Controller
     /**
      * @throws AuthorizationException
      */
-    public function getCommissionConfigurations(Request $request): \Illuminate\Http\JsonResponse
+    public function getCommissionConfigurations($stageName, Request $request): \Illuminate\Http\JsonResponse
     {
         $this->authorize('configureLoanApplicationParameters', Configuration::class);
 
         // get configurations
 
-        $config = CommissionConfig::with([])->first();
+        $config = CommissionConfig::with([])->where('stage_name', '=', $stageName)->first();
+        if(blank($config)){
+            $config = CommissionConfig::with([])->create(
+                [
+                    'stage_name' => $stageName,
+                    'percentage_on_repayment_weekdays' => 0.0,
+                    'percentage_on_repayment_weekends' => 0.0,
+                    'percentage_on_deferment_weekdays' => 0.0,
+                    'percentage_on_deferment_weekends' => 0.0,
+                    'percentage_on_deferment_holidays' => 0.0
+                ]
+
+            );
+        }
+        $config->refresh();
         return response()->json(ApiResponse::successResponseWithData($config));
 
     }

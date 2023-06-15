@@ -92,7 +92,7 @@ Route::middleware(['auth:sanctum', 'role:super admin|admin'])->group(function() 
 
 
     // commission configs
-    Route::get('/get-commission-configurations', [\App\Http\Controllers\Admin\GeneralConfigurationController::class, 'getCommissionConfigurations']);
+    Route::get('/get-commission-configurations/{stageName}', [\App\Http\Controllers\Admin\GeneralConfigurationController::class, 'getCommissionConfigurations']);
     Route::post('/update-commission-configurations', [\App\Http\Controllers\Admin\GeneralConfigurationController::class, 'updateCommissionConfigurations']);
 
 });
