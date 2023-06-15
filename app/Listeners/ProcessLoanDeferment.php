@@ -10,6 +10,7 @@ use App\Models\LoanApplicationStatus;
 use App\Notifications\DefermentReceived;
 use App\Notifications\RepaymentReceived;
 use App\Traits\CommissionTrait;
+use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
@@ -46,7 +47,7 @@ class ProcessLoanDeferment
             $durationLimit = $generalConfig->{'loan_application_duration_limit'};
 
             $amountPaid = $payment->{'amount'};
-            $amountRemaining = $loan->{'amount_to_pay'} - $amountPaid;
+//            $amountRemaining = $loan->{'amount_to_pay'} - $amountPaid;
 
             LoanApplicationStatus::with([])->create([
                 'loan_application_id' => $payment->{'loan_application_id'},
@@ -55,11 +56,16 @@ class ProcessLoanDeferment
                 'created_by' => $payment->{'created_by_name'}
             ]);
 
+            $startD = Carbon::parse('deadline');
+            if($startD->lessThan(Carbon::today())){
+                $startD = Carbon::now();
+            }
+
             $loan->update([
                 'loan_overdue_stage_id' => $loanStageAt0->{'id'},
-                'amount_to_pay' => $amountRemaining,
+//                'amount_to_pay' => $amountRemaining,
                 'amount_disbursed' => $loan->{'amount_requested'},
-                'deadline'  => now()->addDays($durationLimit)
+                'deadline'  => $startD->addDays($durationLimit)
             ]);
 
             // credit tha agent assigned to this loan
