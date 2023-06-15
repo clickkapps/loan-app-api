@@ -14,6 +14,7 @@ class CommissionConfig extends Model
         'percentage_on_deferment_weekdays',
         'percentage_on_deferment_weekends',
         'percentage_on_deferment_holidays',
+        'percentage_on_repayment_holidays',
         'stage_name'
     ];
 }
