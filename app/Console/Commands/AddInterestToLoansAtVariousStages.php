@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\ConfigLoanOverdueStage;
+use App\Models\Configuration;
 use App\Models\LoanApplication;
 use Illuminate\Console\Command;
 
@@ -27,6 +28,14 @@ class AddInterestToLoansAtVariousStages extends Command
      */
     public function handle()
     {
+
+        // check if interests have paused ....
+        $config = Configuration::with([])->first();
+        // if all interests pause, then we don't have to accumulate interest
+        if($config->{'pause_all_interests'}){
+            return;
+        }
+
         $loanStages = ConfigLoanOverdueStage::with([])->where('name', '>', '0')->get();
         foreach ($loanStages as $stage) {
 
