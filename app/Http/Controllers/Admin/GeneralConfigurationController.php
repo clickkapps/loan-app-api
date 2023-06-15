@@ -170,6 +170,21 @@ class GeneralConfigurationController extends Controller
 
     }
 
+
+    /**
+     * @throws AuthorizationException
+     */
+    public function getCommissionConfigurations(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $this->authorize('configureLoanApplicationParameters', Configuration::class);
+
+        // get configurations
+
+        $config = CommissionConfig::with([])->first();
+        return response()->json(ApiResponse::successResponseWithData($config));
+
+    }
+
     /**
      * @throws AuthorizationException
      * @throws \Exception
@@ -180,7 +195,7 @@ class GeneralConfigurationController extends Controller
 
         $config = CommissionConfig::with([])->first();
         if(blank($config)) {
-            throw new \Exception("Invalid config id: $id");
+            throw new \Exception("Invalid config id");
         }
         // get configurations
         $config->update($request->all());
