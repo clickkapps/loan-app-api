@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('configurations', function (Blueprint $table) {
-            $table->boolean('pause_all_interests');
-            $table->boolean('today_is_holiday');
-            $table->boolean('show_customer_call_logs');
+            $table->boolean('pause_all_interests')->default(false);
+            $table->boolean('today_is_holiday')->default(false);
+            $table->boolean('show_customer_call_logs')->default(false);
         });
     }
 
