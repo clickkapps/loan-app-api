@@ -222,7 +222,7 @@ trait LoanApplicationTrait
             return substr($item, -1);
         });
 
-        $loanStages = ConfigLoanOverdueStage::with(['commissions'])->whereIn('name', $stages)->get();
+        $loanStages = ConfigLoanOverdueStage::with(['commission'])->whereIn('name', $stages)->get();
         return response()->json(ApiResponse::successResponseWithData($loanStages));
 
     }
