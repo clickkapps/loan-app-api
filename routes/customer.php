@@ -71,8 +71,8 @@ Route::middleware(['auth:sanctum', 'role:customer'])->group(function() {
     Route::get('/fetch-loan-details/{loanId}', [\App\Http\Controllers\Customer\LoanApplicationController::class, 'getLoanDetails']);
     Route::get('/fetch-loan-history', [\App\Http\Controllers\Customer\LoanApplicationController::class, 'fetchLoanApplicationHistory']);
 
-    Route::get('/initiate-loan-repayment', [\App\Http\Controllers\Customer\LoanApplicationController::class, 'initiateLoanRepayment']);
-    Route::get('/initiate-loan-deferment', [\App\Http\Controllers\Customer\LoanApplicationController::class, 'initiateLoanDeferment']);
+    Route::post('/initiate-loan-repayment', [\App\Http\Controllers\Customer\LoanApplicationController::class, 'initiateLoanRepayment']);
+    Route::post('/initiate-loan-deferment', [\App\Http\Controllers\Customer\LoanApplicationController::class, 'initiateLoanDeferment']);
 
 
 });
