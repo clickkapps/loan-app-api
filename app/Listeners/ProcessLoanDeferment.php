@@ -68,7 +68,6 @@ class ProcessLoanDeferment
 //                'amount_to_pay' => $amountRemaining,
                 'amount_disbursed' => $loan->{'amount_requested'},
                 'deadline'  => $startD->addDays($durationLimit),
-                'assigned_to' => null
             ]);
 
 
