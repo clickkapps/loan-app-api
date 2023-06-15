@@ -25,7 +25,8 @@ class LoanApplication extends Model
         'completed',
         'locked',
         'assigned_to',
-        'wave_interest_by_percentage'
+        'wave_interest_by_percentage',
+        'closed'
     ];
 
     public function statuses(): \Illuminate\Database\Eloquent\Relations\HasMany
