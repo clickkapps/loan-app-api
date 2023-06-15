@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Agent;
 
 use App\Classes\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Models\CommissionConfig;
+use App\Models\Configuration;
 use App\Models\FollowUp;
 use App\Models\LoanApplication;
 use App\Models\User;
@@ -61,6 +63,8 @@ class AuthController extends Controller
         if($countAssignedTo > 0) {
             $rate = ($retrieved / $countAssignedTo) * 100;
         }
+
+        $generalConfig = Configuration::with([])->first();
 
         $lastFollowUp = FollowUp::with([])->where([
             'agent_user_id' => $user->id
