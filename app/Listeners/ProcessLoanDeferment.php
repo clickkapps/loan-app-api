@@ -9,11 +9,13 @@ use App\Models\LoanApplication;
 use App\Models\LoanApplicationStatus;
 use App\Notifications\DefermentReceived;
 use App\Notifications\RepaymentReceived;
+use App\Traits\CommissionTrait;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
 class ProcessLoanDeferment
 {
+    use CommissionTrait;
     /**
      * Create the event listener.
      */
@@ -61,6 +63,9 @@ class ProcessLoanDeferment
             ]);
 
             // credit tha agent assigned to this loan
+            if($loan->{'assigned_to'}) {
+                $this->creditAgentBaseOnLoanDeferment(userId: $loan->{'assigned_to'}, amountPaid: $amountPaid, loan: $loan);
+            }
 
             $user->notify(new DefermentReceived(amount: $amountPaid));
         }
