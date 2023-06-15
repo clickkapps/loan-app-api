@@ -61,16 +61,20 @@ class ProcessLoanDeferment
                 $startD = Carbon::now();
             }
 
+            $assignedTo = $loan->{'assigned_to'};
+
             $loan->update([
                 'loan_overdue_stage_id' => $loanStageAt0->{'id'},
 //                'amount_to_pay' => $amountRemaining,
                 'amount_disbursed' => $loan->{'amount_requested'},
-                'deadline'  => $startD->addDays($durationLimit)
+                'deadline'  => $startD->addDays($durationLimit),
+                'assigned_to' => null
             ]);
 
+
             // credit tha agent assigned to this loan
-            if($loan->{'assigned_to'}) {
-                $this->creditAgentBaseOnLoanDeferment(userId: $loan->{'assigned_to'}, amountPaid: $amountPaid, loan: $loan);
+            if($assignedTo) {
+                $this->creditAgentBaseOnLoanDeferment(userId: $assignedTo, amountPaid: $amountPaid, loan: $loan);
             }
 
             $user->notify(new DefermentReceived(amount: $amountPaid));
