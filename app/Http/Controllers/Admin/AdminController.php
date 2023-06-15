@@ -222,6 +222,16 @@ class AdminController extends Controller
 
     }
 
+    public function getAgentsCommissionDisplayStatus(): \Illuminate\Http\JsonResponse
+    {
+        $atLeastOneAgentShowBalanceIsFalse = Agent::with([])->where('show_balance', '=', false)->exists();
+        return response()->json(ApiResponse::successResponseWithData(
+           [
+               'all_commissions_enabled' => !$atLeastOneAgentShowBalanceIsFalse
+           ]
+        ));
+    }
+
     /**
      * @throws \Exception
      */
