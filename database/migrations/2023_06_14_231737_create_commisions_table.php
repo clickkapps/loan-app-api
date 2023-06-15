@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('commissions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('loan_id')->constrained()->onDelete('cascade');
-
+            $table->foreignId('user_id');
+            $table->foreignId('loan_id');
+            $table->string('amount')->nullable()->default(null);
+            $table->string('action')->nullable()->default(null)->comment('debit, credit');
+            $table->foreignId('creator_id');
             $table->timestamps();
         });
     }

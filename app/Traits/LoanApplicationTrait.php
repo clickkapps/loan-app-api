@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\Classes\ApiResponse;
+use App\Models\Agent;
 use App\Models\CallLog;
 use App\Models\ConfigLoanOverdueStage;
 use App\Models\FollowUp;
@@ -247,6 +248,27 @@ trait LoanApplicationTrait
 
         $callLogs = CallLog::with([])->where(['user_id' => $userId])->orderByDesc('duration')->get();
         return response()->json(ApiResponse::successResponseWithData($callLogs));
+
+    }
+
+    /**
+     * @throws ValidationException
+     */
+    public function showCommissions(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $this->validate($request, [
+           'show_balance' => 'required|bool'
+        ]);
+
+        $query = Agent::with([]);
+        if(!blank($request->get('user_id'))){
+            $userId = $request->get('user_id');
+            $query->where(['user_id' => $userId]);
+        }
+        $query->update([
+            'show_balance' => $request->get('show_balance')
+        ]);
+        return response()->json(ApiResponse::successResponseWithMessage());
 
     }
 

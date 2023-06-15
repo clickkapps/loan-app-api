@@ -24,7 +24,8 @@ class LoanApplication extends Model
         'loan_overdue_stage_id',
         'completed',
         'locked',
-        'assigned_to'
+        'assigned_to',
+        'wave_interest_by_percentage'
     ];
 
     public function statuses(): \Illuminate\Database\Eloquent\Relations\HasMany

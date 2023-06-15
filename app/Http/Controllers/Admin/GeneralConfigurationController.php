@@ -30,6 +30,7 @@ class GeneralConfigurationController extends Controller
 
     }
 
+
     /**
      * @throws AuthorizationException
      * @throws \Exception

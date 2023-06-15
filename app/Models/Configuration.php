@@ -14,6 +14,9 @@ class Configuration extends Model
         'loan_application_interest_percentage',
         'deferment_percentage',
         'processing_fee_percentage',
-        'auto_loan_approval'
+        'auto_loan_approval',
+        'pause_all_interests',
+        'today_is_holiday',
+        'show_customer_call_logs'
     ];
 }

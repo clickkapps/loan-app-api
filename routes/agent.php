@@ -57,8 +57,7 @@ Route::middleware(['auth:sanctum', 'role:agent'])->group(function() {
     Route::post('/add-follow-up-call-log', [\App\Http\Controllers\Agent\LoanApplicationController::class, 'addFollowUpCallLog']);
     Route::post('/add-follow-up-whatsapp-log', [\App\Http\Controllers\Agent\LoanApplicationController::class, 'addFollowUpWhatsappLog']);
     Route::get('/get-call-logs/{userId}', [\App\Http\Controllers\Agent\LoanApplicationController::class, 'getCustomerCallLogs']);
-
-
+    Route::post('/show-commissions/{userId?}', [\App\Http\Controllers\Agent\LoanApplicationController::class, 'showCommissions']);
 
 
 
