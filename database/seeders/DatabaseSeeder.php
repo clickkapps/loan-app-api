@@ -19,5 +19,6 @@ class DatabaseSeeder extends Seeder
         $this->call(ConfigurationTableSeeder::class);
         $this->call(CustomerTableSeeder::class);
         $this->call(ConfigLoanOverdueStageSeeder::class);
+        $this->call(CommissionConfigSeeder::class);
     }
 }

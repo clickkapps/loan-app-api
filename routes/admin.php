@@ -89,6 +89,10 @@ Route::middleware(['auth:sanctum', 'role:super admin|admin'])->group(function() 
     Route::post('/add-loan-stages-configurations', [\App\Http\Controllers\Admin\GeneralConfigurationController::class, 'addLoanStagesConfigurations']);
     Route::delete('/delete-loan-stages-configurations/{id}', [\App\Http\Controllers\Admin\GeneralConfigurationController::class, 'removeLoanStagesConfiguration']);
 
+
+    // commission configs
+    Route::delete('/delete-loan-stages-configurations/{id}', [\App\Http\Controllers\Admin\GeneralConfigurationController::class, 'updateConfigurations']);
+
 });
 
 

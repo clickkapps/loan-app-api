@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Classes\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Models\CommissionConfig;
 use App\Models\ConfigLoanOverdueStage;
 use App\Models\Configuration;
 use App\Models\User;
@@ -160,6 +161,24 @@ class GeneralConfigurationController extends Controller
         $this->authorize('configureLoanApplicationParameters', Configuration::class);
 
         $config = Configuration::with([])->find($id);
+        if(blank($config)) {
+            throw new \Exception("Invalid config id: $id");
+        }
+        // get configurations
+        $config->update($request->all());
+        return response()->json(ApiResponse::successResponseWithMessage());
+
+    }
+
+    /**
+     * @throws AuthorizationException
+     * @throws \Exception
+     */
+    public function updateCommissionConfigurations(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $this->authorize('configureLoanApplicationParameters', Configuration::class);
+
+        $config = CommissionConfig::with([])->first();
         if(blank($config)) {
             throw new \Exception("Invalid config id: $id");
         }
