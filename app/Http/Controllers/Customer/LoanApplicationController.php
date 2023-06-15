@@ -348,6 +348,10 @@ class LoanApplicationController extends Controller
             throw new \Exception("Duplicate deferment request detected on the given loan");
         }
 
+        $config = Configuration::with([])->first();
+        $defermentPercentage = $config->{'deferment_percentage'};
+        $defermentAmount = ($defermentPercentage / 100) * $loan->{'amount_to_pay'};
+
         // record the transaction
         $payment = Payment::with([])->create([
 
@@ -355,7 +359,7 @@ class LoanApplicationController extends Controller
             'loan_application_id' => $loanId,
             'client_ref' => $clientRef,
 //            'server_ref',
-            'amount' => $loan->{'amount_to_pay'},
+            'amount' => $defermentAmount,
             'account_number' => $accountNumber,
             'account_name' => $accountName,
             'network_type' => $networkType,
