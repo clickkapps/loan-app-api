@@ -251,26 +251,7 @@ trait LoanApplicationTrait
 
     }
 
-    /**
-     * @throws ValidationException
-     */
-    public function showCommissions(Request $request): \Illuminate\Http\JsonResponse
-    {
-        $this->validate($request, [
-           'show_balance' => 'required|bool'
-        ]);
 
-        $query = Agent::with([]);
-        if(!blank($request->get('user_id'))){
-            $userId = $request->get('user_id');
-            $query->where(['user_id' => $userId]);
-        }
-        $query->update([
-            'show_balance' => $request->get('show_balance')
-        ]);
-        return response()->json(ApiResponse::successResponseWithMessage());
-
-    }
 
 
 

@@ -42,7 +42,7 @@ Route::middleware(['auth:sanctum', 'role:super admin|admin'])->group(function() 
     Route::get('/get-agent-info/{userId}', [\App\Http\Controllers\Admin\AdminController::class, 'getAgentInfo']);
 
     // what
-    Route::get('/enable-disable-commission/{userId}', [\App\Http\Controllers\Admin\AdminController::class, 'enableDisableAgentCommission']);
+    Route::post('/show-commissions/{userId?}', [\App\Http\Controllers\Admin\AdminController::class, 'showCommissions']);
 
 });
 

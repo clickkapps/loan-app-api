@@ -265,23 +265,28 @@ class AdminController extends Controller
 
     /**
      * @throws ValidationException
+     * @throws AuthorizationException
      */
-    public  function enableDisableAgentCommission(Request $request, $userId){
+    public function showCommissions(Request $request): \Illuminate\Http\JsonResponse
+    {
+
+        $this->authorize('viewAgents', Admin::class);
 
         $this->validate($request, [
-            'status' => 'required|bool'
+            'show_balance' => 'required|bool'
         ]);
 
-        $user = User::with([])->find($userId);
-        if(blank($user)){
-            throw new \Exception('User not found');
+        $query = Agent::with([]);
+        if(!blank($request->get('user_id'))){
+            $userId = $request->get('user_id');
+            $query->where(['user_id' => $userId]);
         }
-
-        if(!$user->hasRole('agent')) {
-            throw  new \Exception('User has no agent role');
-        }
-
-
+        $query->update([
+            'show_balance' => $request->get('show_balance')
+        ]);
+        return response()->json(ApiResponse::successResponseWithMessage());
 
     }
+
+
 }
