@@ -75,6 +75,7 @@ class AuthController extends Controller
             'stages' => $loanStages,
             'tasks' => $countAssignedTo,
             'retrieved' => 0,
+            'general_config' => $generalConfig,
             'rate' => toNDecimalPlaces($rate) . "%",
             'agent_no' =>  "#".$agent->id,
             'commission' => toCurrencyFormat($agent->{'balance'}),

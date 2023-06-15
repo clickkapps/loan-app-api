@@ -23,8 +23,8 @@ class ConfigLoanOverdueStage extends Model
         'jargon'
     ];
 
-    public function commissions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function commission(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
-        return $this->hasMany(CommissionConfig::class, 'stage_name', 'name');
+        return $this->hasOne(CommissionConfig::class, 'stage_name', 'name');
     }
 }
