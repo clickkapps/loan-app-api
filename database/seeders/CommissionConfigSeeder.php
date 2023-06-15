@@ -19,6 +19,7 @@ class CommissionConfigSeeder extends Seeder
         if(!$configExists){
             CommissionConfig::with([])->create(
                 [
+                    'stage_name' => '0',
                     'percentage_on_repayment_weekdays' => 0.0,
                     'percentage_on_repayment_weekends' => 0.0,
                     'percentage_on_deferment_weekdays' => 0.0,

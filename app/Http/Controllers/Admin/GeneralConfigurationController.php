@@ -189,16 +189,19 @@ class GeneralConfigurationController extends Controller
      * @throws AuthorizationException
      * @throws \Exception
      */
-    public function updateCommissionConfigurations(Request $request): \Illuminate\Http\JsonResponse
+    public function updateCommissionConfigurations(Request $request, $stageName): \Illuminate\Http\JsonResponse
     {
         $this->authorize('configureLoanApplicationParameters', Configuration::class);
 
-        $config = CommissionConfig::with([])->first();
-        if(blank($config)) {
-            throw new \Exception("Invalid config id");
+        $stage = ConfigLoanOverdueStage::with([])->where('name','');
+
+
+        $configs = CommissionConfig::with([])->where('stage_name', '=', $stageName)->get();
+        if(empty($configs)) {
+            CommissionConfig::with([])->create($request->all());
         }
         // get configurations
-        $config->update($request->all());
+        CommissionConfig::with([])->where('stage_name', '=', $stageName)->update($request->all());
         return response()->json(ApiResponse::successResponseWithMessage());
 
     }
