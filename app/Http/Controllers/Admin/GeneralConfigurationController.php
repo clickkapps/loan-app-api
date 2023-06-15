@@ -189,19 +189,24 @@ class GeneralConfigurationController extends Controller
      * @throws AuthorizationException
      * @throws \Exception
      */
-    public function updateCommissionConfigurations(Request $request, $stageName): \Illuminate\Http\JsonResponse
+    public function updateCommissionConfigurations(Request $request): \Illuminate\Http\JsonResponse
     {
         $this->authorize('configureLoanApplicationParameters', Configuration::class);
 
-        $stage = ConfigLoanOverdueStage::with([])->where('name','');
+        $this->validate($request, [
+            'stage_name' => 'required'
+        ]);
 
+        $stageName = $request->get('stage_name');
 
         $configs = CommissionConfig::with([])->where('stage_name', '=', $stageName)->get();
         if(empty($configs)) {
             CommissionConfig::with([])->create($request->all());
+        }else {
+            // get configurations
+            CommissionConfig::with([])->where('stage_name', '=', $stageName)->update($request->all());
         }
-        // get configurations
-        CommissionConfig::with([])->where('stage_name', '=', $stageName)->update($request->all());
+
         return response()->json(ApiResponse::successResponseWithMessage());
 
     }
