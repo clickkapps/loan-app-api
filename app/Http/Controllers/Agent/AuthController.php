@@ -60,11 +60,15 @@ class AuthController extends Controller
         $retrieved = 0;
         $rate = 0;
 
+
         if($countAssignedTo > 0) {
             $rate = ($retrieved / $countAssignedTo) * 100;
         }
 
         $generalConfig = Configuration::with([])->first();
+
+        $todayDesc = getTodayDescription();
+
 
         $lastFollowUp = FollowUp::with([])->where([
             'agent_user_id' => $user->id
@@ -81,7 +85,8 @@ class AuthController extends Controller
             'commission' => toCurrencyFormat($agent->{'balance'}),
             'last_follow_up_at' => !blank($lastFollowUp) ? Carbon::parse($lastFollowUp->{'created_at'})->diffForHumans() : 'N/A',
             'app_link' => config('app.agent-url'),
-            'developer_email' => config('custom.developer_email')
+            'developer_email' => config('custom.developer_email'),
+            'today_desc' => $todayDesc
         ]));
 
     }
