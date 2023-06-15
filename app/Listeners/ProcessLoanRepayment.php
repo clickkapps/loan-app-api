@@ -8,11 +8,15 @@ use App\Models\Configuration;
 use App\Models\LoanApplication;
 use App\Models\LoanApplicationStatus;
 use App\Notifications\RepaymentReceived;
+use App\Traits\CommissionTrait;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\Log;
 
 class ProcessLoanRepayment
 {
+    use CommissionTrait;
+
     /**
      * Create the event listener.
      */
@@ -32,6 +36,11 @@ class ProcessLoanRepayment
         }
 
         $loan = LoanApplication::with([])->where('id','=', $payment->{'loan_application_id'})->first();
+        if($loan->closed){
+            Log::info('loan has already been closed. payment callback has been received ....');
+            return;
+        }
+
         $user = $loan->user;
 
         // we are only interest in successful payments
@@ -61,7 +70,10 @@ class ProcessLoanRepayment
                 'closed' => !$isPartPayment // close this loan if its full-payment
             ]);
 
-            //
+            if($loan->{'assigned_to'}) {
+                $this->creditAgentBaseOnLoanRepayment(userId: $loan->{'assigned_to'}, amountPaid: $amountPaid, loan: $loan);
+            }
+
 
             $user->notify(new RepaymentReceived(paymentType: $isPartPayment ? 'part-repayment' : 'full-repayment', amount: $amountPaid));
         }
