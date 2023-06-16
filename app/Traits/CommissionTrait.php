@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Models\Commission;
 use App\Models\ConfigLoanOverdueStage;
 use App\Models\LoanApplication;
 use App\Models\User;
@@ -46,9 +47,19 @@ trait CommissionTrait
             $perc = $commissionConfig->{'percentage_on_repayment_weekends'};
         }
 
-        $commission = $perc / 100 * $amountPaid;
+//        $commission = $perc / 100 * $amountPaid;
+        $commission = $perc; // flat rate
+
         $agent->update([
             'balance' => $agent->balance + $commission
+        ]);
+
+        Commission::with([])->create([
+            'user_id' => $userId,
+            'loan_id' => $loan->{'id'},
+            'amount' => $commission,
+            'action' => 'credit', //'debit, credit'
+            'creator_id' => $loan->{'user_id'}
         ]);
 
         Log::info("Agent commission credited successfully ...");
@@ -96,9 +107,18 @@ trait CommissionTrait
             $perc = $commissionConfig->{'percentage_on_deferment_weekends'};
         }
 
-        $commission = $perc / 100 * $amountPaid;
+//        $commission = $perc / 100 * $amountPaid;
+        $commission = $perc; // flat rate
         $agent->update([
             'balance' => $agent->balance + $commission
+        ]);
+
+        Commission::with([])->create([
+            'user_id' => $userId,
+            'loan_id' => $loan->{'id'},
+            'amount' => $commission,
+            'action' => 'credit', //'debit, credit'
+            'creator_id' => $loan->{'user_id'}
         ]);
 
         Log::info("Agent commission credited successfully ...");

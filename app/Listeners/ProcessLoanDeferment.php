@@ -68,8 +68,6 @@ class ProcessLoanDeferment
 
             $loan->update([
                 'loan_overdue_stage_id' => $loanStageAt0->{'id'},
-//                'amount_to_pay' => $amountRemaining,
-                'amount_disbursed' => $loan->{'amount_requested'},
                 'deadline'  => $startD->addDays($durationLimit + $daysRemaining),
             ]);
 

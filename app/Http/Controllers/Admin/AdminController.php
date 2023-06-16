@@ -12,6 +12,7 @@ use App\Notifications\AdminCreated;
 use App\Notifications\AgentAssigned;
 use App\Notifications\AgentRevoked;
 use App\Traits\RolePermissionTrait;
+use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -206,7 +207,14 @@ class AdminController extends Controller
     {
         $this->authorize('viewAgents', Admin::class);
 
-        $agents = User::role('agent')->with(['agent', 'roles','permissions'])->get();
+        $startOfMonth = !blank($request->get('start_date')) ? Carbon::parse($request->get('start_date')) : Carbon::today()->startOfMonth();
+        $endOfMonth = !blank($request->get('end_date')) ? Carbon::parse($request->get('end_date')) : Carbon::today()->endOfMonth();
+
+        $agents = User::role('agent')->with(['roles','permissions'])->whereHas('agent', function ($query) use ($startOfMonth, $endOfMonth)  {
+            $query
+                ->whereDate('created_at' , '>=' , $startOfMonth)
+                ->whereDate('created_at' , '<=',  $endOfMonth);
+        })->get();
         if(!blank($request->get('stage'))) {
             $loanStage = $request->get('stage');
             $items = explode('-', $loanStage);
