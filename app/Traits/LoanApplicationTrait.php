@@ -150,6 +150,7 @@ trait LoanApplicationTrait
             throw new \Exception("Loan has already been assigned to an agent");
         }
 
+
         $loan->update([
             'assigned_to' => $userId
         ]);
@@ -165,6 +166,61 @@ trait LoanApplicationTrait
         \Illuminate\Support\Facades\Log::info('LoanApplicationAssignedToAgent push-event called:');
         \Illuminate\Support\Facades\Log::info(json_encode($loan));
         event(new \App\Events\LoanApplicationAssignedToAgent(loanApplication: $loan));
+
+
+        return response()->json(ApiResponse::successResponseWithData());
+
+    }
+
+    /**
+     * @throws ValidationException
+     * @throws \Exception
+     */
+    public function assignBulkLoansToAgent(Request $request): \Illuminate\Http\JsonResponse
+    {
+
+        $this->validate($request, [
+            'loan_ids' => 'required|array',
+            'user_id' => 'required',
+            'stage_id' => 'required'
+        ]);
+
+        $loanIds = $request->get('loan_ids');
+        $userId = $request->get('user_id');
+        $stageId = $request->get('stage_id');
+
+//        $loan = LoanApplication::with([])->find($loanId);
+//
+//        if(blank($loan)) {
+//            throw new \Exception("Loan does not exists");
+//        }
+
+//        // check if loan is already assigned to a user
+//        if(!blank($loan->{'assigned_to'})) {
+//            throw new \Exception("Loan has already been assigned to an agent");
+//        }
+
+        LoanApplication::with([])->whereIn('id', $loanIds)->update([
+            'assigned_to' => $userId
+        ]);
+
+        $dataToInsertInLoanAssignedTo = [];
+
+        foreach ($loanIds as $loanId) {
+            $dataToInsertInLoanAssignedTo[] = [
+                'loan_application_id' => $loanId,
+                'user_id' => $userId,
+                'stage_id' => $stageId
+            ];
+        }
+
+        // can be assigned to
+        LoanAssignedTo::with([])->upsert($dataToInsertInLoanAssignedTo, [] );
+
+//        // notify all apps that this loan is no longer available
+//        \Illuminate\Support\Facades\Log::info('LoanApplicationAssignedToAgent push-event called:');
+//        \Illuminate\Support\Facades\Log::info(json_encode($loan));
+        event(new \App\Events\LoanApplicationAssignedToAgent(loanApplication: null));
 
 
         return response()->json(ApiResponse::successResponseWithData());
