@@ -57,8 +57,11 @@ class ProcessLoanDeferment
             ]);
 
             $startD = Carbon::parse('deadline');
+            $daysRemaining = 0;
             if($startD->lessThan(Carbon::today())){
-                $startD = Carbon::now();
+                $startD = Carbon::today();
+            }else{
+               $daysRemaining = Carbon::today()->diffInDays(Carbon::parse('deadline'));
             }
 
             $assignedTo = $loan->{'assigned_to'};
@@ -67,7 +70,7 @@ class ProcessLoanDeferment
                 'loan_overdue_stage_id' => $loanStageAt0->{'id'},
 //                'amount_to_pay' => $amountRemaining,
                 'amount_disbursed' => $loan->{'amount_requested'},
-                'deadline'  => $startD->addDays($durationLimit),
+                'deadline'  => $startD->addDays($durationLimit + $daysRemaining),
             ]);
 
 
