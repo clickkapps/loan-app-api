@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -66,6 +67,20 @@ class User extends Authenticatable
     public function assignedToLoans(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(LoanApplication::class, LoanAssignedTo::class);
+    }
+
+    public function commissions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Commission::class);
+    }
+
+    public function scopeWithCommissionSum($query, $start, $end)
+    {
+        $query->with(['commissions' => function ($query) use ($start, $end) {
+            $query->select('user_id', DB::raw('SUM(amount) as total_amount'))
+                ->whereBetween('created_at', [$start, $end])
+                ->groupBy('user_id');
+        }]);
     }
 
 }

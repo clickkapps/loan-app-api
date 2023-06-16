@@ -210,11 +210,14 @@ class AdminController extends Controller
         $startOfMonth = !blank($request->get('start_date')) ? Carbon::parse($request->get('start_date')) : Carbon::today()->startOfMonth();
         $endOfMonth = !blank($request->get('end_date')) ? Carbon::parse($request->get('end_date')) : Carbon::today()->endOfMonth();
 
-        $agents = User::role('agent')->with(['roles','permissions'])->whereHas('agent', function ($query) use ($startOfMonth, $endOfMonth)  {
-            $query
-                ->whereDate('created_at' , '>=' , $startOfMonth)
-                ->whereDate('created_at' , '<=',  $endOfMonth);
-        })->get();
+        $agents = User::role('agent')->with(['agent', 'roles','permissions'])->withCommissionSum($startOfMonth, $endOfMonth)->get();
+////
+//        ->whereHas('agent', function ($query) use ($startOfMonth, $endOfMonth)  {
+//        $query
+//            ->whereDate('created_at' , '>=' , $startOfMonth)
+//            ->whereDate('created_at' , '<=',  $endOfMonth);
+//    })
+
         if(!blank($request->get('stage'))) {
             $loanStage = $request->get('stage');
             $items = explode('-', $loanStage);
