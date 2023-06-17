@@ -146,7 +146,6 @@ trait LoanApplicationTrait
 
         $authUser = $request->user();
         $permissionNames = $authUser->getRoleNames()->toArray();
-        return response()->json(ApiResponse::successResponseWithData($permissionNames));
 
         $loan = LoanApplication::with([])->find($loanId);
 
@@ -168,7 +167,7 @@ trait LoanApplicationTrait
             'loan_application_id' => $loan->{'id'},
             'status' => 'assigned-to-agent',
             'user_id' => $authUser->{'id'},
-            'created_by' => in_array('agent', $authUser->getPermissionNames()) ? 'agent' : 'admin',
+            'created_by' => in_array('agent', $permissionNames) ? 'agent' : 'admin',
             'agent_user_id' => $userId,
         ]);
 
@@ -219,6 +218,7 @@ trait LoanApplicationTrait
         $userId = $request->get('user_id');
         $stageId = $request->get('stage_id');
         $authUser = $request->user();
+        $permissionNames = $authUser->getRoleNames()->toArray();
 
 //        $loan = LoanApplication::with([])->find($loanId);
 //
@@ -255,7 +255,7 @@ trait LoanApplicationTrait
                 'loan_application_id' => $loanId,
                 'status' => 'assigned-to-agent',
                 'user_id' => $authUser->{'id'},
-                'created_by' => in_array('agent', $authUser->getPermissionNames()) ? 'agent' : 'admin',
+                'created_by' => in_array('agent', $permissionNames) ? 'agent' : 'admin',
                 'agent_user_id' => $userId,
             ];
         }
