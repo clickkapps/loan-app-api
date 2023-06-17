@@ -11,7 +11,7 @@ use Illuminate\Queue\SerializesModels;
 class LoanApplicationAssignedToAgent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    public LoanApplication $loanApplication;
+    public ?LoanApplication $loanApplication;
 
     /**
      * Create a new event instance.
