@@ -89,7 +89,9 @@ class LoanApplicationController extends Controller
                 if($contains) {
                     $response[] = [
                         'name' => $stage->{'jargon'},
-                        'value' => "stage-$stageName"
+                        'value' => "stage-$stageName",
+                        'id' => $stage->{'id'},
+                        'db_name' => $stage->{'name'}
                     ];
                 }
 
