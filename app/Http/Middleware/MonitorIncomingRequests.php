@@ -19,6 +19,7 @@ class MonitorIncomingRequests
      */
     public function handle(Request $request, Closure $next): Response
     {
+        $response = $next($request);
 
         if(config('app.env') == 'production') {
 
@@ -26,10 +27,11 @@ class MonitorIncomingRequests
             Log::info('incoming request body: ' . json_encode($request->all()));
             Log::info('incoming request IP: ' . json_encode($request->ip()));
             Log::info('incoming request URL: ' . json_encode($request->url()));
+            Log::info('incoming request METHOD: ' . $request->method());
+            Log::info('outgoing response: ' . json_encode($response->getContent()));
 
         }
 
-
-        return $next($request);
+        return $response;
     }
 }
