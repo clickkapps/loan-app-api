@@ -145,7 +145,7 @@ trait LoanApplicationTrait
         $userId = $request->get('user_id');
 
         $authUser = $request->user();
-        $permissionNames = $authUser->getPermissionNames();
+        $permissionNames = $authUser->getRoleNames()->toArray();
         return response()->json(ApiResponse::successResponseWithData($permissionNames));
 
         $loan = LoanApplication::with([])->find($loanId);
