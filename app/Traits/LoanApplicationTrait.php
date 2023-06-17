@@ -62,7 +62,7 @@ trait LoanApplicationTrait
     public function getLoansWhoseLatestStatusIs(string $status)
     {
 
-        return LoanApplication::with(['latestStatus'])->latestStatusName($status)->get();
+        return LoanApplication::with(['latestStatus', 'assignedTo'])->latestStatusName($status)->get();
     }
 
     public function initiateLoanDisbursal(LoanApplication $loan, string $createdByName, User $createdByUser = null): void

@@ -70,7 +70,10 @@ class ProcessLoanRepayment
                 'closed' => !$isPartPayment // close this loan if its full-payment
             ]);
 
+
+
             if($loan->{'assigned_to'}) {
+
                 $this->creditAgentBaseOnLoanRepayment(userId: $loan->{'assigned_to'}, amountPaid: $amountPaid, loan: $loan);
             }
 

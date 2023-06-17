@@ -2,10 +2,12 @@
 
 namespace App\Traits;
 
+use App\Models\AgentTask;
 use App\Models\Commission;
 use App\Models\ConfigLoanOverdueStage;
 use App\Models\LoanApplication;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 trait CommissionTrait
@@ -61,6 +63,17 @@ trait CommissionTrait
             'action' => 'credit', //'debit, credit'
             'creator_id' => $loan->{'user_id'}
         ]);
+
+//        add to the agentTasks
+//        AgentTask::with([])->where([
+//            'user_id' => $userId,
+//            'date' => Carbon::today()
+//        ])->update([
+//            'tasks_count' => $tasksCountRemaining,
+//            'collected_count' => 0,
+//            'tasks_amount' => $tasksAmountRemaining,
+//            'collected_amount' => 0,
+//        ])
 
         Log::info("Agent commission credited successfully ...");
         $agent->refresh();
