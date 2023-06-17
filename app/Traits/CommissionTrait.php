@@ -129,8 +129,4 @@ trait CommissionTrait
     }
 
 
-    // userid is the agent userit
-    public  function debitAgent($userId, $amount) {
-
-    }
 }

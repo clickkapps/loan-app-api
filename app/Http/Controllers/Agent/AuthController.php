@@ -12,13 +12,14 @@ use App\Models\User;
 use App\Notifications\AdminCreated;
 use App\Notifications\NewAdminPasswordGenerated;
 use App\Traits\AuthTrait;
+use App\Traits\CommissionTrait;
 use App\Traits\LoanApplicationTrait;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-    use AuthTrait, LoanApplicationTrait;
+    use AuthTrait, LoanApplicationTrait, CommissionTrait;
 
     public function __construct()
     {
@@ -74,6 +75,10 @@ class AuthController extends Controller
             'agent_user_id' => $user->id
         ])->orderByDesc('created_at')->first();
 
+        $startOfMonth = Carbon::today()->startOfMonth();
+        $endOfMonth = Carbon::today()->endOfMonth();
+
+        $commission = User::withCommissionSum($startOfMonth, $endOfMonth);
         return response()->json(ApiResponse::successResponseWithData([
             'agent' => $agent,
             'stages' => $loanStages,
@@ -82,7 +87,7 @@ class AuthController extends Controller
             'general_config' => $generalConfig,
             'rate' => toNDecimalPlaces($rate) . "%",
             'agent_no' =>  "#".$agent->id,
-            'commission' => toCurrencyFormat($agent->{'balance'}),
+            'commission' => toCurrencyFormat($commission),
             'last_follow_up_at' => !blank($lastFollowUp) ? Carbon::parse($lastFollowUp->{'created_at'})->diffForHumans() : 'N/A',
             'app_link' => config('app.agent-url'),
             'developer_email' => config('custom.developer_email'),

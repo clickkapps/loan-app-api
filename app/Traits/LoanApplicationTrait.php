@@ -294,7 +294,7 @@ trait LoanApplicationTrait
         ]);
 
         $loanId = $request->get('loan_id');
-
+        $authUser = $request->user();
         $loan = LoanApplication::with([])->find($loanId);
 
         if(blank($loan)) {
@@ -329,6 +329,13 @@ trait LoanApplicationTrait
             'assigned_to' => null
         ]);
 
+        LoanApplicationStatus::with([])->create([
+            'loan_application_id' => $loan->{'id'},
+            'status' => 'un-assigned-from-agent',
+            'user_id' => $authUser->{'id'},
+            'created_by' => in_array('agent', $authUser->getPermissionNames()) ? 'agent' : 'admin',
+            'agent_user_id' => $agentUserId,
+        ]);
 
 
         return response()->json(ApiResponse::successResponseWithData());
