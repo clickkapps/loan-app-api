@@ -228,7 +228,7 @@ class AdminController extends Controller
         $startOfMonth = !blank($request->get('start_date')) ? Carbon::parse($request->get('start_date')) : Carbon::today()->startOfMonth();
         $endOfMonth = !blank($request->get('end_date')) ? Carbon::parse($request->get('end_date')) : Carbon::today()->endOfMonth();
 
-        $agents = User::role('agent')->with(['agent', 'roles','permissions'])->withCommissionSum($startOfMonth, $endOfMonth)->get();
+        $agents = User::role('agent')->with(['agent', 'roles','permissions'])->get();
 ////
 //        ->whereHas('agent', function ($query) use ($startOfMonth, $endOfMonth)  {
 //        $query
@@ -240,10 +240,16 @@ class AdminController extends Controller
             $loanStage = $request->get('stage');
             $items = explode('-', $loanStage);
             $stageName = $items[1];
-            $agents = collect($agents)->filter(function($agent) use ($stageName){
+            $agents = $agents->filter(function($agent) use ($stageName){
                 return $agent->hasPermissionTo("access to loan stage $stageName");
             })->values();
         }
+
+        $agents->map(function ($agent) use ($startOfMonth, $endOfMonth) {
+                $balance = User::withCommissionSum($startOfMonth, $endOfMonth)->find($agent->{'user_id'});
+                $agent->balance = $balance;
+        });
+
         // Adding permissions via a role
 
         // create an agent account for user

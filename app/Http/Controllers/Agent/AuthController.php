@@ -78,7 +78,7 @@ class AuthController extends Controller
         $startOfMonth = Carbon::today()->startOfMonth();
         $endOfMonth = Carbon::today()->endOfMonth();
 
-        $commission = User::withCommissionSum($startOfMonth, $endOfMonth);
+        $commission = User::withCommissionSum($startOfMonth, $endOfMonth)->find($user->{'id'});
         return response()->json(ApiResponse::successResponseWithData([
             'agent' => $agent,
             'stages' => $loanStages,
