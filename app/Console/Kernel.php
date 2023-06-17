@@ -6,6 +6,7 @@ use App\Console\Commands\AddInterestToLoansAtVariousStages;
 use App\Console\Commands\MoveOverDueLoansToNextStages;
 use App\Console\Commands\ProcessPendingLoans;
 use App\Console\Commands\RevertHolidayToRegularDay;
+use App\Console\Commands\SetupTasksForAgents;
 use App\Console\Commands\Stage0RepaymentReminder;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -20,6 +21,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
         $schedule->command('sanctum:prune-expired --hours=24')->daily()->runInBackground();
         $schedule->command(RevertHolidayToRegularDay::class)->daily()->runInBackground();
+        $schedule->command(SetupTasksForAgents::class)->daily()->runInBackground();
 
         $schedule->command(ProcessPendingLoans::class, ['--isolated'])->everyMinute();
         $schedule->command(Stage0RepaymentReminder::class)->dailyAt('9:00');

@@ -4,14 +4,17 @@ namespace App\Traits;
 
 use App\Classes\ApiResponse;
 use App\Models\Agent;
+use App\Models\AgentTask;
 use App\Models\CallLog;
 use App\Models\ConfigLoanOverdueStage;
 use App\Models\FollowUp;
 use App\Models\LoanApplication;
+use App\Models\LoanApplicationStatus;
 use App\Models\LoanAssignedTo;
 use App\Models\Payment;
 use App\Models\User;
 use App\Notifications\PaymentInitiated;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -139,6 +142,8 @@ trait LoanApplicationTrait
         $loanId = $request->get('loan_id');
         $userId = $request->get('user_id');
 
+        $authUser = $request->user();
+
         $loan = LoanApplication::with([])->find($loanId);
 
         if(blank($loan)) {
@@ -155,12 +160,33 @@ trait LoanApplicationTrait
             'assigned_to' => $userId
         ]);
 
+        LoanApplicationStatus::with([])->create([
+            'loan_application_id' => $loan->{'id'},
+            'status' => 'assigned-to-agent',
+            'user_id' => $authUser->{'id'},
+            'created_by' => in_array('agent', $authUser->getPermissionNames()) ? 'agent' : 'admin',
+            'agent_user_id' => $userId,
+        ]);
+
+        $existingTaskCreatedForToday = AgentTask::with([])->where([
+            'user_id' => $userId,
+            'date' => Carbon::today()
+        ])->first();
+
+        $existingTaskCreatedForToday->update([
+            'tasks_count' => $existingTaskCreatedForToday->{'tasks_count'} + 1,
+            'tasks_amount' => $existingTaskCreatedForToday->{'tasks_amount'} + $loan->{'amount_to_pay'}
+        ]);
+
         // can be assigned to
         LoanAssignedTo::with([])->updateOrCreate([
             'loan_application_id' => $loanId,
             'user_id' => $userId,
             'stage_id' => $loan->{'loan_overdue_stage_id'}
         ], [] );
+
+        // agent's tasks
+
 
         // notify all apps that this loan is no longer available
         \Illuminate\Support\Facades\Log::info('LoanApplicationAssignedToAgent push-event called:');
@@ -188,6 +214,7 @@ trait LoanApplicationTrait
         $loanIds = $request->get('loan_ids');
         $userId = $request->get('user_id');
         $stageId = $request->get('stage_id');
+        $authUser = $request->user();
 
 //        $loan = LoanApplication::with([])->find($loanId);
 //
@@ -205,14 +232,42 @@ trait LoanApplicationTrait
         ]);
 
         $dataToInsertInLoanAssignedTo = [];
+        $dataToInsertInLoanStatus = [];
 
+
+        $totalAmountToPay = 0.00;
         foreach ($loanIds as $loanId) {
+
+            $amountToPay = LoanApplication::with([])->find($loanId)->{'amount_to_pay'};
+            $totalAmountToPay = $totalAmountToPay + $amountToPay;
+
             $dataToInsertInLoanAssignedTo[] = [
                 'loan_application_id' => $loanId,
                 'user_id' => $userId,
                 'stage_id' => $stageId
             ];
+
+            $dataToInsertInLoanStatus[] = [
+                'loan_application_id' => $loanId,
+                'status' => 'assigned-to-agent',
+                'user_id' => $authUser->{'id'},
+                'created_by' => in_array('agent', $authUser->getPermissionNames()) ? 'agent' : 'admin',
+                'agent_user_id' => $userId,
+            ];
         }
+
+        $existingTaskCreatedForToday = AgentTask::with([])->where([
+            'user_id' => $userId,
+            'date' => Carbon::today()
+        ])->first();
+
+        $existingTaskCreatedForToday->update([
+            'tasks_count' => $existingTaskCreatedForToday->{'tasks_count'} + count($loanIds),
+            'tasks_amount' => $existingTaskCreatedForToday->{'tasks_amount'} + $totalAmountToPay
+        ]);
+
+
+        LoanApplicationStatus::with([])->insert($dataToInsertInLoanStatus);
 
         // can be assigned to
         LoanAssignedTo::with([])->upsert($dataToInsertInLoanAssignedTo, [] );
@@ -250,9 +305,24 @@ trait LoanApplicationTrait
             throw new \Exception("Loan has not been assigned to any agent");
         }
 
+        $agentUserId = $loan->{'assigned_to'};
+
+        // subtract the task from the agent's tasks ------
+        $existingTaskCreatedForToday = AgentTask::with([])->where([
+            'user_id' => $agentUserId,
+            'date' => Carbon::today()
+        ])->first();
+
+        $existingTaskCreatedForToday->update([
+            'tasks_count' => $existingTaskCreatedForToday->{'tasks_count'} - 1,
+            'tasks_amount' => $existingTaskCreatedForToday->{'tasks_amount'} - $loan->{'amount_to_pay'}
+        ]);
+
         $loan->update([
             'assigned_to' => null
         ]);
+
+
 
         return response()->json(ApiResponse::successResponseWithData());
 

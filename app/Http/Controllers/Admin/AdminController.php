@@ -6,6 +6,7 @@ use App\Classes\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\Agent;
+use App\Models\AgentTask;
 use App\Models\ConfigLoanOverdueStage;
 use App\Models\User;
 use App\Notifications\AdminCreated;
@@ -144,11 +145,28 @@ class AdminController extends Controller
         ])->exists();
 
         if(!$agentAccountAlreadyCreated) {
-            Agent::with([])->create([
+            $agent = Agent::with([])->create([
                     'user_id' => $user->id,
                     'balance' => 0.00,
                 ]
             );
+
+            /// create a task for the agent for today ---------------
+            $agentId = $agent->{'id'};
+            $agentUserId = $agent->{'user_id'};
+            $tasksCountRemaining = 0.0;
+            $tasksAmountRemaining =  0.0;
+
+            AgentTask::with([])->create([
+                'user_id' => $agentUserId,
+                'agent_id' => $agentId,
+                'date' => Carbon::today(),
+                'tasks_count' => $tasksCountRemaining,
+                'collected_count' => 0,
+                'tasks_amount' => $tasksAmountRemaining,
+                'collected_amount' => 0,
+            ]);
+
         }
 
         /// assign first permission to agent ---------
@@ -160,6 +178,7 @@ class AdminController extends Controller
             'status' => 'assign',
         ]);
         $this->assign($myRequest);
+
 
         $user->notify(new AgentAssigned());
 

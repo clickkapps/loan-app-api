@@ -11,8 +11,10 @@ class AgentTask extends Model
     protected $fillable = [
         'user_id',
         'agent_id',
-        'tasks',
-        'collected',
+        'tasks_count',
+        'collected_count',
+        'tasks_amount',
+        'collected_amount',
         'date'
     ];
 }
