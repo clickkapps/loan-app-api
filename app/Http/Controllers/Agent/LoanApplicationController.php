@@ -103,7 +103,7 @@ class LoanApplicationController extends Controller
     {
 
         $user = $request->user();
-        $query = LoanApplication::with(['latestStatus', 'assignedTo', 'user'])
+        $query = LoanApplication::with(['latestStatus', 'assignedTo', 'user', 'stage', 'statuses'])
             ->where('closed','=', false)
             ->where('assigned_to', $user->id);
 
