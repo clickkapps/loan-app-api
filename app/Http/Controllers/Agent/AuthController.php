@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Agent;
 
 use App\Classes\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Models\AgentTask;
 use App\Models\CommissionConfig;
 use App\Models\Configuration;
 use App\Models\FollowUp;
@@ -52,18 +53,19 @@ class AuthController extends Controller
         $agent = $user->agent;
         $loanStages = $this->getLoanStagesFromPermissions($request)->getData()->extra;
 
-        $countAssignedTo = LoanApplication::with(['latestStatus', 'assignedTo', 'user'])
-            ->where('closed','=', false)
-            ->where('assigned_to', $user->id)->count();
-
 
         // use the db to count this after repayment feature is done
-        $retrieved = 0;
+
         $rate = 0;
 
+        $taskForToday = AgentTask::with([])->where([
+            'user_id' => $user->id,
+            'date' => Carbon::today()
+        ])->first();
 
-        if($countAssignedTo > 0) {
-            $rate = ($retrieved / $countAssignedTo) * 100;
+
+        if($taskForToday->{'tasks_count'} > 0) {
+            $rate = ($taskForToday->{'collected_count'} / $taskForToday->{'tasks_count'}) * 100;
         }
 
         $generalConfig = Configuration::with([])->first();
@@ -79,11 +81,12 @@ class AuthController extends Controller
         $endOfMonth = Carbon::today()->endOfMonth();
 
         $commission = User::withCommissionSum($startOfMonth, $endOfMonth)->find($user->{'id'});
+
         return response()->json(ApiResponse::successResponseWithData([
             'agent' => $agent,
             'stages' => $loanStages,
-            'tasks' => $countAssignedTo,
-            'retrieved' => 0,
+            'tasks' => $taskForToday->{'tasks_count'},
+            'retrieved' => $taskForToday->{'collected_count'},
             'general_config' => $generalConfig,
             'rate' => toNDecimalPlaces($rate) . "%",
             'agent_no' =>  "#".$agent->id,
@@ -91,7 +94,7 @@ class AuthController extends Controller
             'last_follow_up_at' => !blank($lastFollowUp) ? Carbon::parse($lastFollowUp->{'created_at'})->diffForHumans() : 'N/A',
             'app_link' => config('app.agent-url'),
             'developer_email' => config('custom.developer_email'),
-            'today_desc' => $todayDesc
+            'today_desc' => $todayDesc,
         ]));
 
     }
