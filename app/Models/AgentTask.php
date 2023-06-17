@@ -17,4 +17,9 @@ class AgentTask extends Model
         'collected_amount',
         'date'
     ];
+
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }

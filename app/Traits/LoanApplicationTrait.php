@@ -313,6 +313,13 @@ trait LoanApplicationTrait
             'date' => Carbon::today()
         ])->first();
 
+        // if we don't do this check, the collection amount will be greater than the task amount for that day
+        // so later on , when we're auditing we'd be wondering why for that day, his collection amount was greater that  tasks amount
+        if($existingTaskCreatedForToday->{'collected_count'} > 0){
+            $agentName = $existingTaskCreatedForToday->user->name;
+            throw new \Exception("$agentName (already assigned agent) has started making collections for today hence loan cannot be unassigned");
+        }
+
         $existingTaskCreatedForToday->update([
             'tasks_count' => $existingTaskCreatedForToday->{'tasks_count'} - 1,
             'tasks_amount' => $existingTaskCreatedForToday->{'tasks_amount'} - $loan->{'amount_to_pay'}

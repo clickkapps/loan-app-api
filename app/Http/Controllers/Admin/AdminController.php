@@ -147,7 +147,6 @@ class AdminController extends Controller
         if(!$agentAccountAlreadyCreated) {
             $agent = Agent::with([])->create([
                     'user_id' => $user->id,
-                    'balance' => 0.00,
                 ]
             );
 
