@@ -139,10 +139,14 @@ trait LoanApplicationTrait
             'user_id' => 'required',
         ]);
 
+
+
         $loanId = $request->get('loan_id');
         $userId = $request->get('user_id');
 
         $authUser = $request->user();
+        $permissionNames = $authUser->getPermissionNames();
+        return response()->json(ApiResponse::successResponseWithData($permissionNames));
 
         $loan = LoanApplication::with([])->find($loanId);
 
