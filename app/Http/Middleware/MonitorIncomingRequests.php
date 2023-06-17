@@ -23,12 +23,14 @@ class MonitorIncomingRequests
 
         if(config('app.env') == 'production') {
 
+            Log::info('----------------- NEW REQUEST:  -------------------------------------------------');
             Log::info('incoming request header: ' . json_encode($request->header()));
             Log::info('incoming request body: ' . json_encode($request->all()));
             Log::info('incoming request IP: ' . json_encode($request->ip()));
             Log::info('incoming request URL: ' . json_encode($request->url()));
             Log::info('incoming request METHOD: ' . $request->method());
             Log::info('outgoing response: ' . json_encode($response->getContent()));
+            Log::info('----------------- END OF REQUEST:  -------------------------------------------------');
 
         }
 
