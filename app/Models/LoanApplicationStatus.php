@@ -12,7 +12,8 @@ class LoanApplicationStatus extends Model
         'loan_application_id',
         'status',
         'user_id',
-        'created_by'
+        'created_by',
+        'agent_user_id'
     ];
 
     public function loanApplication(): \Illuminate\Database\Eloquent\Relations\BelongsTo
