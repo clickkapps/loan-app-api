@@ -40,7 +40,12 @@ class SetupTasksForAgents extends Command
 
             // carry forward the tasks remaining from yesterday ----------
 
-            $yesterdaysTaskRecord = AgentTask::with([])->whereDate('date', '=', Carbon::yesterday()->startOfDay())->first();
+            $yesterdaysTaskRecord = AgentTask::with([])->whereDate('date', '=', Carbon::yesterday()->startOfDay())
+                ->where([
+                    'agent_id' => $agentId,
+//                    'user_id' => $agentUserId
+                ])
+                ->first();
 
             Log::info('yesterdaysTaskRecord ----');
             Log::info(json_encode($yesterdaysTaskRecord));
