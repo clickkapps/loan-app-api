@@ -44,12 +44,18 @@ class AddInterestToLoansAtVariousStages extends Command
             $loans = LoanApplication::with([])->where('loan_overdue_stage_id', '=', $stage->{'id'})->get();
             foreach ($loans as $loan) {
 
+                $interestWavedPercentage = $loan->{'wave_interest_by_percentage'};
+
                 $amountDisbursed =  $loan->{'amount_disbursed'};
                 $interest = $amountDisbursed * ($interestPercentagePerDay / 100);
+                $interestWaved = ($interestWavedPercentage / 100) * $interest;
+
+                $interestToPay = $interest - $interestWaved;
+
 
                 $loan->update([
-                    'accumulated_interest' => $loan->{'accumulated_interest'} + $interest,
-                    'amount_to_pay' => $loan->{'amount_to_pay'} + $interest
+                    'accumulated_interest' => $loan->{'accumulated_interest'} + $interestToPay,
+                    'amount_to_pay' => $loan->{'amount_to_pay'} + $interestToPay
                 ]);
             }
         }
