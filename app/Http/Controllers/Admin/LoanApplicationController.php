@@ -83,6 +83,32 @@ class LoanApplicationController extends Controller
 
     }
 
+    /**
+     * @throws \Exception
+     */
+    public function waveLoanInterest(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $this->validate($request, [
+           'loan_id' => 'required',
+           'wave_interest_percentage' => 'required'
+        ]);
+
+        $loanId = $request->get('loan_id');
+        $waveInterestPercentage = $request->get('wave_percentage');
+
+        $loan = LoanApplication::with(['statuses', 'assignedTo'])->find($loanId);
+        if(blank($loan)){
+            throw  new \Exception('Loan not found');
+        }
+
+        $loan->update([
+            '$waveInterestPercentage' => $waveInterestPercentage
+        ]);
+
+        return response()->json(ApiResponse::successResponseWithMessage());
+
+    }
+
     public function fetchLoanStages(Request $request): \Illuminate\Http\JsonResponse
     {
 
