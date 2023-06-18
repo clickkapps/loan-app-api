@@ -62,7 +62,7 @@ class ProcessLoanDeferment
             if($startD->lessThan(Carbon::today())){
                 $startD = Carbon::today();
             }else{
-               $daysRemaining = Carbon::today()->diffInDays(Carbon::parse('deadline'));
+               $daysRemaining = Carbon::today()->diffInDays(Carbon::parse($loan->{'deadline'}));
             }
 
             $assignedTo = $loan->{'assigned_to'};
