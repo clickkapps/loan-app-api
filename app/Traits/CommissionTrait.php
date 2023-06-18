@@ -51,10 +51,10 @@ trait CommissionTrait
 
 //        $commission = $perc / 100 * $amountPaid;
         $commission = $perc; // flat rate
-
-        $agent->update([
-            'balance' => $agent->balance + $commission
-        ]);
+//
+//        $agent->update([
+//            'balance' => $agent->balance + $commission
+//        ]);
 
         Commission::with([])->create([
             'user_id' => $userId,
