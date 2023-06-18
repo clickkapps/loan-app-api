@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id');
             $table->foreignId('loan_id');
             $table->string('amount')->nullable()->default(null);
-            $table->string('action')->nullable()->default(null)->comment('debit, credit');
+            $table->string('action')->nullable()->default(null)->comment('full-payment, part-payment', 'deferment');
             $table->foreignId('creator_id');
             $table->timestamps();
         });

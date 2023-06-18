@@ -112,9 +112,13 @@ class LoanApplicationController extends Controller
 
             $data = $query->get();
 
-        }else if ($category == 'unreachable') {
+        }else if ($category == 'part-payment') {
 
             // continue with query statement for the different categories
+//            $query->where()
+//            loanapplication status where agent_user_id = $user->id,
+//            created_at == today
+//            status = part-payment
 
         }
 

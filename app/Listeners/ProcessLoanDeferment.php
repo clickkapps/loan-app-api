@@ -53,7 +53,8 @@ class ProcessLoanDeferment
                 'loan_application_id' => $payment->{'loan_application_id'},
                 'status' => 'deferred',
                 'user_id' => $payment->{'created_by_user_id'},
-                'created_by' => $payment->{'created_by_name'}
+                'created_by' => $payment->{'created_by_name'},
+                'agent_user_id' => $loan->{'assigned_to'}
             ]);
 
             $startD = Carbon::parse('deadline');
@@ -69,6 +70,7 @@ class ProcessLoanDeferment
             $loan->update([
                 'loan_overdue_stage_id' => $loanStageAt0->{'id'},
                 'deadline'  => $startD->addDays($durationLimit + $daysRemaining),
+                'assigned_to' => null
             ]);
 
 

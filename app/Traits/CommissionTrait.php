@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 
 trait CommissionTrait
 {
-    public  function creditAgentBaseOnLoanRepayment($userId, $amountPaid, $loan): void
+    public  function creditAgentBaseOnLoanRepayment($userId, $amountPaid, $loan, bool $isPartPayment): void
     {
         // get the loan stage, and
         // check if today is holday and find the percentage given on holidays for that loan stage
@@ -51,29 +51,22 @@ trait CommissionTrait
 
 //        $commission = $perc / 100 * $amountPaid;
         $commission = $perc; // flat rate
-//
-//        $agent->update([
-//            'balance' => $agent->balance + $commission
-//        ]);
 
         Commission::with([])->create([
             'user_id' => $userId,
             'loan_id' => $loan->{'id'},
             'amount' => $commission,
-            'action' => 'credit', //'debit, credit'
+            'action' => $isPartPayment ? 'part-payment' : 'full-payment', //'part-payment, full-payment', 'deferment'
             'creator_id' => $loan->{'user_id'}
         ]);
 
 //        add to the agentTasks
-//        AgentTask::with([])->where([
-//            'user_id' => $userId,
-//            'date' => Carbon::today()
-//        ])->update([
-//            'tasks_count' => $tasksCountRemaining,
-//            'collected_count' => 0,
-//            'tasks_amount' => $tasksAmountRemaining,
-//            'collected_amount' => 0,
-//        ])
+        $existingTask = AgentTask::with([])->where(['user_id' => $userId, 'date' => Carbon::today()])->first();
+        AgentTask::with([])->where(['user_id' => $userId, 'date' => Carbon::today()])
+            ->update([
+            'collected_count' => $existingTask->{'collected_count'} + 1,
+            'collected_amount' => $existingTask->{'collected_amount'} + $amountPaid,
+        ]);
 
         Log::info("Agent commission credited successfully ...");
         $agent->refresh();
@@ -122,17 +115,25 @@ trait CommissionTrait
 
 //        $commission = $perc / 100 * $amountPaid;
         $commission = $perc; // flat rate
-        $agent->update([
-            'balance' => $agent->balance + $commission
-        ]);
+//        $agent->update([
+//            'balance' => $agent->balance + $commission
+//        ]);
 
         Commission::with([])->create([
             'user_id' => $userId,
             'loan_id' => $loan->{'id'},
             'amount' => $commission,
-            'action' => 'credit', //'debit, credit'
+            'action' => 'deferment', //'full-payment, part-payment, deferment'
             'creator_id' => $loan->{'user_id'}
         ]);
+
+        //        add to the agentTasks
+        $existingTask = AgentTask::with([])->where(['user_id' => $userId, 'date' => Carbon::today()])->first();
+        AgentTask::with([])->where(['user_id' => $userId, 'date' => Carbon::today()])
+            ->update([
+                'collected_count' => $existingTask->{'collected_count'} + 1,
+                'collected_amount' => $existingTask->{'collected_amount'} + $amountPaid,
+            ]);
 
         Log::info("Agent commission credited successfully ...");
         $agent->refresh();
