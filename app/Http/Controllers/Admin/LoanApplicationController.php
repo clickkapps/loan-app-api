@@ -45,9 +45,7 @@ class LoanApplicationController extends Controller
                 $daysToDeadline = $request->get('days_to_deadline');
                 $deadline = Carbon::now()->addDays($daysToDeadline);
                 $loans = LoanApplication::with(['latestStatus', 'assignedTo'])->latestStatusName($type)
-                    ->whereDate([
-                        'deadline', '<=', $deadline
-                    ])->get();
+                    ->whereDate('deadline', '<=', $deadline)->get();
             }else{
                 $loans = $this->getLoansWhoseLatestStatusIs(status: $type);
             }
