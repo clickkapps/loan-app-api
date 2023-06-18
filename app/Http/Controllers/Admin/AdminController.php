@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\Agent;
 use App\Models\AgentTask;
+use App\Models\Commission;
 use App\Models\ConfigLoanOverdueStage;
 use App\Models\User;
 use App\Notifications\AdminCreated;
@@ -246,7 +247,12 @@ class AdminController extends Controller
         }
 
         $agents->map(function ($agent) use ($startOfMonth, $endOfMonth) {
-                $balance = User::withCommissionSum($startOfMonth, $endOfMonth)->find($agent->{'user_id'});
+//                 $balance = User::withCommissionSum($startOfMonth, $endOfMonth)->find($agent->{'user_id'});
+                $balance = Commission::with([])->where('user_id', $agent->{'user_id'})
+                    ->whereDate('created_at', '>=' , $startOfMonth)
+                    ->whereDate('created_at', '<=', $endOfMonth)
+                    ->sum('amount');
+
                 $agent->balance = $balance;
         });
 
@@ -255,6 +261,19 @@ class AdminController extends Controller
         // create an agent account for user
         return response()->json(ApiResponse::successResponseWithData($agents));
 
+    }
+
+    public function getCommissionDetails(Request $request): \Illuminate\Http\JsonResponse
+    {
+
+        $startOfMonth = !blank($request->get('start_date')) ? Carbon::parse($request->get('start_date')) : Carbon::today()->startOfMonth();
+        $endOfMonth = !blank($request->get('end_date')) ? Carbon::parse($request->get('end_date')) : Carbon::today()->endOfMonth();
+
+        $commissions = Commission::with(['agent', 'loan'])
+            ->whereDate('created_at', '>=' , $startOfMonth)
+            ->whereDate('created_at', '<=', $endOfMonth)
+            ->get();
+        return response()->json(ApiResponse::successResponseWithData($commissions));
     }
 
     public function getAgentsCommissionDisplayStatus(): \Illuminate\Http\JsonResponse

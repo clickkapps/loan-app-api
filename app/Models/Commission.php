@@ -15,4 +15,14 @@ class Commission extends Model
         'action', //'debit, credit'
         'creator_id'
     ];
+
+    public function loan(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(LoanApplication::class,'loan_id');
+    }
+
+    public function agent(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class,'user_id');
+    }
 }
