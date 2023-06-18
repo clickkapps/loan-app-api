@@ -6,6 +6,7 @@ use App\Models\Agent;
 use App\Models\AgentTask;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class SetupTasksForAgents extends Command
 {
@@ -39,7 +40,10 @@ class SetupTasksForAgents extends Command
 
             // carry forward the tasks remaining from yesterday ----------
 
-            $yesterdaysTaskRecord = AgentTask::with([])->whereDate('date', '=', Carbon::yesterday())->first();
+            $yesterdaysTaskRecord = AgentTask::with([])->whereDate('date', '=', Carbon::yesterday()->startOfDay())->first();
+
+            Log::info('yesterdaysTaskRecord ----');
+            Log::info(json_encode($yesterdaysTaskRecord));
 
             $tasksCountRemaining = !blank($yesterdaysTaskRecord) ? $yesterdaysTaskRecord->{'tasks_count'} - $yesterdaysTaskRecord->{'collected_count'} : 0.0;
             $tasksAmountRemaining = !blank($yesterdaysTaskRecord) ? $yesterdaysTaskRecord->{'tasks_amount'} - $yesterdaysTaskRecord->{'collected_amount'} : 0.0;
