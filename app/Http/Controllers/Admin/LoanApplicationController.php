@@ -40,7 +40,19 @@ class LoanApplicationController extends Controller
             // get loans whose latest stage is $stageName
 
 //            $stage = ConfigLoanOverdueStage::with([])->where('name', $stageName)->first();
-            $loans = $this->getLoansWhoseLatestStatusIs(status: $type);
+
+            if($stageName == '0' && !blank($request->get('days_to_deadline'))){
+                $daysToDeadline = $request->get('days_to_deadline');
+                $deadline = Carbon::now()->addDays($daysToDeadline);
+                $loans = LoanApplication::with(['latestStatus', 'assignedTo'])->latestStatusName($type)
+                    ->whereDate([
+                        'deadline', '<=', $deadline
+                    ])->get();
+            }else{
+                $loans = $this->getLoansWhoseLatestStatusIs(status: $type);
+            }
+
+
 //            $loans = LoanApplication::with([])->where('loan_overdue_stage_id', $stage->{'id'})->get();
         }
 
