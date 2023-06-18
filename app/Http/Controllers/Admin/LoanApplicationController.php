@@ -8,6 +8,7 @@ use App\Models\ConfigLoanOverdueStage;
 use App\Models\LoanApplication;
 use App\Models\LoanApplicationStatus;
 use App\Traits\LoanApplicationTrait;
+use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -54,15 +55,15 @@ class LoanApplicationController extends Controller
     {
 
         $this->validate($request, [
-           'start_date' => 'required',
-           'end_date' => 'required',
+           'start_date' => 'required|date',
+           'end_date' => 'required|date',
         ]);
 
         $startDate = $request->get('start_date');
         $endDate = $request->get('end_date');
 
         $loanData = LoanApplication::with(['latestStatus', 'stage', 'assignedTo'])
-            ->whereBetween('created_at', [$startDate, $endDate])
+            ->whereBetween('created_at', [Carbon::parse($startDate), Carbon::parse($endDate)])
             ->orderByDesc('created_at')->get();
 
         return response()->json(ApiResponse::successResponseWithData($loanData));
