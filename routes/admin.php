@@ -124,6 +124,7 @@ Route::middleware(['auth:sanctum', 'role:super admin|admin'])->group(function() 
 Route::middleware(['auth:sanctum', 'role:super admin|admin'])->group(function() {
 
     Route::get('/fetch-loans/{type}', [\App\Http\Controllers\Admin\LoanApplicationController::class, 'fetchLoans']);
+    Route::post('/fetch-loan-history', [\App\Http\Controllers\Admin\LoanApplicationController::class, 'fetchLoanHistory']);
     Route::get('/fetch-loan-detail/{loanId}', [\App\Http\Controllers\Admin\LoanApplicationController::class, 'fetchLoanDetail']);
     Route::get('/fetch-loan-stages', [\App\Http\Controllers\Admin\LoanApplicationController::class, 'fetchLoanStages']);
     Route::post('/assign-loan-to-agent', [\App\Http\Controllers\Admin\LoanApplicationController::class, 'assignLoanToAgent']);

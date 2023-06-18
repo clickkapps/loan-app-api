@@ -10,6 +10,7 @@ use App\Models\LoanApplicationStatus;
 use App\Traits\LoanApplicationTrait;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class LoanApplicationController extends Controller
 {
@@ -44,6 +45,27 @@ class LoanApplicationController extends Controller
 
         return response()->json(ApiResponse::successResponseWithData($loans));
 
+    }
+
+    /**
+     * @throws ValidationException
+     */
+    public function fetchLoanHistory(Request $request): \Illuminate\Http\JsonResponse
+    {
+
+        $this->validate($request, [
+           'start_date' => 'required',
+           'end_date' => 'required',
+        ]);
+
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
+
+        $loanData = LoanApplication::with(['latestStatus', 'stage', 'assignedTo'])
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->orderByDesc('created_at')->get();
+
+        return response()->json(ApiResponse::successResponseWithData($loanData));
     }
 
     /**
