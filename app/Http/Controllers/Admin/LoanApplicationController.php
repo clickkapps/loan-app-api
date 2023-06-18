@@ -64,6 +64,7 @@ class LoanApplicationController extends Controller
 
         $loanData = LoanApplication::with(['latestStatus', 'stage', 'assignedTo'])
             ->whereBetween('created_at', [Carbon::parse($startDate), Carbon::parse($endDate)])
+            ->where('closed', '=', true)
             ->orderByDesc('created_at')->get();
 
         return response()->json(ApiResponse::successResponseWithData($loanData));
@@ -102,7 +103,7 @@ class LoanApplicationController extends Controller
         }
 
         $loan->update([
-            '$waveInterestPercentage' => $waveInterestPercentage
+            'wave_interest_by_percentage' => $waveInterestPercentage
         ]);
 
         return response()->json(ApiResponse::successResponseWithMessage());
