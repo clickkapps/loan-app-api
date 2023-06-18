@@ -74,7 +74,7 @@ class LoanApplicationController extends Controller
      */
     public function fetchLoanDetail(Request $request, $loanId): \Illuminate\Http\JsonResponse
     {
-        $loan = LoanApplication::with(['statuses'])->find($loanId);
+        $loan = LoanApplication::with(['statuses', 'assignedTo'])->find($loanId);
         if(blank($loan)){
             throw  new \Exception('Loan not found');
         }
