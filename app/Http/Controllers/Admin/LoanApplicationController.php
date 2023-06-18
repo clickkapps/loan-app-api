@@ -95,7 +95,7 @@ class LoanApplicationController extends Controller
         ]);
 
         $loanId = $request->get('loan_id');
-        $waveInterestPercentage = $request->get('wave_percentage');
+        $waveInterestPercentage = $request->get('wave_interest_percentage');
 
         $loan = LoanApplication::with(['statuses', 'assignedTo'])->find($loanId);
         if(blank($loan)){
