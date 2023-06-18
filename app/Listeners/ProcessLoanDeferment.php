@@ -57,7 +57,7 @@ class ProcessLoanDeferment
                 'agent_user_id' => $loan->{'assigned_to'}
             ]);
 
-            $startD = Carbon::parse('deadline');
+            $startD = Carbon::parse($loan->{'deadline'});
             $daysRemaining = 0;
             if($startD->lessThan(Carbon::today())){
                 $startD = Carbon::today();
