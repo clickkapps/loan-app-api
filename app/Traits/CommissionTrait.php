@@ -53,9 +53,14 @@ trait CommissionTrait
 
         // for partial repayment
         // if the customer makes part payment, the commission will be a fraction of the laid down commission
+        Log::info('amount to pay' . $loan->{'amount_to_pay'});
+        Log::info("isPartPayment: $isPartPayment");
         if($isPartPayment && $loan->{'amount_to_pay'} > 0) {
             $percentageOfAmountPaid = $amountPaid / $loan->{'amount_to_pay'} * 100;
+            Log::info("percentageOfAmountPaid: $percentageOfAmountPaid");
             $commission = ($percentageOfAmountPaid / 100) * $commission;
+            Log::info("commission: $commission");
+
         }
 //        $commission = $perc / 100 * $amountPaid;
 
