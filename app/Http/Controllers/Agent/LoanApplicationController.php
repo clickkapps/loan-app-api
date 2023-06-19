@@ -114,7 +114,7 @@ class LoanApplicationController extends Controller
                 ->where('assigned_to', $user->id);
             $data = $query->get();
 
-        }else if ($category == 'partial-payments') {
+        }else if ($category == 'part-payments') {
 
             // continue with query statement for the different categories
 //            $query->where()
