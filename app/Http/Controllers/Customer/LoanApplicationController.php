@@ -103,10 +103,25 @@ class LoanApplicationController extends Controller
     public function fetchLoanApplicationUpdate(Request $request): \Illuminate\Http\JsonResponse
     {
 
+        $user = $request->user();
+        $customer = $user->customer;
+
+        Log::info('customer: ' . json_encode($customer));
+
+        // general configurations
+        $generalConfig = Configuration::with([])->first();
+
         $runningLoan = $this->getLoanApplicationUpdate($request)->getData()->extra;
 
         return response()->json(ApiResponse::successResponseWithData([
-            "running_loan" => $runningLoan
+            "running_loan" => $runningLoan,
+            'loan_application_config' => [
+                'loan_application_amount_limit' => $customer->{'loan_application_amount_limit'} ?: $generalConfig->{'loan_application_amount_limit'},
+                'loan_application_duration_limit' => $customer->{'loan_application_duration_limit'} ?: $generalConfig->{'loan_application_duration_limit'},
+                'loan_application_interest_percentage' => $customer->{'loan_application_interest_percentage'} ?: $generalConfig->{'loan_application_interest_percentage'},
+                'processing_fee_percentage' => $generalConfig->{'processing_fee_percentage'},
+            ],
+
         ]));
     }
 
