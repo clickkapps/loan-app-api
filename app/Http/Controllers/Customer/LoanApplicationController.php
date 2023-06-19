@@ -177,6 +177,17 @@ class LoanApplicationController extends Controller
                 $display = 'Loan application submitted';
             }else if($status->status == "stage-0") {
                 $display = 'Loan disbursed';
+            } else if($status->status == "denied") {
+                $display = "Application denied";
+            }else if($status->status == "assigned-to-agent") {
+                $display = "Assigned to agent";
+            }
+            else if($status->status == "deferred") {
+                $display = "Deferred";
+            }else if($status->status == "part-repayment") {
+                $display = "Part payment";
+            }else if($status->status == "full-repayment") {
+                $display = "Full payment";
             }
             return [
                 'status' => $status->status,

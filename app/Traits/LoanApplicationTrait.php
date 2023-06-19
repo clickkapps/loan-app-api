@@ -51,6 +51,10 @@ trait LoanApplicationTrait
         }
         else if($displayStatus == "deferred") {
             $displayStatus = "Deferred";
+        }else if($displayStatus == "part-repayment") {
+            $displayStatus = "Part payment";
+        }else if($displayStatus == "full-repayment") {
+            $displayStatus = "Full payment";
         }
 
 
