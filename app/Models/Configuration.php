@@ -17,6 +17,7 @@ class Configuration extends Model
         'auto_loan_approval',
         'pause_all_interests',
         'today_is_holiday',
-        'show_customer_call_logs'
+        'show_customer_call_logs',
+        'allow_agent_pick_loan_orders'
     ];
 }
