@@ -59,7 +59,7 @@ class LoanApplication extends Model
         return $this->belongsToMany(User::class, LoanAssignedTo::class);
     }
 
-    public function scopeLatestStatusName($query, $name, $nameArray)
+    public function scopeLatestStatusName($query, $name, $nameArray = [])
     {
 //        return $query->whereHas('statuses', function ($query) use ($name) {
 //            $query->where('status', $name)
