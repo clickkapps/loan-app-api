@@ -253,7 +253,7 @@ class AdminController extends Controller
 
         $agents->map(function ($agent) use ($startOfMonth, $endOfMonth) {
 //                 $balance = User::withCommissionSum($startOfMonth, $endOfMonth)->find($agent->{'user_id'});
-                $balance = Commission::with([])->where('user_id', $agent->{'user_id'})
+                $balance = Commission::with([])->where('user_id', $agent->{'id'})
                     ->where('created_at', '>=' , $startOfMonth)
                     ->where('created_at', '<=', $endOfMonth)
                     ->sum('amount');
