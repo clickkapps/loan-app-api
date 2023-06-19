@@ -29,27 +29,38 @@ class LoanApplicationController extends Controller
             $this->authorize('access to pending loans');
 
             // Get loans whose latest status is requested --------
-            $loans = $this->getLoansWhoseLatestStatusIs(status: 'requested');
+            $loans = LoanApplication::with(['latestStatus', 'assignedTo'])
+                ->where('loan_overdue_stage_id', '=', null)
+                ->where('closed','=', false)
+                ->get();
+//            $loans = $this->getLoansWhoseLatestStatusIs(status: 'requested');
 
         }else {
 
             $items = explode('-', $type);
             $stageName = $items[1];
 
+
             $this->authorize("access to loan stage $stageName");
 
             // get loans whose latest stage is $stageName
 
-//            $stage = ConfigLoanOverdueStage::with([])->where('name', $stageName)->first();
+            $stage = ConfigLoanOverdueStage::with([])->where('name', $stageName)->first();
             Log::info('days_to_deadline: ' . json_encode($request->get('days_to_deadline')));
             if($stageName == '0' && !blank($request->get('days_to_deadline'))){
 
                 $daysToDeadline = $request->get('days_to_deadline');
                 $deadline = Carbon::now()->addDays($daysToDeadline);
-                $loans = LoanApplication::with(['latestStatus', 'assignedTo'])->latestStatusName($type, ['deferred','part-repayment','full-repayment'])
+                $loans = LoanApplication::with(['latestStatus', 'assignedTo'])
+                    ->where('loan_overdue_stage_id', '=', $stage->{'id'})
+                    ->where('closed','=', false)
                     ->whereDate('deadline', '<=', $deadline)->get();
             }else{
-                $loans = $this->getLoansWhoseLatestStatusIs(status: $type);
+                $loans = LoanApplication::with(['latestStatus', 'assignedTo'])
+                    ->where('loan_overdue_stage_id', '=', $stage->{'id'})
+                    ->where('closed','=', false)
+                    ->get();
+//                $loans = $this->getLoansWhoseLatestStatusIs(status: $type);
             }
 
 
