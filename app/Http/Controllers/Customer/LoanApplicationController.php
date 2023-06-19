@@ -212,6 +212,7 @@ class LoanApplicationController extends Controller
             'account_number' => 'required',
             'account_name' => 'required',
             'network_type' => 'required',
+//            'amount' => 'required',
         ]);
 
         $user = $request->user();
@@ -220,6 +221,7 @@ class LoanApplicationController extends Controller
         $accountNumber = $request->get('account_number');
         $accountName = $request->get('account_name');
         $networkType = $request->get('network_type');
+        $amount = $request->get('amount');
 
 
         $loan = LoanApplication::with([])->find($loanId);
@@ -252,7 +254,8 @@ class LoanApplicationController extends Controller
         // if record already exists for the loan, you don't have to create the record again
         $payment = Payment::with([])->where([
             'description' => $description,
-            'loan_application_id' => $loanId
+            'loan_application_id' => $loanId,
+            'status' => 'opened'
         ])->first();
 
         if(!blank($payment)) {
@@ -266,7 +269,7 @@ class LoanApplicationController extends Controller
             'loan_application_id' => $loanId,
             'client_ref' => $clientRef,
 //            'server_ref',
-            'amount' => $loan->{'amount_to_pay'},
+            'amount' => !blank($amount) ? $amount : $loan->{'amount_to_pay'},
             'account_number' => $accountNumber,
             'account_name' => $accountName,
             'network_type' => $networkType,
