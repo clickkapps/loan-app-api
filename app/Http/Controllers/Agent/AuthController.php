@@ -110,7 +110,7 @@ class AuthController extends Controller
             })->get();
 
 
-        $orders = [
+        $ordersCounts = [
             'new_orders_count' => $newOrders,
             'partial_repayments_count' => $partialRepayments,
             'full_repayments_count' => $fullRepayments,
@@ -130,7 +130,7 @@ class AuthController extends Controller
             'app_link' => config('app.agent-url'),
             'developer_email' => config('custom.developer_email'),
             'today_desc' => $todayDesc,
-            'orders' => $orders
+            'orders_counts' => $ordersCounts
         ]));
 
     }
