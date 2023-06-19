@@ -61,6 +61,10 @@ class LoanApplicationController extends Controller
         ])->first();
         $customer = Customer::with([])->where('user_id', '=', $user->id)->first();
 
+        if(!$customer->{'eligibility_for_next_loan'}){
+            throw new \Exception("Sorry you're not eligible for another loan because you defaulted in your previous loan. Contact support for any queries");
+        }
+
         $fee = $amountRequested * $config->{'processing_fee_percentage'} / 100 + $amountRequested * $config->{'loan_application_interest_percentage'} / 100 ;
 
        $amountLimit  = $customer->{'loan_application_amount_limit'} ?: $config->{'loan_application_amount_limit'};

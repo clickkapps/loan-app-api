@@ -18,6 +18,7 @@ class Customer extends Model
         'agreed_to_terms_or_service',
         'default_momo_account_number',
         'default_momo_account_name',
-        'default_momo_network'
+        'default_momo_network',
+        'eligibility_for_next_loan'
     ];
 }

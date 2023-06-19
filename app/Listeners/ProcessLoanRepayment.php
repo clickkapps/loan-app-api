@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Events\PaymentCallbackReceived;
 use App\Models\ConfigLoanOverdueStage;
 use App\Models\Configuration;
+use App\Models\Customer;
 use App\Models\LoanApplication;
 use App\Models\LoanApplicationStatus;
 use App\Notifications\RepaymentReceived;
@@ -49,8 +50,10 @@ class ProcessLoanRepayment
             // add status that loan moved to stage 0
             $loanStageAt0 = ConfigLoanOverdueStage::with([])->where("name",'=','0')->first();
             $generalConfig = Configuration::with([])->first();
-            $durationLimit = $generalConfig->{'loan_application_duration_limit'};
+            $durationAmountLimit = $generalConfig->{'loan_application_amount_limit'};
 
+            $currentLoanStageId = $loan->{'loan_overdue_stage_id'};
+            $currentLoanStage = ConfigLoanOverdueStage::with([])->find($currentLoanStageId);
             $amountPaid = $payment->{'amount'};
             $amountToPay = $loan->{'amount_to_pay'};
             $amountRemaining = $amountToPay - $amountPaid;
@@ -83,6 +86,23 @@ class ProcessLoanRepayment
             if($assignedTo) {
 
                 $this->creditAgentBaseOnLoanRepayment(userId: $assignedTo, amountPaid: $amountPaid, amountToPay: $amountToPay, loan: $loan, isPartPayment: $isPartPayment);
+            }
+
+            // extend loan limit if its full repayment
+            // or indicate whether the customer is eligible for another loan
+            if(!$isPartPayment){
+//                loan_application_amount_limit
+//                'percentage_raise_on_next_loan_request',
+//        'eligible_for_next_loan_request',
+                $percRaiseForNextLoan = $currentLoanStage->{'percentage_raise_on_next_loan_request'};
+                $eligibilityForNextLoan = $currentLoanStage->{'eligible_for_next_loan_request'};
+                $newAmountLimit = $durationAmountLimit + (($percRaiseForNextLoan / 100) * $durationAmountLimit);
+
+                $customer = Customer::with([])->where('user_id', '=', $loan->{'user_id'})->first();
+                $customer->update([
+                    'eligibility_for_next_loan' => $eligibilityForNextLoan,
+                    'loan_application_amount_limit' => $newAmountLimit
+                ]);
             }
 
 
