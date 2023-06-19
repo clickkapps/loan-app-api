@@ -181,6 +181,7 @@ class LoanApplicationController extends Controller
             return [
                 'status' => $status->status,
                 'display' => $display,
+                'extra' => !blank($status->extra) ? json_decode($status->extra) : null,
                 'created_at' => Carbon::parse($status->{'created_at'})->toDayDateTimeString()
             ];
         });
