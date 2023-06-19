@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 
 trait CommissionTrait
 {
-    public  function creditAgentBaseOnLoanRepayment($userId, $amountPaid, $loan, bool $isPartPayment): void
+    public  function creditAgentBaseOnLoanRepayment($userId, $amountPaid, $amountToPay, $loan, bool $isPartPayment): void
     {
         // get the loan stage, and
         // check if today is holday and find the percentage given on holidays for that loan stage
@@ -53,10 +53,10 @@ trait CommissionTrait
 
         // for partial repayment
         // if the customer makes part payment, the commission will be a fraction of the laid down commission
-        Log::info('amount to pay' . $loan->{'amount_to_pay'});
+        Log::info('amount to pay ' . $amountToPay);
         Log::info("isPartPayment: $isPartPayment");
-        if($isPartPayment && $loan->{'amount_to_pay'} > 0) {
-            $percentageOfAmountPaid = $amountPaid / $loan->{'amount_to_pay'} * 100;
+        if($isPartPayment && $amountToPay > 0) {
+            $percentageOfAmountPaid = $amountPaid / $amountToPay * 100;
             Log::info("percentageOfAmountPaid: $percentageOfAmountPaid");
             $commission = ($percentageOfAmountPaid / 100) * $commission;
             Log::info("commission: $commission");

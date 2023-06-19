@@ -52,7 +52,8 @@ class ProcessLoanRepayment
             $durationLimit = $generalConfig->{'loan_application_duration_limit'};
 
             $amountPaid = $payment->{'amount'};
-            $amountRemaining = $loan->{'amount_to_pay'} - $amountPaid;
+            $amountToPay = $loan->{'amount_to_pay'};
+            $amountRemaining = $amountToPay - $amountPaid;
 
             $isPartPayment = $amountRemaining > 0;
 
@@ -65,6 +66,7 @@ class ProcessLoanRepayment
             ]);
 
             $assignedTo = $loan->{'assigned_to'};
+
             $loan->update([
                 'loan_overdue_stage_id' => $loanStageAt0->{'id'},
                 'amount_to_pay' => $amountRemaining,
@@ -77,7 +79,7 @@ class ProcessLoanRepayment
 
             if($assignedTo) {
 
-                $this->creditAgentBaseOnLoanRepayment(userId: $assignedTo, amountPaid: $amountPaid, loan: $loan, isPartPayment: $isPartPayment);
+                $this->creditAgentBaseOnLoanRepayment(userId: $assignedTo, amountPaid: $amountPaid, amountToPay: $amountToPay, loan: $loan, isPartPayment: $isPartPayment);
             }
 
 
