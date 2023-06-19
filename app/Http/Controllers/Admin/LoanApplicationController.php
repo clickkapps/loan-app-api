@@ -11,6 +11,7 @@ use App\Traits\LoanApplicationTrait;
 use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class LoanApplicationController extends Controller
@@ -40,8 +41,9 @@ class LoanApplicationController extends Controller
             // get loans whose latest stage is $stageName
 
 //            $stage = ConfigLoanOverdueStage::with([])->where('name', $stageName)->first();
-
+            Log::info('days_to_deadline: ' . json_encode($request->get('days_to_deadline')));
             if($stageName == '0' && !blank($request->get('days_to_deadline'))){
+
                 $daysToDeadline = $request->get('days_to_deadline');
                 $deadline = Carbon::now()->addDays($daysToDeadline);
                 $loans = LoanApplication::with(['latestStatus', 'assignedTo'])->latestStatusName($type)

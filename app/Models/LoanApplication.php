@@ -59,16 +59,27 @@ class LoanApplication extends Model
         return $this->belongsToMany(User::class, LoanAssignedTo::class);
     }
 
-    public function scopeLatestStatusName($query, $name)
+    public function scopeLatestStatusName($query, $name, $nameArray)
     {
-        return $query->whereHas('statuses', function ($query) use ($name) {
-            $query->where('status', $name)
-                ->where('created_at', function ($subQuery) {
-                    $subQuery->selectRaw('MAX(created_at)')
-                        ->from('loan_application_statuses')
-                        ->whereColumn('loan_application_id', 'loan_applications.id');
-                });
-        });
+//        return $query->whereHas('statuses', function ($query) use ($name) {
+//            $query->where('status', $name)
+//                ->where('created_at', function ($subQuery) {
+//                    $subQuery->selectRaw('MAX(created_at)')
+//                        ->from('loan_application_statuses')
+//                        ->whereColumn('loan_application_id', 'loan_applications.id');
+//                });
+//        });
+        return $query->whereHas('statuses', function ($query) use ($nameArray, $name) {
+            $query->where('created_at', function ($subQuery) {
+                $subQuery->selectRaw('MAX(created_at)')
+                    ->from('loan_application_statuses')
+                    ->whereColumn('loan_application_id', 'loan_applications.id');
+            })
+                ->where('status', $name);
+        })
+            ->whereDoesntHave('statuses', function ($query) use ($nameArray) {
+                $query->whereIn('status', $nameArray);
+            });
 
     }
 
