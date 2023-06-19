@@ -49,6 +49,9 @@ trait LoanApplicationTrait
         }else if($displayStatus == "assigned-to-agent") {
             $displayStatus = "Assigned to agent";
         }
+        else if($displayStatus == "deferred") {
+            $displayStatus = "Deferred";
+        }
 
 
         return response()->json(ApiResponse::successResponseWithData(

@@ -11,6 +11,7 @@ use App\Models\FollowUpCallLog;
 use App\Models\FollowUpSmsLog;
 use App\Models\FollowUpWhatsappLog;
 use App\Models\LoanApplication;
+use App\Models\LoanApplicationStatus;
 use App\Notifications\FollowUpSmsLogCreated;
 use App\Traits\CusboardingPageTrait;
 use App\Traits\LoanApplicationTrait;
@@ -103,22 +104,57 @@ class LoanApplicationController extends Controller
     {
 
         $user = $request->user();
-        $query = LoanApplication::with(['latestStatus', 'assignedTo', 'user', 'stage', 'statuses'])
-            ->where('closed','=', false)
-            ->where('assigned_to', $user->id);
+
 
         $data = [];
         if($category == 'new-orders'){
 
+            $query = LoanApplication::with(['latestStatus', 'assignedTo', 'user', 'stage', 'statuses'])
+                ->where('closed','=', false)
+                ->where('assigned_to', $user->id);
             $data = $query->get();
 
-        }else if ($category == 'part-payment') {
+        }else if ($category == 'partial-payments') {
 
             // continue with query statement for the different categories
 //            $query->where()
+
 //            loanapplication status where agent_user_id = $user->id,
 //            created_at == today
 //            status = part-payment
+
+//            $status = LoanApplicationStatus::with([])
+//                ->where('user_id','=',$user->id)
+//                ->whereDate('created_at', '=', Carbon::today())
+//                ->where('status', '=', 'part-repayment');
+
+            $data = LoanApplication::with(['latestStatus', 'assignedTo', 'user', 'stage', 'statuses'])
+                ->whereHas('statuses', function ($query) use ($user) {
+                    $query->where('agent_user_id', $user->id)
+                        ->where('status', 'part-repayment')
+                        ->whereDate('created_at', Carbon::today());
+                })->get();
+
+        }else if ($category == 'full-payments') {
+            //'part-repayment'
+//            $status = LoanApplicationStatus::with([])
+//                ->whereDate('created_at', '=', Carbon::today())
+//                ->where('status', '=', 'part-repayment');
+            $data = LoanApplication::with(['latestStatus', 'assignedTo', 'user', 'stage', 'statuses'])
+                ->whereHas('statuses', function ($query) use ($user) {
+                $query->where('agent_user_id', $user->id)
+                    ->where('status', 'full-repayment')
+                    ->whereDate('created_at', Carbon::today());
+            })->get();
+
+        }else if ($category == 'deferred') {
+//            deferred
+            $data = LoanApplication::with(['latestStatus', 'assignedTo', 'user', 'stage', 'statuses'])
+                ->whereHas('statuses', function ($query) use ($user) {
+                    $query->where('agent_user_id', $user->id)
+                        ->where('status', 'deferred')
+                        ->whereDate('created_at', Carbon::today());
+                })->get();
 
         }
 
