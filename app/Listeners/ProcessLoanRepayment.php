@@ -62,7 +62,10 @@ class ProcessLoanRepayment
                 'status' => $isPartPayment ? 'part-repayment' : 'full-repayment',
                 'user_id' => $payment->{'created_by_user_id'},
                 'created_by' => $payment->{'created_by_name'},
-                'agent_user_id' => $loan->{'assigned_to'}
+                'agent_user_id' => $loan->{'assigned_to'},
+                'extra' => json_encode([
+                    'amount_paid' => $amountPaid
+                ])
             ]);
 
             $assignedTo = $loan->{'assigned_to'};
