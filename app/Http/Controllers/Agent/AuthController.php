@@ -101,13 +101,13 @@ class AuthController extends Controller
                 $query->where('agent_user_id', $user->id)
                     ->where('status', 'full-repayment')
                     ->whereDate('created_at', Carbon::today());
-            })->get();
+            })->count();
         $deferred = LoanApplication::with(['latestStatus', 'assignedTo', 'user', 'stage', 'statuses'])
             ->whereHas('statuses', function ($query) use ($user) {
                 $query->where('agent_user_id', $user->id)
                     ->where('status', 'deferred')
                     ->whereDate('created_at', Carbon::today());
-            })->get();
+            })->count();
 
 
         $ordersCounts = [
