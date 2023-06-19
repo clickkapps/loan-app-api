@@ -87,6 +87,36 @@ class AuthController extends Controller
             ->sum('amount');
 //         = User::withCommissionSum($startOfMonth, $endOfMonth)->find($user->{'id'});
 
+        $newOrders = LoanApplication::with(['latestStatus', 'assignedTo', 'user', 'stage', 'statuses'])
+            ->where('closed','=', false)
+            ->where('assigned_to', $user->id)->count();
+        $partialRepayments = LoanApplication::with(['latestStatus', 'assignedTo', 'user', 'stage', 'statuses'])
+            ->whereHas('statuses', function ($query) use ($user) {
+                $query->where('agent_user_id', $user->id)
+                    ->where('status', 'part-repayment')
+                    ->whereDate('created_at', Carbon::today());
+            })->count();
+        $fullRepayments = LoanApplication::with(['latestStatus', 'assignedTo', 'user', 'stage', 'statuses'])
+            ->whereHas('statuses', function ($query) use ($user) {
+                $query->where('agent_user_id', $user->id)
+                    ->where('status', 'full-repayment')
+                    ->whereDate('created_at', Carbon::today());
+            })->get();
+        $deferred = LoanApplication::with(['latestStatus', 'assignedTo', 'user', 'stage', 'statuses'])
+            ->whereHas('statuses', function ($query) use ($user) {
+                $query->where('agent_user_id', $user->id)
+                    ->where('status', 'deferred')
+                    ->whereDate('created_at', Carbon::today());
+            })->get();
+
+
+        $orders = [
+            'new_orders_count' => $newOrders,
+            'partial_repayments_count' => $partialRepayments,
+            'full_repayments_count' => $fullRepayments,
+            'deferred_count' => $deferred,
+        ];
+
         return response()->json(ApiResponse::successResponseWithData([
             'agent' => $agent,
             'stages' => $loanStages,
@@ -100,6 +130,7 @@ class AuthController extends Controller
             'app_link' => config('app.agent-url'),
             'developer_email' => config('custom.developer_email'),
             'today_desc' => $todayDesc,
+            'orders' => $orders
         ]));
 
     }
