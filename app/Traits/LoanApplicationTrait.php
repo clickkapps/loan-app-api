@@ -268,6 +268,8 @@ trait LoanApplicationTrait
                 'user_id' => $authUser->{'id'},
                 'created_by' => in_array('agent', $permissionNames) ? 'agent' : 'admin',
                 'agent_user_id' => $userId,
+                'created_at' => now(),
+                'updated_at' => now()
             ];
         }
 
