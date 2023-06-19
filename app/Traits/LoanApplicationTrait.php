@@ -57,6 +57,7 @@ trait LoanApplicationTrait
         return response()->json(ApiResponse::successResponseWithData(
             [
                 'loan' => $runningLoan,
+                'days_left' => Carbon::today()->diffInDays(Carbon::parse($runningLoan['deadline'])),
                 'display_status' => $displayStatus,
                 'status' => $applicationStatus->status
             ]
