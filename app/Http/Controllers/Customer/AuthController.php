@@ -267,6 +267,8 @@ class AuthController extends Controller
         $user = $request->user();
         $customer = $user->customer;
 
+        Log::info('customer: ' . json_encode($customer));
+
         // general configurations
         $generalConfig = Configuration::with([])->first();
 
