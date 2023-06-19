@@ -46,7 +46,10 @@ trait LoanApplicationTrait
             $displayStatus = "Application denied";
         }else if($displayStatus == "stage-0") {
             $displayStatus = "Loan disbursed";
+        }else if($displayStatus == "assigned-to-agent") {
+            $displayStatus = "Assigned to agent";
         }
+
 
         return response()->json(ApiResponse::successResponseWithData(
             [
