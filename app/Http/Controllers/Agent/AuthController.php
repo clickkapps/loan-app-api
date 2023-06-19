@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Agent;
 use App\Classes\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\AgentTask;
+use App\Models\Commission;
 use App\Models\CommissionConfig;
 use App\Models\Configuration;
 use App\Models\FollowUp;
@@ -80,7 +81,11 @@ class AuthController extends Controller
         $startOfMonth = Carbon::today()->startOfMonth();
         $endOfMonth = Carbon::today()->endOfMonth();
 
-        $commission = User::withCommissionSum($startOfMonth, $endOfMonth)->find($user->{'id'});
+        $commission = Commission::with([])->where('user_id', $user->{'id'})
+            ->where('created_at', '>=' , $startOfMonth)
+            ->where('created_at', '<=', $endOfMonth)
+            ->sum('amount');
+//         = User::withCommissionSum($startOfMonth, $endOfMonth)->find($user->{'id'});
 
         return response()->json(ApiResponse::successResponseWithData([
             'agent' => $agent,
