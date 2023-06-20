@@ -6,6 +6,7 @@ use App\Classes\ApiResponse;
 use App\Models\Agent;
 use App\Models\AgentTask;
 use App\Models\CallLog;
+use App\Models\Commission;
 use App\Models\ConfigLoanOverdueStage;
 use App\Models\FollowUp;
 use App\Models\LoanApplication;
@@ -406,6 +407,22 @@ trait LoanApplicationTrait
 
         $callLogs = CallLog::with([])->where(['user_id' => $userId])->orderByDesc('duration')->get();
         return response()->json(ApiResponse::successResponseWithData($callLogs));
+
+    }
+
+    public function getCommissionsBreakdown(Request $request, $userId): \Illuminate\Http\JsonResponse
+    {
+
+        $startOfMonth = !blank($request->get('start_date')) ? Carbon::parse($request->get('start_date')) : Carbon::today()->startOfMonth();
+        $endOfMonth = !blank($request->get('end_date')) ? Carbon::parse($request->get('end_date')) : Carbon::today()->endOfMonth();
+
+        $commissions = Commission::with(['loan', 'agent'])->get();
+
+        Commission::with(['loan', 'agent', 'action'])->where('user_id', $userId)
+            ->where('created_at', '>=' , $startOfMonth)
+            ->where('created_at', '<=', $endOfMonth);
+
+        return response()->json(ApiResponse::successResponseWithData($commissions));
 
     }
 

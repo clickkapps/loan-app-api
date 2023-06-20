@@ -135,6 +135,7 @@ Route::middleware(['auth:sanctum', 'role:super admin|admin'])->group(function() 
     Route::get('/get-assigned-loans/{userId}', [\App\Http\Controllers\Admin\LoanApplicationController::class, 'getAssignedLoans']);
     Route::get('/get-follow-up-records/{loanId}', [\App\Http\Controllers\Admin\LoanApplicationController::class, 'getFollowUpRecords']);
     Route::get('/get-call-logs/{userId}', [\App\Http\Controllers\Agent\LoanApplicationController::class, 'getCustomerCallLogs']);
+    Route::get('get-commissions-breakdown/{userId}', [\App\Http\Controllers\Agent\LoanApplicationController::class, 'getCommissionsBreakdown']);
 
 
 });

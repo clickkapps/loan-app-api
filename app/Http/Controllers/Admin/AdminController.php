@@ -259,6 +259,7 @@ class AdminController extends Controller
                     ->sum('amount');
 
                 $agent->balance = $balance;
+                $agent->commissionMonth = $startOfMonth->monthName;
         });
 
         // Adding permissions via a role

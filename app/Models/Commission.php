@@ -12,7 +12,7 @@ class Commission extends Model
         'user_id',
         'loan_id',
         'amount',
-        'action', //'debit, credit'
+        'action', //'full, credit'
         'creator_id'
     ];
 
