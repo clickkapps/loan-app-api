@@ -313,6 +313,7 @@ trait LoanApplicationTrait
         $loanId = $request->get('loan_id');
         $authUser = $request->user();
         $loan = LoanApplication::with([])->find($loanId);
+        $permissionNames = $authUser->getRoleNames()->toArray();
 
         if(blank($loan)) {
             throw new \Exception("Loan does not exists");
@@ -350,7 +351,7 @@ trait LoanApplicationTrait
             'loan_application_id' => $loan->{'id'},
             'status' => 'un-assigned-from-agent',
             'user_id' => $authUser->{'id'},
-            'created_by' => in_array('agent', $authUser->getPermissionNames()) ? 'agent' : 'admin',
+            'created_by' => in_array('agent', $permissionNames) ? 'agent' : 'admin',
             'agent_user_id' => $agentUserId,
         ]);
 
