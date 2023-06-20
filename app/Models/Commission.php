@@ -18,7 +18,7 @@ class Commission extends Model
 
     public function loan(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(LoanApplication::class,'loan_id');
+        return $this->belongsTo(LoanApplication::class,'loan_id')->with('stage');
     }
 
     public function agent(): \Illuminate\Database\Eloquent\Relations\BelongsTo
