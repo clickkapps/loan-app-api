@@ -32,7 +32,7 @@ class SupportController extends Controller
         ]);
 
 
-        $recipients = $request->get('recipients');
+        $recipients = $request->get('user_ids');
         $message = $request->get('message');
         $useSms = $request->get('useSms') ?: true;
         $usePush = $request->get('usePush') ?: false;
