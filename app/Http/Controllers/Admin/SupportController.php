@@ -32,7 +32,7 @@ class SupportController extends Controller
         ]);
 
 
-        $recipients = $request->get('user_ids');
+        $recipientIds = $request->get('user_ids');
         $message = $request->get('message');
         $useSms = $request->get('useSms') ?: true;
         $usePush = $request->get('usePush') ?: false;
@@ -43,7 +43,7 @@ class SupportController extends Controller
 
         /// save in the campaigns  / notifications table
 
-        $recipientIds = collect($recipients)->pluck('id');
+//        $recipientIds = collect($recipients)->pluck('id');
 
         Log::info('recipientIds: ' . json_encode($recipientIds));
 
