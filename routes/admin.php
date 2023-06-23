@@ -139,3 +139,18 @@ Route::middleware(['auth:sanctum', 'role:super admin|admin'])->group(function() 
 
 
 });
+
+
+/*
+|--------------------------------------------------------------------------
+| Support Routes / Bulk sms / push notifications
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth:sanctum', 'role:super admin|admin'])->group(function () {
+
+    Route::post('/send-bulk-messages', [\App\Http\Controllers\Admin\SupportController::class, 'sendMessages']);
+    Route::get('/get-last-n-weeks-campaigns/{weeks?}', [\App\Http\Controllers\Admin\SupportController::class, 'getLastNWeeksCampaign']);
+
+
+});

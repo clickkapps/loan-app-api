@@ -40,3 +40,14 @@ function getTodayDescription(): string
     }
     return $todayIs;
 }
+
+
+function replaceFormUserTags(string $form, \App\Models\User $user): string{
+    $fullName =  $user->{'name'}.' '.$user->{'other_names'};
+    $form = str_replace("[fullName]", $fullName , $form);
+    $form = str_replace("[firstName]", $user->{'name'}, $form);
+    $form = str_replace("[lastName]", $user->{'other_names'}, $form);
+    $form = str_replace("[email]", $user->{'email'}, $form);
+    $form = str_replace("[phone]", $user->{'phone'}, $form);
+    return str_replace("[address]", $user->{'address'}, $form);
+}

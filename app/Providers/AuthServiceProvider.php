@@ -4,6 +4,7 @@ namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
 use App\Models\Admin;
+use App\Models\Campaign;
 use App\Models\ConfigCusboardingField;
 use App\Models\Configuration;
 use App\Models\User;
@@ -11,6 +12,7 @@ use App\Policies\AdminPolicy;
 use App\Policies\ConfigurationPolicy;
 use App\Policies\CustomerPolicy;
 use App\Policies\RolePermissionPolicy;
+use App\Policies\SupportPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Spatie\Permission\Models\Permission;
@@ -26,6 +28,7 @@ class AuthServiceProvider extends ServiceProvider
 
         Permission::class => RolePermissionPolicy::class,
         Configuration::class => ConfigurationPolicy::class,
+        Campaign::class => SupportPolicy::class
 
     ];
 
