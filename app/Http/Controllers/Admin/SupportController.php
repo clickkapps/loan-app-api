@@ -27,15 +27,14 @@ class SupportController extends Controller
         $this->authorize('manageSupport', Campaign::class);
 
         $this->validate($request, [
-            'recipients' => 'required|array',
+            'user_ids' => 'required|array',
             'message' => 'required',
-            'useSms' => 'required|bool',
         ]);
 
 
         $recipients = $request->get('recipients');
         $message = $request->get('message');
-        $useSms = $request->get('useSms');
+        $useSms = $request->get('useSms') ?: true;
         $usePush = $request->get('usePush') ?: false;
 
         if(blank($message)){
