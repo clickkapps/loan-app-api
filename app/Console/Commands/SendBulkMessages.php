@@ -50,6 +50,9 @@ class SendBulkMessages extends Command implements Isolatable
 
 
                 $user->notify(new CampaignCreated(campaign: $campaign));
+                $message->update([
+                    'status' => 'processed'
+                ]);
 
 //                getSuperAdmin()->notify(new DriverNotificationRequested($n->message, $user->phone, $c->use_sms, $c->use_push, $pushNotification));
 
