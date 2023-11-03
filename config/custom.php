@@ -21,7 +21,8 @@ return [
                 'major' => 'manage other admins',
                 'subs' => [
                     'create admin',
-                    'view all admins'
+                    'view all admins',
+                    'approve admins'
                 ]
             ],
             [
@@ -64,6 +65,7 @@ return [
                 'subs' => [
                     'assign agents',
                     'view agents',
+                    'approve agents'
                 ]
             ],
             [
