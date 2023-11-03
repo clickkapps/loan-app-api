@@ -42,15 +42,9 @@ class SmsChannel
         Log::info(sprintf('url: %s , apiToken: %s', $apiUrl, $apiToken));
 
         $response = Http::withToken($apiToken)->post($apiUrl, [
-            "supid" => 6,
-            "username" => "Eazisend",
-            "sourceAddress" => "Eazisend",
-            "shortMessage" => $message,
-            "destinationAddress" => $phone,
-            "messageDescription" => "personal",
-            "messageType" => "quick sms",
-            "randomspecial" => "",
-            "specialUnicodeSupport" => true
+            "from" => "Eazisend",
+            "to" => $phone,
+            "message" => $message,
         ]);
 
         if($response->failed()){
